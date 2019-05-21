@@ -40,10 +40,10 @@ namespace WoWFormatLib.FileReaders
                 throw new Exception("WDT does not exist, need this for MCAL flags!");
             }
 
-            LoadADT(wdtFileDataID, tileX, tileY, loadSecondaryADTs);
+            LoadADT(wdtFileDataID, tileX, tileY, loadSecondaryADTs, wdtFileName);
         }
 
-        public void LoadADT(uint wdtFileDataID, byte tileX, byte tileY, bool loadSecondaryADTs = true)
+        public void LoadADT(uint wdtFileDataID, byte tileX, byte tileY, bool loadSecondaryADTs = true, string wdtFilename = "")
         {
             adtfile.x = tileX;
             adtfile.y = tileY;
@@ -61,9 +61,29 @@ namespace WoWFormatLib.FileReaders
                 var wdtr = new WDTReader();
                 wdtr.LoadWDT(wdtFileDataID);
                 wdt = wdtr.wdtfile;
-                rootFileDataID = wdtr.tileFiles[(tileX, tileY)].rootADT;
-                obj0FileDataID = wdtr.tileFiles[(tileX, tileY)].obj0ADT;
-                tex0FileDataID = wdtr.tileFiles[(tileX, tileY)].tex0ADT;
+
+                if(wdtr.tileFiles.Count == 0)
+                {
+                    if (string.IsNullOrEmpty(wdtFilename))
+                    {
+                        throw new Exception("Require WDT filename for filename based ADT loading!");
+                    }
+
+                    var mapName = Path.GetFileNameWithoutExtension(wdtFilename);
+
+                    // Still filename based
+                    rootFileDataID = CASC.getFileDataIdByName("world/maps/" + mapName + "/" + mapName + "_" + tileX + "_" + tileY + ".adt");
+                    obj0FileDataID = CASC.getFileDataIdByName("world/maps/" + mapName + "/" + mapName + "_" + tileX + "_" + tileY + "_obj0.adt");
+                    tex0FileDataID = CASC.getFileDataIdByName("world/maps/" + mapName + "/" + mapName + "_" + tileX + "_" + tileY + "_tex0.adt");
+                }
+                else
+                {
+                    // ID based
+                    rootFileDataID = wdtr.tileFiles[(tileX, tileY)].rootADT;
+                    obj0FileDataID = wdtr.tileFiles[(tileX, tileY)].obj0ADT;
+                    tex0FileDataID = wdtr.tileFiles[(tileX, tileY)].tex0ADT;
+                }
+
             }
             else
             {
