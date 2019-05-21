@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
-using CASCLib;
 
 namespace WoWFormatLib
 {
@@ -32,26 +31,6 @@ namespace WoWFormatLib
             byte[] result = reader.ReadBytes(Unsafe.SizeOf<T>());
 
             return Unsafe.ReadUnaligned<T>(ref result[0]);
-        }
-
-        public static T[] ReadArray<T>(this BinaryReader reader) where T : unmanaged
-        {
-            int numBytes = (int)reader.ReadInt64();
-
-            byte[] source = reader.ReadBytes(numBytes);
-
-            reader.BaseStream.Position += (0 - numBytes) & 0x07;
-
-            return source.CopyTo<T>();
-        }
-
-        public static T[] ReadArray<T>(this BinaryReader reader, int size) where T : unmanaged
-        {
-            int numBytes = Unsafe.SizeOf<T>() * size;
-
-            byte[] source = reader.ReadBytes(numBytes);
-
-            return source.CopyTo<T>();
         }
 
         public static short ReadInt16BE(this BinaryReader reader)

@@ -33,9 +33,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CascStorageLib">
-      <HintPath>..\..\..\..\GitHub\CascStorageLib\CascStorageLib\bin\Debug\CascStorageLib.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -50,7 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DBC\DBCHelper.cs" />
     <Compile Include="FileReaders\ANIMReader.cs" />
     <Compile Include="FileReaders\ADTReader.cs" />
     <Compile Include="FileReaders\BLPReader.cs" />
