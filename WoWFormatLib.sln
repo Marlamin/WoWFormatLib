@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2027
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoWFormatLib", "WoWFormatLib\WoWFormatLib.csproj", "{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		DebugAnalysis|Any CPU = DebugAnalysis|Any CPU
+		DebugAnalysis|Mixed Platforms = DebugAnalysis|Mixed Platforms
+		DebugAnalysis|x64 = DebugAnalysis|x64
+		DebugAnalysis|x86 = DebugAnalysis|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.Debug|x64.Build.0 = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.DebugAnalysis|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.DebugAnalysis|Any CPU.Build.0 = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.DebugAnalysis|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.DebugAnalysis|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.DebugAnalysis|x64.ActiveCfg = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.DebugAnalysis|x64.Build.0 = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.DebugAnalysis|x86.ActiveCfg = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.DebugAnalysis|x86.Build.0 = Debug|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.Release|x64.ActiveCfg = Release|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.Release|x64.Build.0 = Release|Any CPU
+		{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {462B38C9-0A3F-4533-A167-BE5EA3B3F414}
+	EndGlobalSection
+EndGlobal
