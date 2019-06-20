@@ -23,6 +23,9 @@ namespace WoWFormatLib.Structs.M2
         LDV1 = 'L' << 0 | 'D' << 8 | 'V' << 16 | '1' << 24,
         GPID = 'G' << 0 | 'P' << 8 | 'I' << 16 | 'D' << 24,
         RPID = 'R' << 0 | 'P' << 8 | 'I' << 16 | 'D' << 24,
+        WFV1 = 'W' << 0 | 'F' << 8 | 'V' << 16 | '1' << 24,
+        WFV2 = 'W' << 0 | 'F' << 8 | 'V' << 16 | '2' << 24,
+        PGD1 = 'P' << 0 | 'G' << 8 | 'D' << 16 | '1' << 24,
     }
 
     public struct M2Model

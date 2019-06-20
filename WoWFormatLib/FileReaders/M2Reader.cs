@@ -121,6 +121,9 @@ namespace WoWFormatLib.FileReaders
                     case M2Chunks.PADC:
                     case M2Chunks.PEDC:
                     case M2Chunks.PSBC:
+                    case M2Chunks.PGD1:
+                    case M2Chunks.WFV1:
+                    case M2Chunks.WFV2:
                     case M2Chunks.LDV1:
                         break;
                     default:
