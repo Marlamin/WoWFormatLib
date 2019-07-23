@@ -70,7 +70,8 @@ namespace WoWFormatLib.Structs.WMO
         public MOGI[] groupInfo;
         public WMOGroupFile[] group;
         public uint[] groupFileDataIDs;
-        public string  skybox;
+        public string skybox;
+        public uint skyboxFileDataID;
     }
 
     public enum MOHDFlags : short

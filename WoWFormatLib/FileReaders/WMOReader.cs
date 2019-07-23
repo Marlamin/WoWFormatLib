@@ -115,7 +115,7 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MOSB:
                             wmofile.skybox = ReadMOSBChunk(chunkSize, bin);
                             break;
-                        case WMOChunks.MOSB:
+                        case WMOChunks.MOSI:
                             wmofile.skyboxFileDataID = ReadMOSIChunk(chunkSize, bin);
                             break;
                         case WMOChunks.GFID:
