@@ -115,6 +115,9 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MOSB:
                             wmofile.skybox = ReadMOSBChunk(chunkSize, bin);
                             break;
+                        case WMOChunks.MOSB:
+                            wmofile.skyboxFileDataID = ReadMOSIChunk(chunkSize, bin);
+                            break;
                         case WMOChunks.GFID:
                             wmofile.groupFileDataIDs = ReadGFIDChunk(chunkSize, bin);
                             break;
@@ -360,6 +363,11 @@ namespace WoWFormatLib.FileReaders
         private string ReadMOSBChunk(uint size, BinaryReader bin)
         {
             return bin.ReadCString();
+        }
+
+        private uint ReadMOSIChunk(uint size, BinaryReader bin)
+        {
+            return bin.ReadUInt32();
         }
 
         /* GROUP */
