@@ -13,7 +13,7 @@ namespace WoWFormatLib.FileReaders
         private WMO wmofile;
         private byte lodLevel;
 
-        public WMO LoadWMO(Stream wmo, byte lod = 0)
+        public WMO LoadWMO(Stream wmo, byte lod = 0, string filename = "")
         {
             lodLevel = lod;
 
@@ -21,7 +21,7 @@ namespace WoWFormatLib.FileReaders
             return wmofile;
         }
 
-        public WMO LoadWMO(uint filedataid, byte lod = 0)
+        public WMO LoadWMO(uint filedataid, byte lod = 0, string filename = "")
         {
             lodLevel = lod;
 
@@ -29,7 +29,7 @@ namespace WoWFormatLib.FileReaders
             {
                 using (var wmoStream = CASC.OpenFile(filedataid))
                 {
-                    ReadWMO(wmoStream);
+                    ReadWMO(wmoStream, filename);
                 }
             }
             else
@@ -48,7 +48,7 @@ namespace WoWFormatLib.FileReaders
             {
                 using (var wmoStream = CASC.OpenFile(filename))
                 {
-                    ReadWMO(wmoStream);
+                    ReadWMO(wmoStream, filename);
                 }
             }
             else
@@ -60,7 +60,7 @@ namespace WoWFormatLib.FileReaders
         }
 
         /* PARENT */
-        private void ReadWMO(Stream wmo)
+        private void ReadWMO(Stream wmo, string filename = "")
         {
             using (var bin = new BinaryReader(wmo))
             {
@@ -147,35 +147,57 @@ namespace WoWFormatLib.FileReaders
 
             var start = wmofile.header.nGroups * lodLevel;
 
-            for (var i = 0; i < wmofile.header.nGroups; i++)
+            if(wmofile.groupFileDataIDs == null && !string.IsNullOrEmpty(filename))
             {
-                var groupFileDataID = wmofile.groupFileDataIDs[start + i];
-
-                if (lodLevel == 3 && groupFileDataID == 0) // if lod is 3 and there's no lod3 available, fall back to lod1
+                for(var i = 0; i < wmofile.header.nGroups; i++)
                 {
-                    groupFileDataID = wmofile.groupFileDataIDs[i + (wmofile.header.nGroups * 2)];
-                }
-
-                if (lodLevel >= 2 && groupFileDataID == 0) // if lod is 2 or higher and there's no lod2 available, fall back to lod1
-                {
-                    groupFileDataID = wmofile.groupFileDataIDs[i + (wmofile.header.nGroups * 1)];
-                }
-
-                if (lodLevel >= 1 && groupFileDataID == 0) // if lod is 1 or higher check if lod1 available, fall back to lod0
-                {
-                    groupFileDataID = wmofile.groupFileDataIDs[i];
-                }
-
-                if (CASC.IsCASCInit && CASC.FileExists(groupFileDataID))
-                {
-                    using (var wmoStream = CASC.OpenFile(groupFileDataID))
+                    var groupFilename = filename.Replace(".wmo", "_" + i.ToString().PadLeft(3, '0') + ".wmo");
+                    if (CASC.IsCASCInit && CASC.FileExists(groupFilename))
                     {
-                        groupFiles[i] = ReadWMOGroupFile(groupFileDataID, wmoStream);
+                        var groupFileDataID = CASC.getFileDataIdByName(groupFilename);
+                        using (var wmoStream = CASC.OpenFile(groupFileDataID))
+                        {
+                            groupFiles[i] = ReadWMOGroupFile(groupFileDataID, wmoStream);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("CASC is reporting " + groupFilename + " does not exist!");
                     }
                 }
-                else
+            }
+            else
+            {
+                for (var i = 0; i < wmofile.header.nGroups; i++)
                 {
-                    Console.WriteLine("CASC is reporting " + groupFileDataID + " does not exist! This shouldn't happen.");
+                    var groupFileDataID = wmofile.groupFileDataIDs[start + i];
+
+                    if (lodLevel == 3 && groupFileDataID == 0) // if lod is 3 and there's no lod3 available, fall back to lod1
+                    {
+                        groupFileDataID = wmofile.groupFileDataIDs[i + (wmofile.header.nGroups * 2)];
+                    }
+
+                    if (lodLevel >= 2 && groupFileDataID == 0) // if lod is 2 or higher and there's no lod2 available, fall back to lod1
+                    {
+                        groupFileDataID = wmofile.groupFileDataIDs[i + (wmofile.header.nGroups * 1)];
+                    }
+
+                    if (lodLevel >= 1 && groupFileDataID == 0) // if lod is 1 or higher check if lod1 available, fall back to lod0
+                    {
+                        groupFileDataID = wmofile.groupFileDataIDs[i];
+                    }
+
+                    if (CASC.IsCASCInit && CASC.FileExists(groupFileDataID))
+                    {
+                        using (var wmoStream = CASC.OpenFile(groupFileDataID))
+                        {
+                            groupFiles[i] = ReadWMOGroupFile(groupFileDataID, wmoStream);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("CASC is reporting " + groupFileDataID + " does not exist! This shouldn't happen.");
+                    }
                 }
             }
 
