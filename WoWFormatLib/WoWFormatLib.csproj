@@ -35,8 +35,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CascLib, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CascLib.1.0.5\lib\net472\CascLib.dll</HintPath>
+    <Reference Include="CascLib, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CascLib.1.0.7\lib\net472\CascLib.dll</HintPath>
     </Reference>
     <Reference Include="MimeKitLite, Version=2.2.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
       <HintPath>..\packages\MimeKitLite.2.2.0\lib\net45\MimeKitLite.dll</HintPath>
