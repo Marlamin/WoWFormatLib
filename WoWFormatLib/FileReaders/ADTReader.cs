@@ -62,7 +62,7 @@ namespace WoWFormatLib.FileReaders
                 wdtr.LoadWDT(wdtFileDataID);
                 wdt = wdtr.wdtfile;
 
-                if(wdtr.tileFiles.Count == 0)
+                if (wdtr.tileFiles.Count == 0)
                 {
                     if (string.IsNullOrEmpty(wdtFilename))
                     {
@@ -295,6 +295,7 @@ namespace WoWFormatLib.FileReaders
 
             chunk.attributes = new MH2OAttribute[256][];
             chunk.instances = new MH2OInstance[256][];
+            chunk.vertexData = new MH2OVertexData[256][];
 
             for (short i = 0; i < 256; i++)
             {
@@ -316,10 +317,22 @@ namespace WoWFormatLib.FileReaders
                     bin.BaseStream.Position = chunkBasePos + header.offsetInstances;
 
                     chunk.instances[i] = new MH2OInstance[header.layerCount];
+                    chunk.vertexData[i] = new MH2OVertexData[header.layerCount];
 
-                    for (var j = 0; j < header.layerCount; j++)
+                    for (short j = 0; j < header.layerCount; j++)
                     {
                         chunk.instances[i][j] = bin.Read<MH2OInstance>();
+                        if (chunk.instances[i][j].liquidObjectOrLVF >= 42)
+                        {
+                            try
+                            {
+                                DBC.LiquidVertexFormatLookup.TryGetLVF(chunk.instances[i][j].liquidObjectOrLVF, out chunk.instances[i][j].liquidObjectOrLVF);
+                            }
+                            catch (Exception e)
+                            {
+                                CASCLib.Logger.WriteLine("Unable to do LVF lookup, DBC stuff failed: " + e.Message);
+                            }
+                        }
                     }
                 }
             }

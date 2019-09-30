@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DBC\CASCDBCProvider.cs" />
+    <Compile Include="DBC\LiquidVertexFormatLookup.cs" />
     <Compile Include="FileReaders\ANIMReader.cs" />
     <Compile Include="FileReaders\ADTReader.cs" />
     <Compile Include="FileReaders\BLPReader.cs" />
@@ -92,6 +93,12 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DBCD\DBCD\DBCD.csproj">
+      <Project>{66c3c495-9da6-4d2c-b655-9c8446152232}</Project>
+      <Name>DBCD</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -27,6 +27,7 @@ namespace WoWFormatLib.Utils
 
         public static void Load()
         {
+            // TODO: Refresh listfile?
             if (!File.Exists("listfile.csv"))
             {
                 Update();

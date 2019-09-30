@@ -294,6 +294,7 @@ namespace WoWFormatLib.Structs.ADT
         public MH2OHeader[] headers;
         public MH2OAttribute[][] attributes;
         public MH2OInstance[][] instances;
+        public MH2OVertexData[][] vertexData;
     }
 
     public struct MH2OHeader
