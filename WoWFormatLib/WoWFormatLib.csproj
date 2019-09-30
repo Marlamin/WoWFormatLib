@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DBC\CASCDBCProvider.cs" />
     <Compile Include="FileReaders\ANIMReader.cs" />
     <Compile Include="FileReaders\ADTReader.cs" />
     <Compile Include="FileReaders\BLPReader.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Utils\ABlock.cs" />
     <Compile Include="Utils\BinaryReaderExtensions.cs" />
     <Compile Include="Utils\CASC.cs" />
+    <Compile Include="Utils\Listfile.cs" />
     <Compile Include="Utils\RGBColor.cs" />
     <Compile Include="Utils\Quaternion.cs" />
     <Compile Include="Utils\Vector3.cs" />
