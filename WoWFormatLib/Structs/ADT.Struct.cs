@@ -292,6 +292,8 @@ namespace WoWFormatLib.Structs.ADT
     public struct MH2O
     {
         public MH2OHeader[] headers;
+        public MH2OAttribute[][] attributes;
+        public MH2OInstance[][] instances;
     }
 
     public struct MH2OHeader
@@ -299,6 +301,30 @@ namespace WoWFormatLib.Structs.ADT
         public uint offsetInstances;
         public uint layerCount;
         public uint offsetAttributes;
+    }
+
+    public struct MH2OAttribute
+    {
+        public ulong fishable;
+        public ulong deep;
+    }
+
+    public struct MH2OInstance
+    {
+        public ushort liquidType;
+        public ushort liquidObjectOrLVF;
+        public float min_height_level;
+        public float max_height_level;
+        public byte xOffset;
+        public byte yOffset;
+        public uint offsetExistsBitmap;
+        public uint offsetVertexData;
+    }
+
+    public struct MH2OVertexData
+    {
+        public byte liquidVertexFormat;
+        public byte[] vertexData;
     }
 
     [Flags]

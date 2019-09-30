@@ -280,8 +280,10 @@ namespace WoWFormatLib.FileReaders
             }
             return bbchunk;
         }
+
         private MH2O ReadMH20SubChunk(uint size, BinaryReader bin)
         {
+            var chunkBasePos = bin.BaseStream.Position;
             var chunk = new MH2O();
             chunk.headers = new MH2OHeader[256];
             for (var i = 0; i < 256; i++)
@@ -290,8 +292,41 @@ namespace WoWFormatLib.FileReaders
                 chunk.headers[i].layerCount = bin.ReadUInt32();
                 chunk.headers[i].offsetAttributes = bin.ReadUInt32();
             }
+
+            chunk.attributes = new MH2OAttribute[256][];
+            chunk.instances = new MH2OInstance[256][];
+
+            for (short i = 0; i < 256; i++)
+            {
+                var header = chunk.headers[i];
+                if (header.offsetAttributes != 0)
+                {
+                    bin.BaseStream.Position = chunkBasePos + header.offsetAttributes;
+
+                    chunk.attributes[i] = new MH2OAttribute[header.layerCount];
+
+                    for (short j = 0; j < header.layerCount; j++)
+                    {
+                        chunk.attributes[i][j] = bin.Read<MH2OAttribute>();
+                    }
+                }
+
+                if (header.offsetInstances != 0)
+                {
+                    bin.BaseStream.Position = chunkBasePos + header.offsetInstances;
+
+                    chunk.instances[i] = new MH2OInstance[header.layerCount];
+
+                    for (var j = 0; j < header.layerCount; j++)
+                    {
+                        chunk.instances[i][j] = bin.Read<MH2OInstance>();
+                    }
+                }
+            }
+
             return chunk;
         }
+
         /* OBJ */
         private void ReadObjFile(Stream adtObjStream)
         {
