@@ -318,6 +318,8 @@ namespace WoWFormatLib.Structs.ADT
         public float max_height_level;
         public byte xOffset;
         public byte yOffset;
+        public byte width;
+        public byte height;
         public uint offsetExistsBitmap;
         public uint offsetVertexData;
     }

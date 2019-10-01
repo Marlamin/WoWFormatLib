@@ -333,6 +333,35 @@ namespace WoWFormatLib.FileReaders
                                 CASCLib.Logger.WriteLine("Unable to do LVF lookup, DBC stuff failed: " + e.Message);
                             }
                         }
+
+                        var vertexCount = (chunk.instances[i][j].width + 1) * (chunk.instances[i][j].height + 1);
+                        var vertexChunkSize = 0;
+                        switch (chunk.instances[i][j].liquidObjectOrLVF)
+                        {
+                            case 0:
+                                vertexChunkSize += 4 * vertexCount; // heightmap
+                                vertexChunkSize += 1 * vertexCount; // depthmap
+                                break;
+                            case 1:
+                                vertexChunkSize += 4 * vertexCount; // heightmap
+                                vertexChunkSize += 4 * vertexCount; // uvmap
+                                break;
+                            case 2:
+                                vertexChunkSize += 1 * vertexCount; // depthmap
+                                break;
+                            case 3:
+                                vertexChunkSize += 4 * vertexCount; // heightmap
+                                vertexChunkSize += 4 * vertexCount; // uvmap
+                                vertexChunkSize += 1 * vertexCount; // depthmap
+                                break;
+                            default:
+                                CASCLib.Logger.WriteLine("Encountered unknown liquidObjectOrLVF: " + chunk.instances[i][j].liquidObjectOrLVF + ", did DBC lookup fail?");
+                                break;
+                        }
+                        
+                        bin.BaseStream.Position = chunkBasePos + chunk.instances[i][j].offsetVertexData;
+                        chunk.vertexData[i][j].liquidVertexFormat = (byte)chunk.instances[i][j].liquidObjectOrLVF;
+                        chunk.vertexData[i][j].vertexData = bin.ReadBytes(vertexChunkSize);
                     }
                 }
             }
