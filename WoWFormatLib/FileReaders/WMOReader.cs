@@ -134,7 +134,8 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MDDI: // ?
                             break;
                         default:
-                            throw new Exception(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString()));
+                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString()));
+                            break;
                     }
                 }
             }
@@ -513,7 +514,8 @@ namespace WoWFormatLib.FileReaders
                             continue;
                         default:
 #if DEBUG
-                            throw new Exception(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName.ToString("X"), position.ToString()));
+                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName.ToString("X"), position.ToString()));
+                            break;
 #else
                             CASCLib.Logger.WriteLine("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName.ToString("X"), position.ToString());
                             break;

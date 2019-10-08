@@ -128,7 +128,8 @@ namespace WoWFormatLib.FileReaders
                         wdtfile.modf = ReadMODFChunk(bin);
                         break;
                     default:
-                        throw new Exception(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position.ToString()));
+                        Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position.ToString()));
+                        break;
                 }
             }
         }

@@ -128,7 +128,8 @@ namespace WoWFormatLib.FileReaders
                         break;
                     default:
 #if DEBUG
-                        throw new Exception(string.Format("M2: Found unknown header at offset {1} \"{0}\"", chunkName.ToString("X"), position.ToString()));
+                        Console.WriteLine(string.Format("M2: Found unknown header at offset {1} \"{0}\"", chunkName.ToString("X"), position.ToString()));
+                        break;
 #else
                         CASCLib.Logger.WriteLine(String.Format("M2: Found unknown header at offset {1} \"{0}\"", chunkName, position.ToString()));
                         break;

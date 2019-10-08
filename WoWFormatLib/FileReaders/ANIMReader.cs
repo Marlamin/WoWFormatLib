@@ -34,7 +34,8 @@ namespace WoWFormatLib.FileReaders
                         case ANIMChunks.AFSB:
                             break;
                         default:
-                            throw new Exception(string.Format("{2} Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position, fileDataID));
+                            Console.WriteLine(string.Format("{2} Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position, fileDataID));
+                            break;
                     }
                 }
             }

@@ -143,7 +143,8 @@ namespace WoWFormatLib.FileReaders
                         case ADTChunks.MBNV:
                             break;
                         default:
-                            throw new Exception(string.Format("ADT {3}, {4} for WDT filedataid: {2} - found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position, wdtFileDataID, tileX, tileY));
+                            Console.WriteLine(string.Format("ADT {3}, {4} for WDT filedataid: {2} - found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position, wdtFileDataID, tileX, tileY));
+                            break;
                     }
                 }
             }
@@ -203,7 +204,8 @@ namespace WoWFormatLib.FileReaders
                         case ADTChunks.MCLV:
                             continue;
                         default:
-                            throw new Exception(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName, subpos.ToString()));
+                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName, subpos.ToString()));
+                            break;
                     }
                 }
             }
@@ -417,7 +419,8 @@ namespace WoWFormatLib.FileReaders
                             // TODO
                             break;
                         default:
-                            throw new Exception(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position));
+                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position));
+                            break;
                     }
                 }
             }
@@ -587,7 +590,8 @@ namespace WoWFormatLib.FileReaders
                         case ADTChunks.MAMP:
                             break;
                         default:
-                            throw new Exception(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position));
+                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position));
+                            break;
                     }
                 }
             }
@@ -621,7 +625,8 @@ namespace WoWFormatLib.FileReaders
                         case ADTChunks.MCMT:
                             break;
                         default:
-                            throw new Exception(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName, subpos.ToString()));
+                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName, subpos.ToString()));
+                            break;
                     }
                 }
             }

@@ -83,7 +83,8 @@ namespace WoWFormatLib.FileReaders
                     case WDLChunks.MAHO:
                         continue;
                     default:
-                        throw new Exception(String.Format("{2} Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position.ToString(), filename));
+                        Console.WriteLine(string.Format("{2} Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position.ToString(), filename));
+                        break;
                 }
             }
         }
