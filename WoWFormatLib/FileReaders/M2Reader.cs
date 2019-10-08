@@ -127,13 +127,15 @@ namespace WoWFormatLib.FileReaders
                     case M2Chunks.LDV1:
                         break;
                     default:
+                        if (chunkName.ToString("X") != "00000000")
+                        {
 #if DEBUG
-                        Console.WriteLine(string.Format("M2: Found unknown header at offset {1} \"{0}\"", chunkName.ToString("X"), position.ToString()));
-                        break;
+                            Console.WriteLine(string.Format("M2: Found unknown header at offset {1} \"{0}\"", chunkName.ToString("X"), position.ToString()));
 #else
-                        CASCLib.Logger.WriteLine(String.Format("M2: Found unknown header at offset {1} \"{0}\"", chunkName, position.ToString()));
-                        break;
+                            CASCLib.Logger.WriteLine(String.Format("M2: Found unknown header at offset {1} \"{0}\"", chunkName, position.ToString()));
 #endif
+                        }
+                        break;
                 }
             }
 
