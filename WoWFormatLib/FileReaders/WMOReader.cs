@@ -198,7 +198,7 @@ namespace WoWFormatLib.FileReaders
                     }
                     else
                     {
-                        Console.WriteLine("CASC is reporting " + groupFileDataID + " does not exist! This shouldn't happen.");
+                        //Console.WriteLine("CASC is reporting " + groupFileDataID + " does not exist! This shouldn't happen.");
                     }
                 }
             }
