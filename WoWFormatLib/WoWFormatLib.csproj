@@ -35,8 +35,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CascLib, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CascLib.1.0.8\lib\net472\CascLib.dll</HintPath>
+    <Reference Include="CascLib, Version=1.0.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CascLib.1.0.10\lib\net48\CascLib.dll</HintPath>
     </Reference>
     <Reference Include="MimeKitLite, Version=2.2.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
       <HintPath>..\packages\MimeKitLite.2.2.0\lib\net45\MimeKitLite.dll</HintPath>
@@ -96,7 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DBCD\DBCD\DBCD.csproj">
-      <Project>{66c3c495-9da6-4d2c-b655-9c8446152232}</Project>
+      <Project>{603a84a9-3b68-45b5-8d08-2c0e151d14dd}</Project>
       <Name>DBCD</Name>
     </ProjectReference>
   </ItemGroup>
