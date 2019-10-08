@@ -131,6 +131,7 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MCVP: // MCVP Convex Volume Planes
                         case WMOChunks.MOUV: // MOUV Animated texture UVs
                         case WMOChunks.MLSP: // ?
+                        case WMOChunks.MDDI: // ?
                             break;
                         default:
                             throw new Exception(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString()));

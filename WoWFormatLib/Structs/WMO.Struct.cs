@@ -27,6 +27,7 @@ namespace WoWFormatLib.Structs.WMO
         MCVP = 'M' << 24 | 'C' << 16 | 'V' << 8 | 'P' << 0,
         MOUV = 'M' << 24 | 'O' << 16 | 'U' << 8 | 'V' << 0,
         MOSI = 'M' << 24 | 'O' << 16 | 'S' << 8 | 'I' << 0,
+        MDDI = 'M' << 24 | 'D' << 16 | 'D' << 8 | 'I' << 0,
 
         // Group WMO
         MOGP = 'M' << 24 | 'O' << 16 | 'G' << 8 | 'P' << 0,
