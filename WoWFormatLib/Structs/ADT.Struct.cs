@@ -229,6 +229,7 @@ namespace WoWFormatLib.Structs.ADT
         mddf_liquid_known           = 0x20,
         mddf_entry_is_filedataid    = 0x40,
         mddf_0x100                  = 0x100,
+        mddf_0x200                  = 0x200,
     }
 
     //List of filenames for M2 models that appear in this map tile.
