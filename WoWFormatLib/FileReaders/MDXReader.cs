@@ -99,7 +99,7 @@ namespace WoWFormatLib.FileReaders
                     case MDXChunks.PVTX: ParseChunk_PVTX(data, ref geoset); break;
                     case MDXChunks.GNDX: ParseChunk_GNDX(data); break;
                     case MDXChunks.MTGC: ParseChunk_MTGC(data); break;
-                    case MDXChunks.MATS: ParseChunk_MATS(data); break;
+                    case MDXChunks.MATS: ParseChunk_MATS(data, ref geoset); break;
                     case MDXChunks.TANG: ParseChunk_TANG(data); break;
                     case MDXChunks.SKIN: ParseChunk_SKIN(data); break;
                     case MDXChunks.UVAS: ParseChunk_UVAS(data, stream, ref geoset); break;
@@ -171,13 +171,15 @@ namespace WoWFormatLib.FileReaders
             data.Skip((int)data.ReadUInt32() * 4);
         }
 
-        private void ParseChunk_MATS(BinaryReader data)
+        private void ParseChunk_MATS(BinaryReader data, ref Geoset geoset)
         {
             // Not Yet Implemented
             data.Skip((int)data.ReadUInt32() * 4);
 
             // This seems version specific (900?), may need additional checks.
-            data.Skip(128); // Geoset material name?
+            data.Skip(16); // Flags?
+            byte[] geosetName = data.ReadBytes(112); // 112 name bytes?
+            geoset.name = Encoding.UTF8.GetString(geosetName).Replace("\0", string.Empty);
         }
 
         private void ParseChunk_TANG(BinaryReader data)

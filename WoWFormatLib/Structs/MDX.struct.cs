@@ -33,6 +33,7 @@
         public Normal[] normals;
         public Primitive[] primitives;
         public UV[] uvs;
+        public string name;
     }
 
     public struct Vert
