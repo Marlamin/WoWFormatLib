@@ -57,20 +57,31 @@ namespace WoWFormatLib.FileReaders
 
         private void ParseChunk_GEOS(BinaryReader data, Stream stream, uint chunkLength)
         {
-            List<Geoset> geosets = new List<Geoset>();
-
             long chunkEnd = stream.Position + chunkLength;
+
+            // Pre-calculate how many geosets we have to save memory.
+            uint geosetCount = 0;
+            while (stream.Position < chunkEnd)
+            {
+                geosetCount++;
+                stream.Seek(data.ReadUInt32() - 4, SeekOrigin.Current);
+            }
+
+            stream.Position = chunkEnd - chunkLength;
+            Geoset[] geosets = new Geoset[geosetCount];
+
+            uint geosetIndex = 0;
             while (stream.Position < chunkEnd)
             {
                 long geosetStart = stream.Position;
                 uint geosetSize = data.ReadUInt32();
                 long geosetEnd = geosetStart + geosetSize;
 
-                geosets.Add(ParseGeoset(data, stream, geosetEnd));
+                geosets[geosetIndex++] = ParseGeoset(data, stream, geosetEnd);
                 stream.Position = geosetEnd;
             }
 
-            model.geosets = geosets.ToArray();
+            model.geosets = geosets;
         }
 
         private Geoset ParseGeoset(BinaryReader data, Stream stream, long end)
@@ -185,19 +196,12 @@ namespace WoWFormatLib.FileReaders
         {
             uint chunkCount = data.ReadUInt32();
 
-            if ((MDXChunks)data.ReadUInt32() == MDXChunks.UVBS)
-            {
-                // MDX 900 UVAS appears to contain UVBS sub-chunks.
-                // Not encountered one that has more than one, so there's some over-riding occuring here.
-                for (int i = 0; i < chunkCount; i++)
-                    ParseChunk_UVBS(data, ref geoset);
-            }
-            else
-            {
-                // UVAS matches documentation, so treat it like one UVBS chunk.
+            // 900 UVAS contain UVBS sub-chunks. If it doesn't, treat it like an old UVAS.
+            // Note: No idea what the use of auxiliary UVBS chunks are, so we ignore them.
+            if ((MDXChunks)data.ReadUInt32() != MDXChunks.UVBS)
                 stream.Seek(-8, SeekOrigin.Current);
-                ParseChunk_UVBS(data, ref geoset);
-            }
+
+            ParseChunk_UVBS(data, ref geoset);
         }
 
         private void ParseChunk_UVBS(BinaryReader data, ref Geoset geoset)
