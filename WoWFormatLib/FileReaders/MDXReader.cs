@@ -36,6 +36,8 @@ namespace WoWFormatLib.FileReaders
                     case MDXChunks.VERS: ParseChunk_VERS(data); break;
                     case MDXChunks.MODL: ParseChunk_MODL(data); break;
                     case MDXChunks.GEOS: ParseChunk_GEOS(data, stream, chunkLength); break;
+                    case MDXChunks.MTLS: ParseChunk_MTLS(data, stream, chunkLength); break;
+                    case MDXChunks.TEXS: ParseChunk_TEXS(data, chunkLength); break;
                     default:
                         Console.WriteLine("Skipping unknown MDX chunk: {0}", chunkID.ToString("X"));
                         break;
@@ -53,6 +55,43 @@ namespace WoWFormatLib.FileReaders
             // Model names are always a fixed length of 50 bytes.
             byte[] nameBytes = data.ReadBytes(50);
             model.name = Encoding.UTF8.GetString(nameBytes).Replace("\0", string.Empty);
+        }
+        
+        private void ParseChunk_MTLS(BinaryReader data, Stream stream, uint chunkLength)
+        {
+            long chunkEnd = stream.Position + chunkLength;
+
+            // Look ahead to pre-calculate material count.
+            uint materialCount = 0;
+            while (stream.Position < chunkEnd)
+            {
+                materialCount++;
+                data.Skip((int)data.ReadUInt32() - 4); // materialSize is inclusive.
+            }
+
+            stream.Seek(chunkEnd - chunkLength, SeekOrigin.Begin);
+            Material[] materials = new Material[materialCount];
+
+            uint materialIndex = 0;
+            while (stream.Position < chunkEnd)
+            {
+                long matStartIndex = stream.Position;
+                uint materialSize = data.ReadUInt32();
+                data.Skip(4 + 4); // Priority plane + Material flags
+                data.Skip(80); // Shader name?
+
+                data.Skip(4); // LAYS header
+                data.Skip(4); // Number of layers
+                data.Skip(4); // Layer size (inclusive)
+
+                data.Skip(4 + 4); // Blend mode + Shading flags
+
+                materials[materialIndex++] = new Material { textureID = data.ReadUInt32() };
+
+                stream.Position = matStartIndex + materialSize; // materialSize is inclusive
+            }
+
+            model.materials = materials;
         }
 
         private void ParseChunk_GEOS(BinaryReader data, Stream stream, uint chunkLength)
@@ -110,6 +149,20 @@ namespace WoWFormatLib.FileReaders
                 }
             }
             return geoset;
+        }
+
+        private void ParseChunk_TEXS(BinaryReader data, uint chunkLength)
+        {
+            uint textureCount = chunkLength / 268; // uint32 (0x0?) + char[] 260 + uint32 flags
+            string[] textures = new string[textureCount];
+            for (int i = 0; i < textureCount; i++)
+            {
+                data.Skip(4); // Skip header (0x0?)
+                textures[i] = Encoding.UTF8.GetString(data.ReadBytes(260)).Replace("\0", string.Empty);
+                data.Skip(4); // Skip flag
+            }
+
+            model.textures = textures;
         }
 
         private void ParseChunk_VRTX(BinaryReader data, ref Geoset geoset)
@@ -177,7 +230,9 @@ namespace WoWFormatLib.FileReaders
             data.Skip((int)data.ReadUInt32() * 4);
 
             // This seems version specific (900?), may need additional checks.
-            data.Skip(16); // Flags?
+            geoset.materialIndex = data.ReadUInt32();
+            data.Skip(12);
+
             byte[] geosetName = data.ReadBytes(112); // 112 name bytes?
             geoset.name = Encoding.UTF8.GetString(geosetName).Replace("\0", string.Empty);
         }
@@ -204,6 +259,13 @@ namespace WoWFormatLib.FileReaders
                 stream.Seek(-8, SeekOrigin.Current);
 
             ParseChunk_UVBS(data, ref geoset);
+
+            // Even though we don't parse auxiliary UVBS chunks, we need to skip them.
+            for (int i = 0; i < chunkCount - 1; i++)
+            {
+                data.Skip(4); // UVBS header.
+                data.Skip((int)data.ReadUInt32() * 8);
+            }
         }
 
         private void ParseChunk_UVBS(BinaryReader data, ref Geoset geoset)

@@ -17,7 +17,9 @@
         MTGC = 'M' << 0 | 'T' << 8 | 'G' << 16 | 'C' << 24,
         MATS = 'M' << 0 | 'A' << 8 | 'T' << 16 | 'S' << 24,
         TANG = 'T' << 0 | 'A' << 8 | 'N' << 16 | 'G' << 24,
-        SKIN = 'S' << 0 | 'K' << 8 | 'I' << 16 | 'N' << 24
+        SKIN = 'S' << 0 | 'K' << 8 | 'I' << 16 | 'N' << 24,
+        TEXS = 'T' << 0 | 'E' << 8 | 'X' << 16 | 'S' << 24,
+        MTLS = 'M' << 0 | 'T' << 8 | 'L' << 16 | 'S' << 24
     }
 
     public struct MDXModel
@@ -25,6 +27,8 @@
         public uint version;
         public string name;
         public Geoset[] geosets;
+        public string[] textures;
+        public Material[] materials;
     }
 
     public struct Geoset
@@ -34,6 +38,7 @@
         public Primitive[] primitives;
         public UV[] uvs;
         public string name;
+        public uint materialIndex;
     }
 
     public struct Vert
@@ -61,5 +66,10 @@
     {
         public float x;
         public float y;
+    }
+
+    public struct Material
+    {
+        public uint textureID;
     }
 }
