@@ -133,7 +133,14 @@ namespace WoWFormatLib.FileReaders
                             adtfile.header = bin.Read<MHDR>();
                             break;
                         case ADTChunks.MH2O:
-                            adtfile.mh2o = ReadMH20SubChunk(chunkSize, bin);
+                            try
+                            {
+                                adtfile.mh2o = ReadMH20SubChunk(chunkSize, bin);
+                            }
+                            catch(Exception e)
+                            {
+                                CASCLib.Logger.WriteLine("Failed to read MH2O: " + e.Message);
+                            }
                             break;
                         case ADTChunks.MFBO:
                         //model.blob stuff
