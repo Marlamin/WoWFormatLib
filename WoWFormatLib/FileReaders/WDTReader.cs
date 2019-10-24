@@ -39,6 +39,11 @@ namespace WoWFormatLib.FileReaders
             }
         }
 
+        public void LoadWDT(Stream wdt)
+        {
+            ReadWDT(wdt);
+        }
+
         private void ReadMAINChunk(BinaryReader bin)
         {
             for (byte x = 0; x < 64; x++)
@@ -88,9 +93,33 @@ namespace WoWFormatLib.FileReaders
                 }
             }
         }
+
         private MODF ReadMODFChunk(BinaryReader bin)
         {
             return bin.Read<MODF>();
+        }
+
+        private MANM ReadMANMChunk(BinaryReader bin)
+        {
+            var manm = new MANM();
+            manm.countA = bin.ReadUInt32();
+            manm.countB = bin.ReadUInt32();
+            manm.entriesB = new MANM_B[manm.countB];
+            for(var i = 0; i < manm.countB; i++)
+            {
+                manm.entriesB[i] = new MANM_B();
+                manm.entriesB[i].c = bin.ReadUInt32();
+                manm.entriesB[i].d = bin.ReadBytes(544);
+                manm.entriesB[i].type = bin.ReadUInt32();
+                manm.entriesB[i].s = bin.ReadUInt32();
+                manm.entriesB[i].posPlusNormalCount = bin.ReadUInt32();
+                manm.entriesB[i].posPlusNormal = new MANMPosPlusNormal[manm.entriesB[i].posPlusNormalCount];
+                for(var j = 0; j < manm.entriesB[i].posPlusNormalCount; j++)
+                {
+                    manm.entriesB[i].posPlusNormal[j] = bin.Read<MANMPosPlusNormal>();
+                }
+            }
+            return manm;
         }
 
         private void ReadWDT(Stream wdt)
@@ -127,8 +156,11 @@ namespace WoWFormatLib.FileReaders
                     case WDTChunks.MODF:
                         wdtfile.modf = ReadMODFChunk(bin);
                         break;
+                    case WDTChunks.MANM:
+                        wdtfile.manm = ReadMANMChunk(bin);
+                        break;
                     default:
-                        Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position.ToString()));
+                        Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString()));
                         break;
                 }
             }

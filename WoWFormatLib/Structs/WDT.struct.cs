@@ -12,13 +12,41 @@ namespace WoWFormatLib.Structs.WDT
         MPLT = 'M' << 24 | 'P' << 16 | 'L' << 8 | 'T' << 0,
         MODF = 'M' << 24 | 'O' << 16 | 'D' << 8 | 'F' << 0,
         MAID = 'M' << 24 | 'A' << 16 | 'I' << 8 | 'D' << 0,
+        MANM = 'M' << 24 | 'A' << 16 | 'N' << 8 | 'M' << 0
     }
 
     public struct WDT
     {
         public MPHD mphd;
         public MODF modf;
+        public MANM manm;
         public MapFileDataIDs[] filedataids;
+    }
+
+    /* Names in MANM stuff are very much placeholder and taken from 010 template*/
+
+    public struct MANM
+    {
+        public uint countA;
+        public uint countB;
+        public MANM_B[] entriesB;
+
+    }
+
+    public struct MANM_B
+    {
+        public uint c; // ID?
+        public byte[] d; // 544 bytes of still unk
+        public uint type;
+        public uint s;
+        public uint posPlusNormalCount;
+        public MANMPosPlusNormal[] posPlusNormal;
+    }
+
+    public struct MANMPosPlusNormal
+    {
+        public Vector3 position;
+        public Vector3 normal;
     }
 
     public struct MODF
