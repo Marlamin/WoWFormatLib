@@ -379,7 +379,7 @@ namespace WoWFormatLib.FileReaders
                 doodads[i].position = bin.Read<Vector3>();
                 doodads[i].rotation = bin.Read<Quaternion>();
                 doodads[i].scale = bin.ReadSingle();
-                doodads[i].color = bin.ReadBytes(4);
+                doodads[i].color = bin.Read<BGRAColor>();
             }
             return doodads;
         }

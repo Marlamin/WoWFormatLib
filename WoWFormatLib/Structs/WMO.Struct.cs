@@ -121,7 +121,7 @@ namespace WoWFormatLib.Structs.WMO
         public Vector3 position;
         public Quaternion rotation;
         public float scale;
-        public byte[] color;
+        public BGRAColor color;
     }
 
     public struct MODS

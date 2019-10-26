@@ -88,6 +88,7 @@
     <Compile Include="Utils\BinaryReaderExtensions.cs" />
     <Compile Include="Utils\CASC.cs" />
     <Compile Include="Utils\Listfile.cs" />
+    <Compile Include="Utils\BGRAColor.cs" />
     <Compile Include="Utils\RGBColor.cs" />
     <Compile Include="Utils\Quaternion.cs" />
     <Compile Include="Utils\Vector3.cs" />
