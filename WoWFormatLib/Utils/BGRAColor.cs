@@ -2,12 +2,12 @@
 {
     public struct BGRAColor
     {
-        public char B;
-        public char G;
-        public char R;
-        public char A;
+        public byte B;
+        public byte G;
+        public byte R;
+        public byte A;
 
-        public BGRAColor(char b, char g, char r, char a)
+        public BGRAColor(byte b, byte g, byte r, byte a)
             : this()
         {
             B = b;
