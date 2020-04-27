@@ -28,6 +28,11 @@ namespace WoWFormatLib.Structs.WMO
         MOUV = 'M' << 24 | 'O' << 16 | 'U' << 8 | 'V' << 0,
         MOSI = 'M' << 24 | 'O' << 16 | 'S' << 8 | 'I' << 0,
         MDDI = 'M' << 24 | 'D' << 16 | 'D' << 8 | 'I' << 0,
+        MDDL = 'M' << 24 | 'D' << 16 | 'D' << 8 | 'L' << 0,
+        MFED = 'M' << 24 | 'F' << 16 | 'E' << 8 | 'D' << 0,
+        MGI2 = 'M' << 24 | 'G' << 16 | 'I' << 8 | '2' << 0,
+        MNLD = 'M' << 24 | 'N' << 16 | 'L' << 8 | 'D' << 0,
+        MAVD = 'M' << 24 | 'A' << 16 | 'V' << 8 | 'D' << 0,
 
         // Group WMO
         MOGP = 'M' << 24 | 'O' << 16 | 'G' << 8 | 'P' << 0,
@@ -55,6 +60,7 @@ namespace WoWFormatLib.Structs.WMO
         MLSS = 'M' << 24 | 'L' << 16 | 'S' << 8 | 'S' << 0,
         MLSK = 'M' << 24 | 'L' << 16 | 'S' << 8 | 'K' << 0,
         MOP2 = 'M' << 24 | 'O' << 16 | 'P' << 8 | '2' << 0,
+        MNLR = 'M' << 24 | 'N' << 16 | 'L' << 8 | 'R' << 0,
     }
 
     public struct WMO
@@ -69,10 +75,16 @@ namespace WoWFormatLib.Structs.WMO
         public MODS[] doodadSets;
         public MOGN[] groupNames;
         public MOGI[] groupInfo;
+        public MDDI[] detailDoodadInfo;
         public WMOGroupFile[] group;
         public uint[] groupFileDataIDs;
         public string skybox;
         public uint skyboxFileDataID;
+    }
+
+    public struct MDDI
+    {
+
     }
 
     public enum MOHDFlags : short
@@ -250,9 +262,9 @@ namespace WoWFormatLib.Structs.WMO
         public Vector3 boundingBox2;
         public ushort ofsPortals; //Index of portal in MOPR chunk
         public ushort numPortals;   
-        public ushort numBatchesA;
-        public ushort numBatchesB;
-        public uint numBatchesC; //WoWDev: For the "Number of batches" fields, A + B + C == the total number of batches in the WMO/v17 group (in the MOBA chunk).
+        public ushort transparentBatchCount;
+        public ushort interiorBatchCount;
+        public uint exteriorBatchCount; //WoWDev: For the "Number of batches" fields, A + B + C == the total number of batches in the WMO/v17 group (in the MOBA chunk).
         public byte fogIndices_0;
         public byte fogIndices_1;
         public byte fogIndices_2;
@@ -269,6 +281,30 @@ namespace WoWFormatLib.Structs.WMO
         public MONR[] normals;
         public MOTV[][] textureCoords;
         public MOBA[] renderBatches;
+        public MOBS[] shadowBatches;
+    }
+
+    public struct MOBS
+    {
+        public byte unk0;
+        public byte unk1;
+        public byte unk2;
+        public byte unk3;
+        public byte unk4;
+        public byte unk5;
+        public byte unk6;
+        public byte unk7;
+        public byte unk8;
+        public byte unk9;
+        public short materialIDBig;
+        public uint unk11;
+        public short unk12;
+        public byte unk13;
+        public byte unk14;
+        public byte unk15;
+        public byte unk16;
+        public byte flags;
+        public byte materialIDSmall;
     }
 
     public struct MOVI

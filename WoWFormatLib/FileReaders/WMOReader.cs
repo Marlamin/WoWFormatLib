@@ -121,6 +121,12 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.GFID:
                             wmofile.groupFileDataIDs = ReadGFIDChunk(chunkSize, bin);
                             break;
+                        case WMOChunks.MDDI: // MDDI Detail Doodad Information
+                            //wmofile.detailDoodadInfo = ReadMDDIChunk(chunkSize, bin);
+                            break;
+                        case WMOChunks.MDDL: // MODL Detail Doodad Layers
+
+                            break;
                         case WMOChunks.MOPV: // MOPV Portal Vertices
                         case WMOChunks.MOPR: // MOPR Portal References
                         case WMOChunks.MOPT: // MOPT Portal Information
@@ -130,11 +136,14 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MFOG: // MFOG Fog Information
                         case WMOChunks.MCVP: // MCVP Convex Volume Planes
                         case WMOChunks.MOUV: // MOUV Animated texture UVs
-                        case WMOChunks.MLSP: // ?
-                        case WMOChunks.MDDI: // ?
+                        case WMOChunks.MLSP: // MLSP Light Set Pointlights
+                        case WMOChunks.MFED: // ?
+                        case WMOChunks.MGI2: // MGI2 Group Info (LOD)
+                        case WMOChunks.MNLD: // MNLD New Light Defs
+                        case WMOChunks.MAVD: // MAVD Ambient Volumne Definition
                             break;
                         default:
-                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString()));
+                            Console.WriteLine(string.Format("Faaaound unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName.ToString("X"), (wmo.Position - 8).ToString()));
                             break;
                     }
                 }
@@ -204,6 +213,11 @@ namespace WoWFormatLib.FileReaders
             }
 
             wmofile.group = groupFiles;
+        }
+
+        private object ReadMDDIChunk(uint chunkSize, BinaryReader bin)
+        {
+            throw new NotImplementedException();
         }
 
         private uint[] ReadGFIDChunk(uint size, BinaryReader bin)
@@ -395,7 +409,7 @@ namespace WoWFormatLib.FileReaders
         }
 
         /* GROUP */
-        private WMOGroupFile ReadWMOGroupFile(uint filedataid, Stream wmo)
+        public WMOGroupFile ReadWMOGroupFile(uint filedataid, Stream wmo)
         {
             var groupFile = new WMOGroupFile();
 
@@ -440,9 +454,9 @@ namespace WoWFormatLib.FileReaders
                 boundingBox2 = bin.Read<Vector3>(),
                 ofsPortals = bin.ReadUInt16(),
                 numPortals = bin.ReadUInt16(),
-                numBatchesA = bin.ReadUInt16(),
-                numBatchesB = bin.ReadUInt16(),
-                numBatchesC = bin.ReadUInt32(),
+                transparentBatchCount = bin.ReadUInt16(),
+                interiorBatchCount = bin.ReadUInt16(),
+                exteriorBatchCount = bin.ReadUInt32(),
                 unused = bin.ReadUInt32(),
                 liquidType = bin.ReadUInt32(),
                 groupID = bin.ReadUInt32(),
@@ -494,7 +508,9 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MOPY: // MOPY Material info for triangles, two bytes per triangle.
                             mogp.materialInfo = ReadMOPYChunk(subChunkSize, subbin);
                             break;
-                        case WMOChunks.MOBS: // MOBS Unk
+                        case WMOChunks.MOBS: // MOBS Shadow batches
+                            mogp.shadowBatches = ReadMOBSChunk(subChunkSize, subbin);
+                            break;
                         case WMOChunks.MODR: // MODR Doodad references
                         case WMOChunks.MOBN: // MOBN Array of t_BSP_NODE
                         case WMOChunks.MOBR: // MOBR Face indices
@@ -511,6 +527,7 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MLSS: // ?
                         case WMOChunks.MLSK: // ?
                         case WMOChunks.MOP2: // ?
+                        case WMOChunks.MNLR: // MLNR Light New References
                             continue;
                         default:
 #if DEBUG
@@ -526,6 +543,18 @@ namespace WoWFormatLib.FileReaders
 
             return mogp;
         }
+
+        private MOBS[] ReadMOBSChunk(uint size, BinaryReader bin)
+        {
+            var numBatches = size / 24;
+            var batches = new MOBS[numBatches];
+            for(var i = 0; i < numBatches; i++)
+            {
+                batches[i] = bin.Read<MOBS>();
+            }
+            return batches;
+        }
+
         private MONR[] ReadMONRChunk(uint size, BinaryReader bin)
         {
             var numNormals = size / 12;
