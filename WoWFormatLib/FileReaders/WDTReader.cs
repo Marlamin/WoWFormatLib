@@ -157,7 +157,7 @@ namespace WoWFormatLib.FileReaders
                         wdtfile.modf = ReadMODFChunk(bin);
                         break;
                     case WDTChunks.MANM:
-                        wdtfile.manm = ReadMANMChunk(bin);
+                        //wdtfile.manm = ReadMANMChunk(bin);
                         break;
                     default:
                         Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString()));
