@@ -125,6 +125,10 @@ namespace WoWFormatLib.FileReaders
                     case M2Chunks.WFV1:
                     case M2Chunks.WFV2:
                     case M2Chunks.LDV1:
+                    case M2Chunks.WFV3:
+                    case M2Chunks.PFDC:
+                    case M2Chunks.EDGF:
+                    case M2Chunks.NERF:
                         break;
                     default:
                         if (chunkName.ToString("X") != "00000000")
