@@ -513,11 +513,11 @@ namespace WoWFormatLib.FileReaders
             {
                 textures[i].type = bin.ReadUInt32();
                 textures[i].flags = (TextureFlags)bin.ReadUInt32();
+                var lenFilename = bin.ReadUInt32();
+                var ofsFilename = bin.ReadUInt32();
 
                 if (textures[i].type == 0)
                 {
-                    var lenFilename = bin.ReadUInt32();
-                    var ofsFilename = bin.ReadUInt32();
                     if (ofsFilename < 10)
                     {
                         // Referenced in TXID, no longer in file (rip listfiles)
