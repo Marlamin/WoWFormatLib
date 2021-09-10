@@ -27,7 +27,7 @@ namespace WoWFormatLib.Structs.WDT
 
     public struct MANM
     {
-        public uint countA;
+        public uint version;
         public uint countB;
         public MANM_B[] entriesB;
 

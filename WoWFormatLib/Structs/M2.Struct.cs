@@ -294,10 +294,7 @@ namespace WoWFormatLib.Structs.M2
 
     public struct Event
     {
-        public char identifier_0;
-        public char identifier_1;
-        public char identifier_2;
-        public char identifier_3;
+        public string identifier;
         public uint data;
         public uint bone;
         public Vector3 position;

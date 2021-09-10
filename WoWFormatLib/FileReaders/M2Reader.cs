@@ -410,7 +410,17 @@ namespace WoWFormatLib.FileReaders
             var events = new Event[nEvents];
             for (var i = 0; i < nEvents; i++)
             {
-                events[i] = bin.Read<Event>();
+                events[i] = new Event()
+                {
+                    identifier = System.Text.Encoding.ASCII.GetString(bin.ReadBytes(4)),
+                    data =  bin.ReadUInt32(), 
+                    bone = bin.ReadUInt32(),
+                    position = bin.Read<Vector3>(),
+                    interpolationType = bin.ReadUInt16(),
+                    GlobalSequence = bin.ReadUInt16(),
+                    nTimestampEntries = bin.ReadUInt32(),
+                    ofsTimestampList = bin.ReadUInt32()
+                };
             }
             return events;
         }

@@ -181,6 +181,9 @@ namespace WoWFormatLib.FileReaders
             {
                 for (var i = 0; i < wmofile.header.nGroups; i++)
                 {
+                    if (wmofile.groupFileDataIDs == null)
+                        continue;
+
                     var groupFileDataID = wmofile.groupFileDataIDs[start + i];
 
                     if (lodLevel == 3 && groupFileDataID == 0) // if lod is 3 and there's no lod3 available, fall back to lod1
