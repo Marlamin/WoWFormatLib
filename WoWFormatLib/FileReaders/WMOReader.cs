@@ -121,12 +121,6 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.GFID:
                             wmofile.groupFileDataIDs = ReadGFIDChunk(chunkSize, bin);
                             break;
-                        case WMOChunks.MDDI: // MDDI Detail Doodad Information
-                            //wmofile.detailDoodadInfo = ReadMDDIChunk(chunkSize, bin);
-                            break;
-                        case WMOChunks.MDDL: // MODL Detail Doodad Layers
-
-                            break;
                         case WMOChunks.MOPV: // MOPV Portal Vertices
                         case WMOChunks.MOPR: // MOPR Portal References
                         case WMOChunks.MOPT: // MOPT Portal Information
@@ -137,14 +131,19 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MCVP: // MCVP Convex Volume Planes
                         case WMOChunks.MOUV: // MOUV Animated texture UVs
                         case WMOChunks.MLSP: // MLSP Light Set Pointlights
-                        case WMOChunks.MFED: // ?
+                        case WMOChunks.MDDI: // MDDI Detail Doodad Information
+                        case WMOChunks.MDDL: // MODL Detail Doodad Layers
                         case WMOChunks.MGI2: // MGI2 Group Info (LOD)
                         case WMOChunks.MNLD: // MNLD New Light Defs
                         case WMOChunks.MAVD: // MAVD Ambient Volumne Definition
+                        case WMOChunks.MFED: // ?
+                        case WMOChunks.MAVG: // ?
+                        case WMOChunks.MPVD: // ?
+                        case WMOChunks.MBVD: // ?
+                        case WMOChunks.MOLV: // ?
                             break;
                         default:
-                            Console.WriteLine(string.Format("Faaaound unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName.ToString("X"), (wmo.Position - 8).ToString()));
-                            break;
+                            throw new Exception(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString()));
                     }
                 }
             }
@@ -396,7 +395,7 @@ namespace WoWFormatLib.FileReaders
                 doodads[i].position = bin.Read<Vector3>();
                 doodads[i].rotation = bin.Read<Quaternion>();
                 doodads[i].scale = bin.ReadSingle();
-                doodads[i].color = bin.Read<BGRAColor>();
+                doodads[i].color = bin.ReadBytes(4);
             }
             return doodads;
         }
@@ -457,9 +456,9 @@ namespace WoWFormatLib.FileReaders
                 boundingBox2 = bin.Read<Vector3>(),
                 ofsPortals = bin.ReadUInt16(),
                 numPortals = bin.ReadUInt16(),
-                transparentBatchCount = bin.ReadUInt16(),
-                interiorBatchCount = bin.ReadUInt16(),
-                exteriorBatchCount = bin.ReadUInt32(),
+                numBatchesA = bin.ReadUInt16(),
+                numBatchesB = bin.ReadUInt16(),
+                numBatchesC = bin.ReadUInt32(),
                 unused = bin.ReadUInt32(),
                 liquidType = bin.ReadUInt32(),
                 groupID = bin.ReadUInt32(),
@@ -526,16 +525,19 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MOLP: // MOLP Points Lights
                         case WMOChunks.MOLS: // MOLS Spot Lights
                         case WMOChunks.MOPB: // MOPB Prepass Batches
+                        case WMOChunks.MNLR: // MLNR Light New References
                         case WMOChunks.MLSP: // ?
                         case WMOChunks.MLSS: // ?
                         case WMOChunks.MLSK: // ?
                         case WMOChunks.MOP2: // ?
-                        case WMOChunks.MNLR: // MLNR Light New References
+                        case WMOChunks.MFVR: // ?
+                        case WMOChunks.MAVR: // ?
+                        case WMOChunks.MPVR: // ?
+                        case WMOChunks.MBVR: // ?
                             continue;
                         default:
 #if DEBUG
-                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName.ToString("X"), position.ToString()));
-                            break;
+                            throw new Exception(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName.ToString("X"), position.ToString()));
 #else
                             CASCLib.Logger.WriteLine("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName.ToString("X"), position.ToString());
                             break;
