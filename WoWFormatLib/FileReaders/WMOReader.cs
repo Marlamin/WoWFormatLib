@@ -492,6 +492,8 @@ namespace WoWFormatLib.FileReaders
 
                     switch (subChunkName)
                     {
+                        case WMOChunks.MOHD:
+                            throw new NotSupportedException("Trying to parse root WMO as group WMO!");
                         case WMOChunks.MOVI: // MOVI Vertex indices for triangles
                             mogp.indices = ReadMOVIChunk(subChunkSize, subbin);
                             break;
