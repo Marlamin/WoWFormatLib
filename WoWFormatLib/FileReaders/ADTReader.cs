@@ -423,6 +423,8 @@ namespace WoWFormatLib.FileReaders
                             break;
                         case ADTChunks.MLMB:
                         case ADTChunks.MCNK:
+                        case ADTChunks.MWDR:
+                        case ADTChunks.MWDS:
                             // TODO
                             break;
                         default:

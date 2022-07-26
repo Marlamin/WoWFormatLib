@@ -17,6 +17,7 @@ namespace WoWFormatLib.Structs.BLS
         public uint[] ofsShaderBlocks;
         public List<byte[]> decompressedBlocks;
         public ShaderBlock[] shaderBlocks;
+        public byte[] rawBytes;
     }
 
     public struct ShaderBlock

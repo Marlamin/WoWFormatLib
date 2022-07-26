@@ -39,11 +39,10 @@ namespace WoWFormatLib.FileReaders
                     throw new Exception("Unsupported shader file: " + identifier);
                 }
 
-                var unk1 = bin.ReadUInt32();
-
                 shaderFile.version = bin.ReadUInt32();
+                shaderFile.permutationCount = bin.ReadUInt32();
 
-                if (shaderFile.version != 28)
+                if (shaderFile.version != 0x1000B)
                 {
                     Console.WriteLine("Unsupported shader version: " + shaderFile.version.ToString("X") + ", skipping..");
                     return shaderFile;
@@ -96,8 +95,9 @@ namespace WoWFormatLib.FileReaders
                     }
                 }
 
-                ///File.WriteAllBytes("out.bin", targetStream.ToArray());
+                shaderFile.rawBytes = targetStream.ToArray();
             }
+            return shaderFile;
 
             // Start reading decompressed data
             using (var bin = new BinaryReader(targetStream))
@@ -124,7 +124,7 @@ namespace WoWFormatLib.FileReaders
                             magicFound = true;
                             bin.BaseStream.Position -= 8;
                             length = bin.ReadInt32();
-                           // Console.WriteLine("Found " + magic + " at " + bin.BaseStream.Position);
+                           // Console.WriteLine("Found " + magic + " at " + bin.BaseStream.Position + " of length " + length);
                         }
 
                         if (bin.BaseStream.Position == bin.BaseStream.Length)
@@ -145,7 +145,7 @@ namespace WoWFormatLib.FileReaders
 
                     if(length == 1)
                     {
-                        File.WriteAllBytes("out2.bin", targetStream.ToArray());
+                      //  File.WriteAllBytes("out2.bin", targetStream.ToArray());
                     }
                     /*Console.WriteLine(magic);
                     while (magic != "DXBC" && magic != "MTLB")
