@@ -19,7 +19,7 @@ namespace WoWFormatLib.DBC
             }
             else
             {
-                throw new FileNotFoundException("DBC " + tableName + " not found in listfile, could not look up filedataid!");
+                throw new FileNotFoundException("DBC " + tableName + " not found in listfile, could not look up FileDataID!");
             }
         }
     }

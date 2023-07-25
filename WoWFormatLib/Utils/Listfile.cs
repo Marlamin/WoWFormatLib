@@ -10,6 +10,7 @@ namespace WoWFormatLib.Utils
     {
         public static Dictionary<uint, string> FDIDToFilename = new Dictionary<uint, string>();
         public static Dictionary<string, uint> FilenameToFDID = new Dictionary<string, uint>();
+        public static string ListfileURL = "https://github.com/wowdev/wow-listfile/blob/master/community-listfile.csv";
 
         public static void Update()
         {
@@ -17,7 +18,7 @@ namespace WoWFormatLib.Utils
             using (var stream = new MemoryStream())
             {
                 client.Headers[HttpRequestHeader.AcceptEncoding] = "gzip";
-                var responseStream = new GZipStream(client.OpenRead("https://wow.tools/casc/listfile/download/csv/unverified"), CompressionMode.Decompress);
+                var responseStream = new GZipStream(client.OpenRead(ListfileURL), CompressionMode.Decompress);
                 responseStream.CopyTo(stream);
                 File.WriteAllBytes("listfile.csv", stream.ToArray());
                 responseStream.Close();
@@ -27,11 +28,8 @@ namespace WoWFormatLib.Utils
 
         public static void Load()
         {
-            // TODO: Refresh listfile?
             if (!File.Exists("listfile.csv"))
-            {
                 Update();
-            }
 
             using (var listfile = File.Open("listfile.csv", FileMode.Open))
             using (var reader = new StreamReader(listfile))
