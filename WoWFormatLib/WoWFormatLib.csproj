@@ -47,6 +47,9 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Common, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Common.7.0.0\lib\net462\System.Drawing.Common.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
@@ -75,8 +78,6 @@
     <Compile Include="FileReaders\WMOReader.cs" />
     <Compile Include="FileReaders\LODADTReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SereniaBLPLib\BlpFile.cs" />
-    <Compile Include="SereniaBLPLib\DXTDecompression.cs" />
     <Compile Include="Structs\ANIM.struct.cs" />
     <Compile Include="Structs\ADT.struct.cs" />
     <Compile Include="Structs\BLS.struct.cs" />
@@ -104,6 +105,10 @@
     <ProjectReference Include="..\DBCD\DBCD\DBCD.csproj">
       <Project>{603a84a9-3b68-45b5-8d08-2c0e151d14dd}</Project>
       <Name>DBCD</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SereniaBLPLib\SereniaBLPLib\SereniaBLPLib.csproj">
+      <Project>{511591cf-392b-4976-8790-032c9d4c54dd}</Project>
+      <Name>SereniaBLPLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,7 +1,7 @@
-﻿using System.Drawing;
+﻿using SereniaBLPLib;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using WoWFormatLib.SereniaBLPLib;
 using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.FileReaders

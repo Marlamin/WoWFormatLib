@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.452
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoWFormatLib", "WoWFormatLib\WoWFormatLib.csproj", "{5DB0FB8F-0EAA-490A-AA7D-28AE010186A9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBCD", "DBCD\DBCD\DBCD.csproj", "{603A84A9-3B68-45B5-8D08-2C0E151D14DD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBFileReaderLib", "DBCD\DBFileReaderLib\DBFileReaderLib.csproj", "{7BFF161A-25A9-4DEA-ADB1-2EDF8BBEBAD4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SereniaBLPLib", "SereniaBLPLib\SereniaBLPLib\SereniaBLPLib.csproj", "{511591CF-392B-4976-8790-032C9D4C54DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,6 +97,30 @@ Global
 		{7BFF161A-25A9-4DEA-ADB1-2EDF8BBEBAD4}.Release|x64.Build.0 = Release|Any CPU
 		{7BFF161A-25A9-4DEA-ADB1-2EDF8BBEBAD4}.Release|x86.ActiveCfg = Release|Any CPU
 		{7BFF161A-25A9-4DEA-ADB1-2EDF8BBEBAD4}.Release|x86.Build.0 = Release|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Debug|x64.Build.0 = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Debug|x86.Build.0 = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.DebugAnalysis|Any CPU.ActiveCfg = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.DebugAnalysis|Any CPU.Build.0 = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.DebugAnalysis|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.DebugAnalysis|Mixed Platforms.Build.0 = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.DebugAnalysis|x64.ActiveCfg = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.DebugAnalysis|x64.Build.0 = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.DebugAnalysis|x86.ActiveCfg = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.DebugAnalysis|x86.Build.0 = Debug|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Release|x64.ActiveCfg = Release|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Release|x64.Build.0 = Release|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Release|x86.ActiveCfg = Release|Any CPU
+		{511591CF-392B-4976-8790-032C9D4C54DD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

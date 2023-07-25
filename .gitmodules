@@ -1,3 +1,6 @@
 [submodule "DBCD"]
 	path = DBCD
 	url = https://github.com/wowdev/DBCD.git
+[submodule "SereniaBLPLib"]
+	path = SereniaBLPLib
+	url = https://github.com/WoW-Tools/SereniaBLPLib
