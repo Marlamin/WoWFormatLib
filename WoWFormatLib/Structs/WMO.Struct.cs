@@ -37,6 +37,7 @@ namespace WoWFormatLib.Structs.WMO
         MAVD = 'M' << 24 | 'A' << 16 | 'V' << 8 | 'D' << 0,
         MPVD = 'M' << 24 | 'P' << 16 | 'V' << 8 | 'D' << 0,
         MBVD = 'M' << 24 | 'B' << 16 | 'V' << 8 | 'D' << 0,
+        MOMX = 'M' << 24 | 'O' << 16 | 'M' << 8 | 'X' << 0,
 
         // Group WMO
         MOGP = 'M' << 24 | 'O' << 16 | 'G' << 8 | 'P' << 0,
@@ -69,6 +70,11 @@ namespace WoWFormatLib.Structs.WMO
         MPVR = 'M' << 24 | 'P' << 16 | 'V' << 8 | 'R' << 0,
         MBVR = 'M' << 24 | 'B' << 16 | 'V' << 8 | 'R' << 0,
         MOLV = 'M' << 24 | 'O' << 16 | 'L' << 8 | 'V' << 0,
+        MOGX = 'M' << 24 | 'O' << 16 | 'G' << 8 | 'X' << 0,
+        MPY2 = 'M' << 24 | 'P' << 16 | 'Y' << 8 | '2' << 0,
+        MOQG = 'M' << 24 | 'O' << 16 | 'Q' << 8 | 'G' << 0,
+        MOC2 = 'M' << 24 | 'O' << 16 | 'C' << 8 | '2' << 0,
+
     }
 
     public struct WMO

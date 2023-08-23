@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using WoWFormatLib.Structs.M2;
 using WoWFormatLib.Utils;
 
@@ -129,12 +130,15 @@ namespace WoWFormatLib.FileReaders
                     case M2Chunks.PFDC:
                     case M2Chunks.EDGF:
                     case M2Chunks.NERF:
+                    case M2Chunks.DETL:
+                    case M2Chunks.DBOC:
                         break;
                     default:
                         if (chunkName.ToString("X") != "00000000")
                         {
 #if DEBUG
-                            Console.WriteLine(string.Format("M2: Found unknown header at offset {1} \"{0}\"", chunkName.ToString("X"), position.ToString()));
+                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)chunkName))));
+                            break;
 #else
                             CASCLib.Logger.WriteLine(String.Format("M2: Found unknown header at offset {1} \"{0}\"", chunkName, position.ToString()));
 #endif

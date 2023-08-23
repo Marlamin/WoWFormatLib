@@ -141,9 +141,12 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MPVD: // ?
                         case WMOChunks.MBVD: // ?
                         case WMOChunks.MOLV: // ?
+                        case WMOChunks.MOMX: // ?
+
                             break;
                         default:
-                            throw new Exception(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString()));
+                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)chunkName))));
+                            break;
                     }
                 }
             }
@@ -474,11 +477,11 @@ namespace WoWFormatLib.FileReaders
 
                 if (mogp.flags.HasFlag(MOGPFlags.Flag_0x40000000))
                 {
-                    mogp.textureCoords = new MOTV[3][];
+                    mogp.textureCoords = new MOTV[4][];
                 }
                 else
                 {
-                    mogp.textureCoords = new MOTV[2][];
+                    mogp.textureCoords = new MOTV[4][];
                 }
 
                 while (position < stream.Length)
@@ -536,10 +539,15 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MAVR: // ?
                         case WMOChunks.MPVR: // ?
                         case WMOChunks.MBVR: // ?
+                        case WMOChunks.MOGX: // ?
+                        case WMOChunks.MPY2: // ?
+                        case WMOChunks.MOQG: // ?
+                        case WMOChunks.MOC2: // ?
                             continue;
                         default:
 #if DEBUG
-                            throw new Exception(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName.ToString("X"), position.ToString()));
+                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", subChunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)subChunkName))));
+                            break;
 #else
                             CASCLib.Logger.WriteLine("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName.ToString("X"), position.ToString());
                             break;

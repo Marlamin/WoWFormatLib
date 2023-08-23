@@ -30,6 +30,8 @@ namespace WoWFormatLib.Structs.M2
         PFDC = 'P' << 0 | 'F' << 8 | 'D' << 16 | 'C' << 24,
         EDGF = 'E' << 0 | 'D' << 8 | 'G' << 16 | 'F' << 24,
         NERF = 'N' << 0 | 'E' << 8 | 'R' << 16 | 'F' << 24,
+        DETL = 'D' << 0 | 'E' << 8 | 'T' << 16 | 'L' << 24,
+        DBOC = 'D' << 0 | 'B' << 8 | 'O' << 16 | 'C' << 24,
     }
 
     public struct M2Model
