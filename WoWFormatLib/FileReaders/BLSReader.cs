@@ -42,7 +42,7 @@ namespace WoWFormatLib.FileReaders
                 shaderFile.version = bin.ReadUInt32();
                 shaderFile.permutationCount = bin.ReadUInt32();
 
-                if (shaderFile.version != 0x1000B)
+                if (shaderFile.version != 0x1000C)
                 {
                     Console.WriteLine("Unsupported shader version: " + shaderFile.version.ToString("X") + ", skipping..");
                     return shaderFile;
