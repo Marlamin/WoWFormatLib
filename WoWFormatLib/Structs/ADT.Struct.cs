@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using WoWFormatLib.Utils;
 namespace WoWFormatLib.Structs.ADT
 {
@@ -14,6 +15,7 @@ namespace WoWFormatLib.Structs.ADT
         MBBB = 'M' << 24 | 'B' << 16 | 'B' << 8 | 'B' << 0,
         MBMI = 'M' << 24 | 'B' << 16 | 'M' << 8 | 'I' << 0,
         MBNV = 'M' << 24 | 'B' << 16 | 'N' << 8 | 'V' << 0,
+        MCIN = 'M' << 24 | 'C' << 16 | 'I' << 8 | 'N' << 0, // Removed in Cataclysm.
 
         // Root MCNK
         MCVT = 'M' << 24 | 'C' << 16 | 'V' << 8 | 'T' << 0,
@@ -36,11 +38,15 @@ namespace WoWFormatLib.Structs.ADT
         MWDR = 'M' << 24 | 'W' << 16 | 'D' << 8 | 'R' << 0,
 
         // TEX
-        MTEX = 'M' << 24 | 'T' << 16 | 'E' << 8 | 'X' << 0,
-        MTXP = 'M' << 24 | 'T' << 16 | 'X' << 8 | 'P' << 0,
-        MAMP = 'M' << 24 | 'A' << 16 | 'M' << 8 | 'P' << 0,
-        MDID = 'M' << 24 | 'D' << 16 | 'I' << 8 | 'D' << 0,
-        MHID = 'M' << 24 | 'H' << 16 | 'I' << 8 | 'D' << 0,
+
+        [Obsolete("Replaced by MDID/MHID FileDataID chunks in 8.1.")]
+        [Description("Array of texture filenames")]
+        MTEX = 'M' << 24 | 'T' << 16 | 'E' << 8 | 'X' << 0, // Removed in 8.1.
+
+        MAMP = 'M' << 24 | 'A' << 16 | 'M' << 8 | 'P' << 0, // Added in 4.x.
+        MTXP = 'M' << 24 | 'T' << 16 | 'X' << 8 | 'P' << 0, // Added in 5.x.
+        MDID = 'M' << 24 | 'D' << 16 | 'I' << 8 | 'D' << 0, // Added in 8.1.
+        MHID = 'M' << 24 | 'H' << 16 | 'I' << 8 | 'D' << 0, // Added in 8.1.
 
         // TEX MCNK
         MCLY = 'M' << 24 | 'C' << 16 | 'L' << 8 | 'Y' << 0,
@@ -76,6 +82,21 @@ namespace WoWFormatLib.Structs.ADT
         public Obj objects;
         public uint[] diffuseTextureFileDataIDs;
         public uint[] heightTextureFileDataIDs;
+    }
+
+    public struct RootADT
+    {
+
+    }
+
+    public struct Tex0ADT
+    {
+
+    }
+
+    public struct Obj0ADT
+    {
+
     }
 
     public enum MHDRFlags{

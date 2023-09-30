@@ -36,6 +36,7 @@ namespace WoWFormatLib.Utils
             CASCConfig.LoadFlags &= ~(LoadFlags.Download | LoadFlags.Install);
             CASCConfig.ValidateData = false;
             CASCConfig.ThrowOnFileNotFound = false;
+            CASCConfig.ThrowOnMissingDecryptionKey = false;
 
             if (basedir == null)
             {
