@@ -10,6 +10,7 @@ namespace WoWFormatLib.Utils
         private static CASCHandler cascHandler;
         public static bool IsCASCInit = false;
         public static string BuildName;
+        public static string BuildNameFormatted;
 
         // Talking to local API instead of handling CASC via CASCLib
         private static bool usingLocalAPI;
@@ -50,7 +51,8 @@ namespace WoWFormatLib.Utils
                 cascHandler = CASCHandler.OpenLocalStorage(basedir, program, worker);
             }
 
-            BuildName = cascHandler.Config.BuildName;
+            var splitName = cascHandler.Config.BuildName.Replace("WOW-", "").Split("patch");
+            BuildName = splitName[1].Split('_')[0] + "." + splitName[0];
 
             cascHandler.Root.SetFlags(locale);
 

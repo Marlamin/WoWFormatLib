@@ -1,27 +1,18 @@
 ﻿using SereniaBLPLib;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
+using SixLabors.ImageSharp;
 using WoWFormatLib.Utils;
-
 namespace WoWFormatLib.FileReaders
 {
     public class BLPReader
     {
-        public Bitmap bmp;
-
-        public MemoryStream asBitmapStream()
-        {
-            var bitmapstream = new MemoryStream();
-            bmp.Save(bitmapstream, ImageFormat.Bmp);
-            return bitmapstream;
-        }
+        public Image bmp;
 
         public void LoadBLP(uint fileDataID)
         {
             using (var blp = new BlpFile(CASC.OpenFile(fileDataID)))
             {
-                bmp = blp.GetBitmap(0);
+                bmp = blp.GetImage(0);
             }
         }
 
@@ -29,7 +20,7 @@ namespace WoWFormatLib.FileReaders
         {
             using (var blp = new BlpFile(CASC.OpenFile(filename)))
             {
-                bmp = blp.GetBitmap(0);
+                bmp = blp.GetImage(0);
             }
         }
 
@@ -37,7 +28,7 @@ namespace WoWFormatLib.FileReaders
         {
             using (var blp = new BlpFile(file))
             {
-                bmp = blp.GetBitmap(0);
+                bmp = blp.GetImage(0);
             }
         }
     }

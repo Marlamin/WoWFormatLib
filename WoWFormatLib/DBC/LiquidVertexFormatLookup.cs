@@ -13,9 +13,9 @@ namespace WoWFormatLib.DBC
             liquidObjectToLVFDict = new Dictionary<uint, ushort>();
 
             var dbcd = new DBCD.DBCD(new CASCDBCProvider(), new DBCD.Providers.GithubDBDProvider());
-            var loStorage = dbcd.Load("LiquidObject", CASC.BuildName);
-            var ltStorage = dbcd.Load("LiquidType", CASC.BuildName);
-            var lmStorage = dbcd.Load("LiquidMaterial", CASC.BuildName);
+            var loStorage = dbcd.Load("LiquidObject", CASC.BuildNameFormatted);
+            var ltStorage = dbcd.Load("LiquidType", CASC.BuildNameFormatted);
+            var lmStorage = dbcd.Load("LiquidMaterial", CASC.BuildNameFormatted);
 
             foreach (dynamic loEntry in loStorage.Values)
             {
