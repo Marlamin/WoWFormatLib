@@ -3,7 +3,7 @@
 	url = https://github.com/wowdev/DBCD.git
 [submodule "SereniaBLPLib"]
 	path = SereniaBLPLib
-	url = https://github.com/WoW-Tools/SereniaBLPLib
+	url = https://github.com/Marlamin/SereniaBLPLib
 [submodule "CascLib"]
 	path = CascLib
 	url = https://github.com/WoW-Tools/CascLib
