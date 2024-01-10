@@ -1,4 +1,5 @@
-﻿using WoWFormatLib.Utils;
+﻿using System.Numerics;
+using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.Structs.SKIN
 {

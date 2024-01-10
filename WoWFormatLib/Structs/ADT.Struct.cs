@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using WoWFormatLib.Utils;
+using System.Numerics;
 namespace WoWFormatLib.Structs.ADT
 {
     public enum ADTChunks

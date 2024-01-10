@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.Structs.WDT

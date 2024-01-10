@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Numerics;
 using WoWFormatLib.Structs.SKIN;
 using WoWFormatLib.Utils;
 

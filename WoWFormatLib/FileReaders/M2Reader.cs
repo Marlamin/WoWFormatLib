@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Numerics;
 using System.Text;
 using WoWFormatLib.Structs.M2;
 using WoWFormatLib.Utils;
