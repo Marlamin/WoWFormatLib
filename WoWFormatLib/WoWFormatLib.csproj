@@ -11,9 +11,9 @@
     <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CascLib\CascLib\CascLib.csproj" />
-    <ProjectReference Include="..\DBCD\DBCD\DBCD.csproj" />
-    <ProjectReference Include="..\SereniaBLPLib\SereniaBLPLib\SereniaBLPLib.csproj" />
+    <ProjectReference Include="..\..\CascLib\CascLib\CascLib.csproj" />
+    <ProjectReference Include="..\..\DBCD\DBCD\DBCD.csproj" />
+    <ProjectReference Include="..\..\SereniaBLPLib\SereniaBLPLib\SereniaBLPLib.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
