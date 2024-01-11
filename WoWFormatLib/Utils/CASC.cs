@@ -19,6 +19,13 @@ namespace WoWFormatLib.Utils
         private static string CDNConfig;
         private static HttpClient Client;
 
+        public static void InitCasc(CASCHandler cascHandler)
+        {
+            CASC.cascHandler = cascHandler;
+            usingLocalAPI = false;
+            IsCASCInit = true;
+        }
+
         public static void InitCasc(string cascToolHostURL, string buildConfig, string cdnConfig)
         {
             usingLocalAPI = true;
