@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using WoWFormatLib.Structs.WDT;
@@ -29,6 +30,11 @@ namespace WoWFormatLib.FileReaders
                 ReadWDT(stream);
             }
 
+            wdtfile.stringTileFiles = new Dictionary<string, MapFileDataIDs>();
+
+            if(wdtfile.tileFiles == null) 
+                wdtfile.tileFiles = new Dictionary<(byte, byte), MapFileDataIDs>();
+
             foreach (var entry in wdtfile.tileFiles)
             {
                 wdtfile.stringTileFiles.Add(entry.Key.Item1 + "," + entry.Key.Item2, entry.Value);
@@ -37,11 +43,13 @@ namespace WoWFormatLib.FileReaders
 
         public void LoadWDT(Stream wdt)
         {
+            wdtfile = new WDT();
             ReadWDT(wdt);
         }
 
-        private void ReadMAINChunk(BinaryReader bin)
+        private static List<(byte, byte)> ReadMAINChunk(BinaryReader bin)
         {
+            var tileList = new List<(byte, byte)>();
             for (byte x = 0; x < 64; x++)
             {
                 for (byte y = 0; y < 64; y++)
@@ -50,10 +58,11 @@ namespace WoWFormatLib.FileReaders
                     bin.ReadUInt32();
                     if (flags == 1)
                     {
-                        wdtfile.tiles.Add((y, x));
+                        tileList.Add((y, x));
                     }
                 }
             }
+            return tileList;
         }
 
         private static void ReadMWMOChunk(BinaryReader bin)
@@ -79,15 +88,17 @@ namespace WoWFormatLib.FileReaders
             return bin.Read<MPHD>();
         }
 
-        private void ReadMAIDChunk(BinaryReader bin)
+        private static Dictionary<(byte, byte), MapFileDataIDs> ReadMAIDChunk(BinaryReader bin)
         {
+            var tileFiles = new Dictionary<(byte, byte), MapFileDataIDs>();
             for (byte x = 0; x < 64; x++)
             {
                 for (byte y = 0; y < 64; y++)
                 {
-                    wdtfile.tileFiles.Add((y, x), bin.Read<MapFileDataIDs>());
+                    tileFiles.Add((y, x), bin.Read<MapFileDataIDs>());
                 }
             }
+            return tileFiles;
         }
 
         private static MODF ReadMODFChunk(BinaryReader bin)
@@ -141,7 +152,7 @@ namespace WoWFormatLib.FileReaders
                             throw new Exception("Unsupported WDT version!");
                         break;
                     case WDTChunks.MAIN:
-                        ReadMAINChunk(bin);
+                        wdtfile.tiles = ReadMAINChunk(bin);
                         break;
                     case WDTChunks.MWMO:
                         ReadMWMOChunk(bin);
@@ -150,7 +161,7 @@ namespace WoWFormatLib.FileReaders
                         wdtfile.mphd = ReadMPHDChunk(bin);
                         break;
                     case WDTChunks.MAID:
-                        ReadMAIDChunk(bin);
+                        wdtfile.tileFiles = ReadMAIDChunk(bin);
                         break;
                     case WDTChunks.MODF:
                         wdtfile.modf = ReadMODFChunk(bin);

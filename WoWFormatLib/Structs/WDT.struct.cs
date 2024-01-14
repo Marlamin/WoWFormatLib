@@ -105,7 +105,7 @@ namespace WoWFormatLib.Structs.WDT
         unk_0x40                                = 0x40,
         adt_has_height_texturing                = 0x80,
         unk_0x100                               = 0x100,
-        unk_0x200                               = 0x200,
+        wdt_has_maid                            = 0x200,
         unk_0x400                               = 0x400,
         unk_0x800                               = 0x800,
         unk_0x1000                              = 0x1000,

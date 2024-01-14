@@ -18,7 +18,7 @@ namespace WoWFormatLib.FileReaders
         /// <param name="tileY" >Tile Y coordinate</param>
         /// <param name="loadSecondaryADTs">Load secondary ADTs (OBJ0 and TEX0)</param>
         /// <param name="wdtFilename">WDT filename, required for filename based ADT loading</param>
-        public void LoadADT(Structs.WDT.WDT? wdtFile, byte tileX, byte tileY, bool loadSecondaryADTs = true, string wdtFilename = "")
+        public void LoadADT(Structs.WDT.WDT? wdtFile, byte tileX, byte tileY, bool loadSecondaryADTs = true, string internalMapName = "")
         {
             adtfile.x = tileX;
             adtfile.y = tileY;
@@ -31,19 +31,17 @@ namespace WoWFormatLib.FileReaders
             {
                 wdt = wdtFile.Value;
 
-                if (wdt.tileFiles.Count == 0)
+                if (!wdt.mphd.flags.HasFlag(Structs.WDT.MPHDFlags.wdt_has_maid))
                 {
-                    if (string.IsNullOrEmpty(wdtFilename))
+                    if (string.IsNullOrEmpty(internalMapName))
                     {
-                        throw new Exception("Require WDT filename for filename based ADT loading!");
+                        throw new Exception("Require internal map name for filename based ADT loading!");
                     }
 
-                    var mapName = Path.GetFileNameWithoutExtension(wdtFilename);
-
                     // Still filename based
-                    rootFileDataID = CASC.getFileDataIdByName("world/maps/" + mapName + "/" + mapName + "_" + tileX + "_" + tileY + ".adt");
-                    obj0FileDataID = CASC.getFileDataIdByName("world/maps/" + mapName + "/" + mapName + "_" + tileX + "_" + tileY + "_obj0.adt");
-                    tex0FileDataID = CASC.getFileDataIdByName("world/maps/" + mapName + "/" + mapName + "_" + tileX + "_" + tileY + "_tex0.adt");
+                    rootFileDataID = CASC.getFileDataIdByName("world/maps/" + internalMapName + "/" + internalMapName + "_" + tileX + "_" + tileY + ".adt");
+                    obj0FileDataID = CASC.getFileDataIdByName("world/maps/" + internalMapName + "/" + internalMapName + "_" + tileX + "_" + tileY + "_obj0.adt");
+                    tex0FileDataID = CASC.getFileDataIdByName("world/maps/" + internalMapName + "/" + internalMapName + "_" + tileX + "_" + tileY + "_tex0.adt");
                 }
                 else
                 {
@@ -58,7 +56,6 @@ namespace WoWFormatLib.FileReaders
                 throw new Exception("Need WDT file for filename based ADT/correct MCAL loading!");
             }
 
-            // get ids from wdt
             if (!CASC.FileExists(rootFileDataID) || !CASC.FileExists(obj0FileDataID) || !CASC.FileExists(tex0FileDataID))
             {
                 throw new FileNotFoundException("One or more ADT files for ADT " + rootFileDataID + " could not be found.");
@@ -80,9 +77,49 @@ namespace WoWFormatLib.FileReaders
             }
         }
 
-        private void ReadRootFile(uint rootFileDataID)
+        public void LoadADT(uint rootFileDataID, uint obj0FileDataID = 0, uint tex0FileDataID = 0, bool loadSecondaryADTs = true)
         {
+            ReadRootFile(rootFileDataID);
+
+            if (loadSecondaryADTs)
+            {
+                if (!CASC.FileExists(obj0FileDataID))
+                {
+                    throw new FileNotFoundException("OBJ0 ADT file " + obj0FileDataID + " could not be found.");
+                }
+
+                using (var adtobj0 = CASC.OpenFile(obj0FileDataID))
+                {
+                    ReadObjFile(adtobj0);
+                }
+
+                if (!CASC.FileExists(tex0FileDataID))
+                {
+                    throw new FileNotFoundException("TEX0 ADT file " + tex0FileDataID + " could not be found.");
+                }
+
+                using (var adttex0 = CASC.OpenFile(tex0FileDataID))
+                {
+                    ReadTexFile(adttex0);
+                }
+            }
+        }
+
+        public void ReadRootFile(uint rootFileDataID)
+        {
+            if (!CASC.FileExists(rootFileDataID))
+            {
+                throw new FileNotFoundException("Root ADT file " + rootFileDataID + " could not be found.");
+            }
+
             using (var adt = CASC.OpenFile(rootFileDataID))
+            {
+                ReadRootFile(adt);
+            }
+        }
+
+        public void ReadRootFile(Stream adt)
+        {
             using (var bin = new BinaryReader(adt))
             {
                 long position = 0;
@@ -293,7 +330,7 @@ namespace WoWFormatLib.FileReaders
                         chunk.attributes[i][j] = bin.Read<MH2OAttribute>();
                     }
                 }
-
+      
                 if (header.offsetInstances != 0)
                 {
                     bin.BaseStream.Position = chunkBasePos + header.offsetInstances;
@@ -304,50 +341,60 @@ namespace WoWFormatLib.FileReaders
                     for (short j = 0; j < header.layerCount; j++)
                     {
                         chunk.instances[i][j] = bin.Read<MH2OInstance>();
-                        if (chunk.instances[i][j].liquidObjectOrLVF >= 42)
-                        {
-                            try
-                            {
-                                DBC.LiquidVertexFormatLookup.TryGetLVF(chunk.instances[i][j].liquidObjectOrLVF, out chunk.instances[i][j].liquidObjectOrLVF);
-                            }
-                            catch (Exception e)
-                            {
-                                CASCLib.Logger.WriteLine("Unable to do LVF lookup, DBC stuff failed: " + e.Message);
-                            }
-                        }
+                        //if (chunk.instances[i][j].liquidObjectOrLVF >= 42)
+                        //{
+                        //    try
+                        //    {
+                        //        DBC.LiquidVertexFormatLookup.TryGetLVF(chunk.instances[i][j].liquidObjectOrLVF, out chunk.instances[i][j].liquidObjectOrLVF);
+                        //    }
+                        //    catch (Exception e)
+                        //    {
+                        //        throw new Exception("Unable to do LVF lookup, DBC stuff failed: " + e.Message);
+                        //    }
+                        //}
 
-                        var vertexCount = (chunk.instances[i][j].width + 1) * (chunk.instances[i][j].height + 1);
-                        var vertexChunkSize = 0;
-                        switch (chunk.instances[i][j].liquidObjectOrLVF)
-                        {
-                            case 0:
-                                vertexChunkSize += 4 * vertexCount; // heightmap
-                                vertexChunkSize += 1 * vertexCount; // depthmap
-                                break;
-                            case 1:
-                                vertexChunkSize += 4 * vertexCount; // heightmap
-                                vertexChunkSize += 4 * vertexCount; // uvmap
-                                break;
-                            case 2:
-                                vertexChunkSize += 1 * vertexCount; // depthmap
-                                break;
-                            case 3:
-                                vertexChunkSize += 4 * vertexCount; // heightmap
-                                vertexChunkSize += 4 * vertexCount; // uvmap
-                                vertexChunkSize += 1 * vertexCount; // depthmap
-                                break;
-                            default:
-                                CASCLib.Logger.WriteLine("Encountered unknown liquidObjectOrLVF: " + chunk.instances[i][j].liquidObjectOrLVF + ", did DBC lookup fail?");
-                                break;
-                        }
-
-                        bin.BaseStream.Position = chunkBasePos + chunk.instances[i][j].offsetVertexData;
-                        chunk.vertexData[i][j].liquidVertexFormat = (byte)chunk.instances[i][j].liquidObjectOrLVF;
-                        chunk.vertexData[i][j].vertexData = bin.ReadBytes(vertexChunkSize);
+                        //var vertexCount = (chunk.instances[i][j].width + 1) * (chunk.instances[i][j].height + 1);
+                        //var vertexChunkSize = 0;
+                        //switch (chunk.instances[i][j].liquidObjectOrLVF)
+                        //{
+                        //    case 0:
+                        //        vertexChunkSize += 4 * vertexCount; // heightmap
+                        //        vertexChunkSize += 1 * vertexCount; // depthmap
+                        //        break;
+                        //    case 1:
+                        //        vertexChunkSize += 4 * vertexCount; // heightmap
+                        //        vertexChunkSize += 4 * vertexCount; // uvmap
+                        //        break;
+                        //    case 2:
+                        //        vertexChunkSize += 1 * vertexCount; // depthmap
+                        //        break;
+                        //    case 3:
+                        //        vertexChunkSize += 4 * vertexCount; // heightmap
+                        //        vertexChunkSize += 4 * vertexCount; // uvmap
+                        //        vertexChunkSize += 1 * vertexCount; // depthmap
+                        //        break;
+                        //    default:
+                        //        throw new Exception("Encountered unknown liquidObjectOrLVF: " + chunk.instances[i][j].liquidObjectOrLVF + ", did DBC lookup fail?");
+                        //        break;
+                        //}
                     }
                 }
             }
 
+            //for (short i = 0; i < 256; i++)
+            //{
+            //    var header = chunk.headers[i];
+
+            //    if (header.offsetInstances != 0)
+            //    {
+            //        for (short j = 0; j < header.layerCount; j++)
+            //        {
+            //            bin.BaseStream.Position = chunkBasePos + chunk.instances[i][j].offsetVertexData;
+            //            //chunk.vertexData[i][j].liquidVertexFormat = (byte)chunk.instances[i][j].liquidObjectOrLVF;
+            //            //chunk.vertexData[i][j].vertexData = bin.ReadBytes(vertexChunkSize);
+            //        }
+            //    }
+            //}
             return chunk;
         }
 
@@ -412,7 +459,7 @@ namespace WoWFormatLib.FileReaders
 
         private static MWDR[] ReadMWDRChunk(uint chunkSize, BinaryReader bin)
         {
-            var mwdrArr = new MWDR[chunkSize / 4];
+            var mwdrArr = new MWDR[chunkSize / 8];
             for (var i = 0; i < mwdrArr.Length; i++)
             {
                 mwdrArr[i] = bin.Read<MWDR>();
