@@ -449,6 +449,7 @@ namespace WoWFormatLib.FileReaders
                             break;
                         case ADTChunks.MLMB:
                         case ADTChunks.MCNK:
+                            break;
                         default:
                             Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position));
                             break;
