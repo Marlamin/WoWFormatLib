@@ -221,12 +221,7 @@ namespace WoWFormatLib.FileReaders
             wmofile.group = groupFiles;
         }
 
-        private object ReadMDDIChunk(uint chunkSize, BinaryReader bin)
-        {
-            throw new NotImplementedException();
-        }
-
-        private uint[] ReadGFIDChunk(uint size, BinaryReader bin)
+        private static uint[] ReadGFIDChunk(uint size, BinaryReader bin)
         {
             var count = size / 4;
             var gfids = new uint[count];
@@ -237,7 +232,7 @@ namespace WoWFormatLib.FileReaders
             return gfids;
         }
 
-        private MOTX[] ReadMOTXChunk(uint size, BinaryReader bin)
+        private static MOTX[] ReadMOTXChunk(uint size, BinaryReader bin)
         {
             //List of BLP filenames
             var blpFilesChunk = bin.ReadBytes((int)size);
@@ -275,7 +270,7 @@ namespace WoWFormatLib.FileReaders
 
             return textures;
         }
-        private MOMT[] ReadMOMTChunk(uint size, BinaryReader bin)
+        private static MOMT[] ReadMOMTChunk(uint size, BinaryReader bin)
         {
             var count = size / 64;
             var materials = new MOMT[count];
@@ -285,7 +280,7 @@ namespace WoWFormatLib.FileReaders
             }
             return materials;
         }
-        private MOGN[] ReadMOGNChunk(uint size, BinaryReader bin)
+        private static MOGN[] ReadMOGNChunk(uint size, BinaryReader bin)
         {
             var wmoGroupsChunk = bin.ReadBytes((int)size);
             var str = new StringBuilder();
@@ -316,7 +311,7 @@ namespace WoWFormatLib.FileReaders
             }
             return groupNames;
         }
-        private MOGI[] ReadMOGIChunk(uint size, BinaryReader bin)
+        private static MOGI[] ReadMOGIChunk(uint size, BinaryReader bin)
         {
             var count = size / 32;
             var groupInfo = new MOGI[count];
@@ -326,7 +321,7 @@ namespace WoWFormatLib.FileReaders
             }
             return groupInfo;
         }
-        private MODS[] ReadMODSChunk(uint size, BinaryReader bin)
+        private static MODS[] ReadMODSChunk(uint size, BinaryReader bin)
         {
             var numDoodadSets = size / 32;
             var doodadSets = new MODS[numDoodadSets];
@@ -339,7 +334,7 @@ namespace WoWFormatLib.FileReaders
             }
             return doodadSets;
         }
-        private MODN[] ReadMODNChunk(uint size, BinaryReader bin)
+        private static MODN[] ReadMODNChunk(uint size, BinaryReader bin)
         {
             //List of M2 filenames, but are still named after MDXs internally. Have to rename!
             var m2FilesChunk = bin.ReadBytes((int)size);
@@ -377,7 +372,7 @@ namespace WoWFormatLib.FileReaders
             }
             return doodadNames;
         }
-        private uint[] ReadMODIChunk(uint size, BinaryReader bin)
+        private static uint[] ReadMODIChunk(uint size, BinaryReader bin)
         {
             var numIds = size / 4;
             var fileDataIDs = new uint[numIds];
@@ -387,7 +382,7 @@ namespace WoWFormatLib.FileReaders
             }
             return fileDataIDs;
         }
-        private MODD[] ReadMODDChunk(uint size, BinaryReader bin)
+        private static MODD[] ReadMODDChunk(uint size, BinaryReader bin)
         {
             var numDoodads = size / 40;
             var doodads = new MODD[numDoodads];
@@ -404,18 +399,18 @@ namespace WoWFormatLib.FileReaders
             return doodads;
         }
 
-        private string ReadMOSBChunk(uint size, BinaryReader bin)
+        private static string ReadMOSBChunk(uint size, BinaryReader bin)
         {
             return bin.ReadCString();
         }
 
-        private uint ReadMOSIChunk(uint size, BinaryReader bin)
+        private static uint ReadMOSIChunk(uint size, BinaryReader bin)
         {
             return bin.ReadUInt32();
         }
 
         /* GROUP */
-        public WMOGroupFile ReadWMOGroupFile(uint filedataid, Stream wmo)
+        public static WMOGroupFile ReadWMOGroupFile(uint filedataid, Stream wmo)
         {
             var groupFile = new WMOGroupFile();
 
@@ -433,9 +428,9 @@ namespace WoWFormatLib.FileReaders
                     {
                         case WMOChunks.MVER:
                             groupFile.version = bin.ReadUInt32();
-                            if (wmofile.version != 17)
+                            if (groupFile.version != 17)
                             {
-                                throw new Exception("Unsupported WMO version! (" + wmofile.version + ")");
+                                throw new Exception("Unsupported WMO version! (" + groupFile.version + ")");
                             }
                             continue;
                         case WMOChunks.MOGP:
@@ -449,7 +444,7 @@ namespace WoWFormatLib.FileReaders
 
             return groupFile;
         }
-        private MOGP ReadMOGPChunk(uint size, BinaryReader bin)
+        private static MOGP ReadMOGPChunk(uint size, BinaryReader bin)
         {
             var mogp = new MOGP()
             {
@@ -560,7 +555,7 @@ namespace WoWFormatLib.FileReaders
             return mogp;
         }
 
-        private MOBS[] ReadMOBSChunk(uint size, BinaryReader bin)
+        private static MOBS[] ReadMOBSChunk(uint size, BinaryReader bin)
         {
             var numBatches = size / 24;
             var batches = new MOBS[numBatches];
@@ -571,7 +566,7 @@ namespace WoWFormatLib.FileReaders
             return batches;
         }
 
-        private MONR[] ReadMONRChunk(uint size, BinaryReader bin)
+        private static MONR[] ReadMONRChunk(uint size, BinaryReader bin)
         {
             var numNormals = size / 12;
             var normals = new MONR[numNormals];
@@ -581,7 +576,7 @@ namespace WoWFormatLib.FileReaders
             }
             return normals;
         }
-        private MOVT[] ReadMOVTChunk(uint size, BinaryReader bin)
+        private static MOVT[] ReadMOVTChunk(uint size, BinaryReader bin)
         {
             var numVerts = size / 12;
             var vertices = new MOVT[numVerts];
@@ -591,7 +586,7 @@ namespace WoWFormatLib.FileReaders
             }
             return vertices;
         }
-        private MOBA[] ReadMOBAChunk(uint size, BinaryReader bin)
+        private static MOBA[] ReadMOBAChunk(uint size, BinaryReader bin)
         {
             var numBatches = size / 24;
             var batches = new MOBA[numBatches];
@@ -601,7 +596,7 @@ namespace WoWFormatLib.FileReaders
             }
             return batches;
         }
-        private MOPY[] ReadMOPYChunk(uint size, BinaryReader bin)
+        private static MOPY[] ReadMOPYChunk(uint size, BinaryReader bin)
         {
             var numMaterials = size / 2;
             var materials = new MOPY[numMaterials];
@@ -611,7 +606,7 @@ namespace WoWFormatLib.FileReaders
             }
             return materials;
         }
-        private MOTV[] ReadMOTVChunk(uint size, BinaryReader bin)
+        private static MOTV[] ReadMOTVChunk(uint size, BinaryReader bin)
         {
             var numCoords = size / 8;
             var textureCoords = new MOTV[numCoords];
@@ -622,7 +617,7 @@ namespace WoWFormatLib.FileReaders
             }
             return textureCoords;
         }
-        private MOVI[] ReadMOVIChunk(uint size, BinaryReader bin)
+        private static MOVI[] ReadMOVIChunk(uint size, BinaryReader bin)
         {
             var numIndices = size / 2;
             var indices = new MOVI[numIndices];

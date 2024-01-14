@@ -10,9 +10,6 @@ namespace WoWFormatLib.FileReaders
     public class ADTReader
     {
         public ADT adtfile;
-        public List<string> blpFiles;
-        public List<string> m2Files;
-        public List<string> wmoFiles;
         private Structs.WDT.WDT wdt;
 
         /* ROOT */
@@ -47,10 +44,6 @@ namespace WoWFormatLib.FileReaders
         {
             adtfile.x = tileX;
             adtfile.y = tileY;
-
-            m2Files = new List<string>();
-            wmoFiles = new List<string>();
-            blpFiles = new List<string>();
 
             uint rootFileDataID;
             uint tex0FileDataID;
@@ -137,7 +130,7 @@ namespace WoWFormatLib.FileReaders
                             {
                                 adtfile.mh2o = ReadMH20SubChunk(chunkSize, bin);
                             }
-                            catch(Exception e)
+                            catch (Exception e)
                             {
                                 CASCLib.Logger.WriteLine("Failed to read MH2O: " + e.Message);
                             }
@@ -170,7 +163,7 @@ namespace WoWFormatLib.FileReaders
             }
         }
 
-        private MCNK ReadMCNKChunk(uint size, BinaryReader bin)
+        private static MCNK ReadMCNKChunk(uint size, BinaryReader bin)
         {
             var mapchunk = new MCNK()
             {
@@ -219,7 +212,7 @@ namespace WoWFormatLib.FileReaders
 
             return mapchunk;
         }
-        private MCVT ReadMCVTSubChunk(BinaryReader bin)
+        private static MCVT ReadMCVTSubChunk(BinaryReader bin)
         {
             var vtchunk = new MCVT()
             {
@@ -232,7 +225,7 @@ namespace WoWFormatLib.FileReaders
             }
             return vtchunk;
         }
-        private MCCV ReadMCCVSubChunk(BinaryReader bin)
+        private static MCCV ReadMCCVSubChunk(BinaryReader bin)
         {
             var vtchunk = new MCCV()
             {
@@ -252,7 +245,7 @@ namespace WoWFormatLib.FileReaders
 
             return vtchunk;
         }
-        private MCNR ReadMCNRSubChunk(BinaryReader bin)
+        private static MCNR ReadMCNRSubChunk(BinaryReader bin)
         {
             var nrchunk = new MCNR()
             {
@@ -270,7 +263,7 @@ namespace WoWFormatLib.FileReaders
 
             return nrchunk;
         }
-        private MCSE ReadMCSESubChunk(uint size, BinaryReader bin)
+        private static MCSE ReadMCSESubChunk(uint size, BinaryReader bin)
         {
             var sechunk = new MCSE()
             {
@@ -279,7 +272,7 @@ namespace WoWFormatLib.FileReaders
 
             return sechunk;
         }
-        private MCBB[] ReadMCBBSubChunk(uint size, BinaryReader bin)
+        private static MCBB[] ReadMCBBSubChunk(uint size, BinaryReader bin)
         {
             var count = size / 20;
             var bbchunk = new MCBB[count];
@@ -290,7 +283,7 @@ namespace WoWFormatLib.FileReaders
             return bbchunk;
         }
 
-        private MH2O ReadMH20SubChunk(uint size, BinaryReader bin)
+        private static MH2O ReadMH20SubChunk(uint size, BinaryReader bin)
         {
             var chunkBasePos = bin.BaseStream.Position;
             var chunk = new MH2O();
@@ -367,7 +360,7 @@ namespace WoWFormatLib.FileReaders
                                 CASCLib.Logger.WriteLine("Encountered unknown liquidObjectOrLVF: " + chunk.instances[i][j].liquidObjectOrLVF + ", did DBC lookup fail?");
                                 break;
                         }
-                        
+
                         bin.BaseStream.Position = chunkBasePos + chunk.instances[i][j].offsetVertexData;
                         chunk.vertexData[i][j].liquidVertexFormat = (byte)chunk.instances[i][j].liquidObjectOrLVF;
                         chunk.vertexData[i][j].vertexData = bin.ReadBytes(vertexChunkSize);
@@ -423,9 +416,11 @@ namespace WoWFormatLib.FileReaders
                             break;
                         case ADTChunks.MLMB:
                         case ADTChunks.MCNK:
-                        case ADTChunks.MWDR:
-                        case ADTChunks.MWDS:
-                            // TODO
+                        case ADTChunks.MWDR: // WMO doodad references (multiple)
+                            adtfile.objects.worldModelDoodadRefs = ReadMWDRChunk(chunkSize, bin);
+                            break;
+                        case ADTChunks.MWDS: // WMO doodad sets
+                            adtfile.objects.worldModelDoodadSets = ReadMWDSChunk(chunkSize, bin);
                             break;
                         default:
                             Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position));
@@ -434,7 +429,28 @@ namespace WoWFormatLib.FileReaders
                 }
             }
         }
-        private MMDX ReadMMDXChunk(uint size, BinaryReader bin)
+
+        private static MWDR[] ReadMWDRChunk(uint chunkSize, BinaryReader bin)
+        {
+            var mwdrArr = new MWDR[chunkSize / 4];
+            for (var i = 0; i < mwdrArr.Length; i++)
+            {
+                mwdrArr[i] = bin.Read<MWDR>();
+            }
+            return mwdrArr;
+        }
+
+        private static uint[] ReadMWDSChunk(uint chunkSize, BinaryReader bin)
+        {
+            var mwdsArr = new uint[chunkSize / 4];
+            for (var i = 0; i < mwdsArr.Length; i++)
+            {
+                mwdsArr[i] = bin.ReadUInt32();
+            }
+            return mwdsArr;
+        }
+
+        private static MMDX ReadMMDXChunk(uint size, BinaryReader bin)
         {
             var m2FilesChunk = bin.ReadBytes((int)size);
 
@@ -442,6 +458,7 @@ namespace WoWFormatLib.FileReaders
             var str = new StringBuilder();
 
             var offsets = new List<uint>();
+            var m2Files = new List<string>();
 
             for (var i = 0; i < m2FilesChunk.Length; i++)
             {
@@ -461,7 +478,7 @@ namespace WoWFormatLib.FileReaders
             mmdx.offsets = offsets.ToArray();
             return mmdx;
         }
-        private MMID ReadMMIDChunk(uint size, BinaryReader bin)
+        private static MMID ReadMMIDChunk(uint size, BinaryReader bin)
         {
             var count = size / 4;
 
@@ -477,7 +494,7 @@ namespace WoWFormatLib.FileReaders
 
             return mmid;
         }
-        private MWMO ReadMWMOChunk(uint size, BinaryReader bin)
+        private static MWMO ReadMWMOChunk(uint size, BinaryReader bin)
         {
             var wmoFilesChunk = bin.ReadBytes((int)size);
 
@@ -485,6 +502,7 @@ namespace WoWFormatLib.FileReaders
             var str = new StringBuilder();
 
             var offsets = new List<uint>();
+            var wmoFiles = new List<string>();
 
             for (var i = 0; i < wmoFilesChunk.Length; i++)
             {
@@ -504,7 +522,7 @@ namespace WoWFormatLib.FileReaders
             mwmo.offsets = offsets.ToArray();
             return mwmo;
         }
-        private MWID ReadMWIDChunk(uint size, BinaryReader bin)
+        private static MWID ReadMWIDChunk(uint size, BinaryReader bin)
         {
             var count = size / 4;
 
@@ -520,7 +538,7 @@ namespace WoWFormatLib.FileReaders
 
             return mwid;
         }
-        private MDDF ReadMDDFChunk(uint size, BinaryReader bin)
+        private static MDDF ReadMDDFChunk(uint size, BinaryReader bin)
         {
             var mddf = new MDDF();
 
@@ -539,7 +557,7 @@ namespace WoWFormatLib.FileReaders
 
             return mddf;
         }
-        private MODF ReadMODFChunk(uint size, BinaryReader bin)
+        private static MODF ReadMODFChunk(uint size, BinaryReader bin)
         {
             var modf = new MODF();
 
@@ -642,13 +660,14 @@ namespace WoWFormatLib.FileReaders
 
             return mapchunk;
         }
-        private MTEX ReadMTEXChunk(uint size, BinaryReader bin)
+        private static MTEX ReadMTEXChunk(uint size, BinaryReader bin)
         {
             var txchunk = new MTEX();
 
             //List of BLP filenames
             var blpFilesChunk = bin.ReadBytes((int)size);
 
+            var blpFiles = new List<string>();
             var str = new StringBuilder();
 
             for (var i = 0; i < blpFilesChunk.Length; i++)
@@ -671,7 +690,7 @@ namespace WoWFormatLib.FileReaders
             txchunk.filenames = blpFiles.ToArray();
             return txchunk;
         }
-        private MTXP[] ReadMTXPChunk(uint size, BinaryReader bin)
+        private static MTXP[] ReadMTXPChunk(uint size, BinaryReader bin)
         {
             var count = size / 16;
 
@@ -773,7 +792,7 @@ namespace WoWFormatLib.FileReaders
 
             return mcal;
         }
-        private MCLY[] ReadMCLYSubChunk(uint size, BinaryReader bin)
+        private static MCLY[] ReadMCLYSubChunk(uint size, BinaryReader bin)
         {
             var count = size / 16;
             var mclychunks = new MCLY[count];
@@ -788,7 +807,7 @@ namespace WoWFormatLib.FileReaders
             return mclychunks;
         }
 
-        private uint[] ReadFileDataIDChunk(uint size, BinaryReader bin)
+        private static uint[] ReadFileDataIDChunk(uint size, BinaryReader bin)
         {
             var count = size / 4;
             var filedataids = new uint[count];

@@ -195,6 +195,9 @@ namespace WoWFormatLib.Structs.ADT
         public MWMO wmoNames;
         public MWID wmoNameOffsets;
 
+        public MWDR[] worldModelDoodadRefs;
+        public uint[] worldModelDoodadSets;
+
     }
 
     //WMO placement
@@ -224,6 +227,13 @@ namespace WoWFormatLib.Structs.ADT
         modf_use_lod                = 0x2,
         modf_0x4_unk                = 0x4,
         modf_entry_is_filedataid    = 0x8,
+        modf_use_sets_from_mwds     = 0x80,
+    }
+
+    public struct MWDR
+    {
+        public uint begin;
+        public uint end;
     }
 
     //M2 placement

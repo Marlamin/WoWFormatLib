@@ -282,7 +282,7 @@ namespace WoWFormatLib.FileReaders
             model.particleemitters = ReadParticleEmitters(nParticleEmitters, ofsParticleEmitters, bin);
         }
 
-        private AnimationLookup[] ReadAnimationLookup(uint nAnimationLookup, uint ofsAnimationLookup, BinaryReader bin)
+        private static AnimationLookup[] ReadAnimationLookup(uint nAnimationLookup, uint ofsAnimationLookup, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsAnimationLookup;
             var animationlookup = new AnimationLookup[nAnimationLookup];
@@ -317,7 +317,7 @@ namespace WoWFormatLib.FileReaders
             }
             return animations;
         }
-        private AttachLookup[] ReadAttachLookup(uint nAttachLookup, uint ofsAttachLookup, BinaryReader bin)
+        private static AttachLookup[] ReadAttachLookup(uint nAttachLookup, uint ofsAttachLookup, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsAttachLookup;
             var attachlookup = new AttachLookup[nAttachLookup];
@@ -327,7 +327,7 @@ namespace WoWFormatLib.FileReaders
             }
             return attachlookup;
         }
-        private Attachment[] ReadAttachments(uint nAttachments, uint ofsAttachments, BinaryReader bin)
+        private static Attachment[] ReadAttachments(uint nAttachments, uint ofsAttachments, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsAttachments;
             var attachments = new Attachment[nAttachments];
@@ -337,7 +337,7 @@ namespace WoWFormatLib.FileReaders
             }
             return attachments;
         }
-        private BoneLookupTable[] ReadBoneLookupTable(uint nBoneLookupTable, uint ofsBoneLookupTable, BinaryReader bin)
+        private static BoneLookupTable[] ReadBoneLookupTable(uint nBoneLookupTable, uint ofsBoneLookupTable, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsBoneLookupTable;
             var bonelookuptable = new BoneLookupTable[nBoneLookupTable];
@@ -347,7 +347,7 @@ namespace WoWFormatLib.FileReaders
             }
             return bonelookuptable;
         }
-        private Bone[] ReadBones(uint nBones, uint ofsBones, BinaryReader bin)
+        private static Bone[] ReadBones(uint nBones, uint ofsBones, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsBones;
             var bones = new Bone[nBones];
@@ -357,7 +357,7 @@ namespace WoWFormatLib.FileReaders
             }
             return bones;
         }
-        private BoundingNormal[] ReadBoundingNormals(uint nBoundingNormals, uint ofsBoundingNormals, BinaryReader bin)
+        private static BoundingNormal[] ReadBoundingNormals(uint nBoundingNormals, uint ofsBoundingNormals, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsBoundingNormals;
             var boundingNormals = new BoundingNormal[nBoundingNormals];
@@ -367,7 +367,7 @@ namespace WoWFormatLib.FileReaders
             }
             return boundingNormals;
         }
-        private BoundingVertex[] ReadBoundingVertices(uint nBoundingVertices, uint ofsBoundingVertices, BinaryReader bin)
+        private static BoundingVertex[] ReadBoundingVertices(uint nBoundingVertices, uint ofsBoundingVertices, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsBoundingVertices;
             var boundingVertices = new BoundingVertex[nBoundingVertices];
@@ -377,7 +377,7 @@ namespace WoWFormatLib.FileReaders
             }
             return boundingVertices;
         }
-        private BoundingTriangle[] ReadBoundingTriangles(uint nBoundingTriangles, uint ofsBoundingTriangles, BinaryReader bin)
+        private static BoundingTriangle[] ReadBoundingTriangles(uint nBoundingTriangles, uint ofsBoundingTriangles, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsBoundingTriangles;
             var boundingTriangles = new BoundingTriangle[nBoundingTriangles / 3];
@@ -387,7 +387,7 @@ namespace WoWFormatLib.FileReaders
             }
             return boundingTriangles;
         }
-        private CameraLookup[] ReadCameraLookup(uint nCameraLookup, uint ofsCameraLookup, BinaryReader bin)
+        private static CameraLookup[] ReadCameraLookup(uint nCameraLookup, uint ofsCameraLookup, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsCameraLookup;
             var cameraLookup = new CameraLookup[nCameraLookup];
@@ -397,7 +397,7 @@ namespace WoWFormatLib.FileReaders
             }
             return cameraLookup;
         }
-        private Camera[] ReadCameras(uint nCameras, uint ofsCameras, BinaryReader bin)
+        private static Camera[] ReadCameras(uint nCameras, uint ofsCameras, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsCameras;
             var cameras = new Camera[nCameras];
@@ -407,7 +407,7 @@ namespace WoWFormatLib.FileReaders
             }
             return cameras;
         }
-        private Color[] ReadColors(uint nColors, uint ofsColors, BinaryReader bin)
+        private static Color[] ReadColors(uint nColors, uint ofsColors, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsColors;
             var colors = new Color[nColors];
@@ -417,7 +417,7 @@ namespace WoWFormatLib.FileReaders
             }
             return colors;
         }
-        private Event[] ReadEvents(uint nEvents, uint ofsEvents, BinaryReader bin)
+        private static Event[] ReadEvents(uint nEvents, uint ofsEvents, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsEvents;
             var events = new Event[nEvents];
@@ -437,7 +437,7 @@ namespace WoWFormatLib.FileReaders
             }
             return events;
         }
-        private KeyBoneLookup[] ReadKeyboneLookup(uint nKeyboneLookup, uint ofsKeyboneLookup, BinaryReader bin)
+        private static KeyBoneLookup[] ReadKeyboneLookup(uint nKeyboneLookup, uint ofsKeyboneLookup, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsKeyboneLookup;
             var keybonelookup = new KeyBoneLookup[nKeyboneLookup];
@@ -447,7 +447,7 @@ namespace WoWFormatLib.FileReaders
             }
             return keybonelookup;
         }
-        private Light[] ReadLights(uint nLights, uint ofsLights, BinaryReader bin)
+        private static Light[] ReadLights(uint nLights, uint ofsLights, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsLights;
             var lights = new Light[nLights];
@@ -457,7 +457,7 @@ namespace WoWFormatLib.FileReaders
             }
             return lights;
         }
-        private ParticleEmitter[] ReadParticleEmitters(uint nParticleEmitters, uint ofsParticleEmitters, BinaryReader bin)
+        private static ParticleEmitter[] ReadParticleEmitters(uint nParticleEmitters, uint ofsParticleEmitters, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsParticleEmitters;
             var particleEmitters = new ParticleEmitter[nParticleEmitters];
@@ -467,7 +467,7 @@ namespace WoWFormatLib.FileReaders
             }
             return particleEmitters;
         }
-        private RenderFlag[] ReadRenderFlags(uint nRenderFlags, uint ofsRenderFlags, BinaryReader bin)
+        private static RenderFlag[] ReadRenderFlags(uint nRenderFlags, uint ofsRenderFlags, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsRenderFlags;
             var renderflags = new RenderFlag[nRenderFlags];
@@ -477,7 +477,7 @@ namespace WoWFormatLib.FileReaders
             }
             return renderflags;
         }
-        private RibbonEmitter[] ReadRibbonEmitters(uint nRibbonEmitters, uint ofsRibbonEmitters, BinaryReader bin)
+        private static RibbonEmitter[] ReadRibbonEmitters(uint nRibbonEmitters, uint ofsRibbonEmitters, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsRibbonEmitters;
             var ribbonEmitters = new RibbonEmitter[nRibbonEmitters];
@@ -487,7 +487,7 @@ namespace WoWFormatLib.FileReaders
             }
             return ribbonEmitters;
         }
-        private Sequence[] ReadSequences(uint nSequences, uint ofsSequences, BinaryReader bin)
+        private static Sequence[] ReadSequences(uint nSequences, uint ofsSequences, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsSequences;
             var sequences = new Sequence[nSequences];
@@ -497,7 +497,7 @@ namespace WoWFormatLib.FileReaders
             }
             return sequences;
         }
-        private Structs.SKIN.SKIN[] ReadSkins(uint[] skinFileDataIDs)
+        private static Structs.SKIN.SKIN[] ReadSkins(uint[] skinFileDataIDs)
         {
             var skins = new Structs.SKIN.SKIN[skinFileDataIDs.Length];
             for (var i = 0; i < skinFileDataIDs.Length; i++)
@@ -508,7 +508,7 @@ namespace WoWFormatLib.FileReaders
             }
             return skins;
         }
-        private TexLookup[] ReadTexLookup(uint nTexLookup, uint ofsTexLookup, BinaryReader bin)
+        private static TexLookup[] ReadTexLookup(uint nTexLookup, uint ofsTexLookup, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsTexLookup;
             var texlookup = new TexLookup[nTexLookup];
@@ -518,7 +518,7 @@ namespace WoWFormatLib.FileReaders
             }
             return texlookup;
         }
-        private TexReplace[] ReadTexReplace(uint nTexReplace, uint ofsTexReplace, BinaryReader bin)
+        private static TexReplace[] ReadTexReplace(uint nTexReplace, uint ofsTexReplace, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsTexReplace;
             var texreplace = new TexReplace[nTexReplace];
@@ -528,7 +528,7 @@ namespace WoWFormatLib.FileReaders
             }
             return texreplace;
         }
-        private Texture[] ReadTextures(uint num, uint offset, BinaryReader bin)
+        private static Texture[] ReadTextures(uint num, uint offset, BinaryReader bin)
         {
             bin.BaseStream.Position = offset;
             var textures = new Texture[num];
@@ -570,7 +570,7 @@ namespace WoWFormatLib.FileReaders
             }
             return textures;
         }
-        private TransLookup[] ReadTransLookup(uint nTransLookup, uint ofsTranslookup, BinaryReader bin)
+        private static TransLookup[] ReadTransLookup(uint nTransLookup, uint ofsTranslookup, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsTranslookup;
             var translookup = new TransLookup[nTransLookup];
@@ -580,7 +580,7 @@ namespace WoWFormatLib.FileReaders
             }
             return translookup;
         }
-        private Transparency[] ReadTransparency(uint nTransparency, uint ofsTransparency, BinaryReader bin)
+        private static Transparency[] ReadTransparency(uint nTransparency, uint ofsTransparency, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsTransparency;
             var transparency = new Transparency[nTransparency];
@@ -590,7 +590,7 @@ namespace WoWFormatLib.FileReaders
             }
             return transparency;
         }
-        private void ReadUnk1(uint nUnk1, uint ofsUnk1, BinaryReader bin)
+        private static void ReadUnk1(uint nUnk1, uint ofsUnk1, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsUnk1;
             for (var i = 0; i < nUnk1; i++)
@@ -598,7 +598,7 @@ namespace WoWFormatLib.FileReaders
                 //wot
             }
         }
-        private UVAnimation[] ReadUVAnimation(uint nUVAnimation, uint ofsUVAnimation, BinaryReader bin)
+        private static UVAnimation[] ReadUVAnimation(uint nUVAnimation, uint ofsUVAnimation, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsUVAnimation;
             var uvanimations = new UVAnimation[nUVAnimation];
@@ -608,7 +608,7 @@ namespace WoWFormatLib.FileReaders
             }
             return uvanimations;
         }
-        private UVAnimLookup[] ReadUVAnimLookup(uint nUVAnimLookup, uint ofsUVAnimLookup, BinaryReader bin)
+        private static UVAnimLookup[] ReadUVAnimLookup(uint nUVAnimLookup, uint ofsUVAnimLookup, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsUVAnimLookup;
             var uvanimlookup = new UVAnimLookup[nUVAnimLookup];
@@ -618,7 +618,7 @@ namespace WoWFormatLib.FileReaders
             }
             return uvanimlookup;
         }
-        private Vertice[] ReadVertices(uint nVertices, uint ofsVertices, BinaryReader bin)
+        private static Vertice[] ReadVertices(uint nVertices, uint ofsVertices, BinaryReader bin)
         {
             bin.BaseStream.Position = ofsVertices;
             var vertices = new Vertice[nVertices];

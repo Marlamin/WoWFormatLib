@@ -65,7 +65,7 @@ namespace WoWFormatLib.FileReaders
             }
         }
 
-        private float[] ReadMLVHChunk(uint size, BinaryReader bin)
+        private static float[] ReadMLVHChunk(uint size, BinaryReader bin)
         {
             var count = size / 4;
             var mlvh = new float[count];
@@ -78,7 +78,7 @@ namespace WoWFormatLib.FileReaders
             return mlvh;
 
         }
-        private short[] ReadMLVIChunk(uint size, BinaryReader bin)
+        private static short[] ReadMLVIChunk(uint size, BinaryReader bin)
         {
             var count = size / 2;
             var mlvi = new short[count];
@@ -91,7 +91,7 @@ namespace WoWFormatLib.FileReaders
             return mlvi;
         }
 
-        private MLLLEntry[] ReadMLLLChunk(uint size, BinaryReader bin)
+        private static MLLLEntry[] ReadMLLLChunk(uint size, BinaryReader bin)
         {
             var count = size / 24;
             var mlll = new MLLLEntry[count];
@@ -104,7 +104,7 @@ namespace WoWFormatLib.FileReaders
             return mlll;
         }
 
-        private MLNDEntry[] ReadMLNDChunk(uint size, BinaryReader bin)
+        private static MLNDEntry[] ReadMLNDChunk(uint size, BinaryReader bin)
         {
             var count = size / 24;
             var mlnd = new MLNDEntry[count];
@@ -117,7 +117,7 @@ namespace WoWFormatLib.FileReaders
             return mlnd;
         }
 
-        private short[] ReadMLSIChunk(uint size, BinaryReader bin)
+        private static short[] ReadMLSIChunk(uint size, BinaryReader bin)
         {
             var count = size / 2;
             var mlsi = new short[count];
