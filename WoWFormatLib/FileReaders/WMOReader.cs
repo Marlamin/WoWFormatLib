@@ -362,7 +362,7 @@ namespace WoWFormatLib.FileReaders
                 }
             }
 
-            var num = m2Files.Count();
+            var num = m2Files.Count;
 
             var doodadNames = new MODN[num];
             for (var i = 0; i < num; i++)

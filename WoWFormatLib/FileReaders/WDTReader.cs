@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using WoWFormatLib.Structs.WDT;
@@ -9,9 +8,6 @@ namespace WoWFormatLib.FileReaders
 {
     public class WDTReader
     {
-        public List<(byte, byte)> tiles = new List<(byte, byte)>();
-        public Dictionary<(byte, byte), MapFileDataIDs> tileFiles = new Dictionary<(byte, byte), MapFileDataIDs>();
-        public Dictionary<string, MapFileDataIDs> stringTileFiles = new Dictionary<string, MapFileDataIDs>();
         public WDT wdtfile;
 
         public void LoadWDT(string filename)
@@ -33,9 +29,9 @@ namespace WoWFormatLib.FileReaders
                 ReadWDT(stream);
             }
 
-            foreach(var entry in tileFiles)
+            foreach (var entry in wdtfile.tileFiles)
             {
-                stringTileFiles.Add(entry.Key.Item1 + "," + entry.Key.Item2, entry.Value);
+                wdtfile.stringTileFiles.Add(entry.Key.Item1 + "," + entry.Key.Item2, entry.Value);
             }
         }
 
@@ -54,13 +50,13 @@ namespace WoWFormatLib.FileReaders
                     bin.ReadUInt32();
                     if (flags == 1)
                     {
-                        tiles.Add((y, x));
+                        wdtfile.tiles.Add((y, x));
                     }
                 }
             }
         }
 
-        private void ReadMWMOChunk(BinaryReader bin)
+        private static void ReadMWMOChunk(BinaryReader bin)
         {
             if (bin.ReadByte() != 0)
             {
@@ -78,7 +74,7 @@ namespace WoWFormatLib.FileReaders
             }
         }
 
-        private MPHD ReadMPHDChunk(BinaryReader bin)
+        private static MPHD ReadMPHDChunk(BinaryReader bin)
         {
             return bin.Read<MPHD>();
         }
@@ -89,23 +85,23 @@ namespace WoWFormatLib.FileReaders
             {
                 for (byte y = 0; y < 64; y++)
                 {
-                    tileFiles.Add((y, x), bin.Read<MapFileDataIDs>());
+                    wdtfile.tileFiles.Add((y, x), bin.Read<MapFileDataIDs>());
                 }
             }
         }
 
-        private MODF ReadMODFChunk(BinaryReader bin)
+        private static MODF ReadMODFChunk(BinaryReader bin)
         {
             return bin.Read<MODF>();
         }
 
-        private MANM ReadMANMChunk(BinaryReader bin)
+        private static MANM ReadMANMChunk(BinaryReader bin)
         {
             var manm = new MANM();
             manm.version = bin.ReadUInt32();
             manm.countB = bin.ReadUInt32();
             manm.entriesB = new MANM_B[manm.countB];
-            for(var i = 0; i < manm.countB; i++)
+            for (var i = 0; i < manm.countB; i++)
             {
                 manm.entriesB[i] = new MANM_B();
                 manm.entriesB[i].c = bin.ReadUInt32();
@@ -114,7 +110,7 @@ namespace WoWFormatLib.FileReaders
                 //manm.entriesB[i].s = bin.ReadUInt32();
                 manm.entriesB[i].posPlusNormalCount = bin.ReadUInt32();
                 manm.entriesB[i].posPlusNormal = new MANMPosPlusNormal[manm.entriesB[i].posPlusNormalCount];
-                for(var j = 0; j < manm.entriesB[i].posPlusNormalCount; j++)
+                for (var j = 0; j < manm.entriesB[i].posPlusNormalCount; j++)
                 {
                     manm.entriesB[i].posPlusNormal[j] = bin.Read<MANMPosPlusNormal>();
                 }

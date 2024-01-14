@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using WoWFormatLib.Utils;
 
@@ -22,6 +23,10 @@ namespace WoWFormatLib.Structs.WDT
         public MODF modf;
         public MANM manm;
         public MapFileDataIDs[] filedataids;
+        public Dictionary<uint, string> filenames;
+        public List<(byte, byte)> tiles;
+        public Dictionary<(byte, byte), MapFileDataIDs> tileFiles;
+        public Dictionary<string, MapFileDataIDs> stringTileFiles;
     }
 
     /* Names in MANM stuff are very much placeholder and taken from 010 template*/

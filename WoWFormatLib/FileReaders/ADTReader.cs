@@ -13,34 +13,12 @@ namespace WoWFormatLib.FileReaders
         private Structs.WDT.WDT wdt;
 
         /* ROOT */
-        public void LoadADT(string filename, bool loadSecondaryADTs = true)
-        {
-            filename = Path.ChangeExtension(filename, ".adt");
-
-            var mapname = filename.Replace("world\\maps\\", "").Substring(0, filename.Replace("world\\maps\\", "").IndexOf("\\"));
-            var wdtFileName = "world\\maps\\" + mapname + "\\" + mapname + ".wdt";
-
-            var exploded = Path.GetFileNameWithoutExtension(filename).Split('_');
-
-            if (!byte.TryParse(exploded[exploded.Length - 2], out var tileX) || !byte.TryParse(exploded[exploded.Length - 1], out var tileY))
-            {
-                throw new FormatException("An error occured converting coordinates from " + filename + " to bytes");
-            }
-
-            uint wdtFileDataID;
-            if (CASC.FileExists(wdtFileName))
-            {
-                wdtFileDataID = CASC.getFileDataIdByName(wdtFileName);
-            }
-            else
-            {
-                throw new Exception("WDT does not exist, need this for MCAL flags!");
-            }
-
-            LoadADT(wdtFileDataID, tileX, tileY, loadSecondaryADTs, wdtFileName);
-        }
-
-        public void LoadADT(uint wdtFileDataID, byte tileX, byte tileY, bool loadSecondaryADTs = true, string wdtFilename = "")
+        /// <param name="wdtFile">WDT file, required to load split ADTs and load MCAL correctly</param>
+        /// <param name="tileX">Tile X coordinate</param>
+        /// <param name="tileY" >Tile Y coordinate</param>
+        /// <param name="loadSecondaryADTs">Load secondary ADTs (OBJ0 and TEX0)</param>
+        /// <param name="wdtFilename">WDT filename, required for filename based ADT loading</param>
+        public void LoadADT(Structs.WDT.WDT? wdtFile, byte tileX, byte tileY, bool loadSecondaryADTs = true, string wdtFilename = "")
         {
             adtfile.x = tileX;
             adtfile.y = tileY;
@@ -49,13 +27,11 @@ namespace WoWFormatLib.FileReaders
             uint tex0FileDataID;
             uint obj0FileDataID;
 
-            if (CASC.FileExists(wdtFileDataID))
+            if (wdtFile.HasValue)
             {
-                var wdtr = new WDTReader();
-                wdtr.LoadWDT(wdtFileDataID);
-                wdt = wdtr.wdtfile;
+                wdt = wdtFile.Value;
 
-                if (wdtr.tileFiles.Count == 0)
+                if (wdt.tileFiles.Count == 0)
                 {
                     if (string.IsNullOrEmpty(wdtFilename))
                     {
@@ -72,15 +48,14 @@ namespace WoWFormatLib.FileReaders
                 else
                 {
                     // ID based
-                    rootFileDataID = wdtr.tileFiles[(tileX, tileY)].rootADT;
-                    obj0FileDataID = wdtr.tileFiles[(tileX, tileY)].obj0ADT;
-                    tex0FileDataID = wdtr.tileFiles[(tileX, tileY)].tex0ADT;
+                    rootFileDataID = wdt.tileFiles[(tileX, tileY)].rootADT;
+                    obj0FileDataID = wdt.tileFiles[(tileX, tileY)].obj0ADT;
+                    tex0FileDataID = wdt.tileFiles[(tileX, tileY)].tex0ADT;
                 }
-
             }
             else
             {
-                throw new Exception("WDT does not exist, need this for MCAL flags!");
+                throw new Exception("Need WDT file for filename based ADT/correct MCAL loading!");
             }
 
             // get ids from wdt
@@ -89,6 +64,24 @@ namespace WoWFormatLib.FileReaders
                 throw new FileNotFoundException("One or more ADT files for ADT " + rootFileDataID + " could not be found.");
             }
 
+            ReadRootFile(rootFileDataID);
+
+            if (loadSecondaryADTs)
+            {
+                using (var adtobj0 = CASC.OpenFile(obj0FileDataID))
+                {
+                    ReadObjFile(adtobj0);
+                }
+
+                using (var adttex0 = CASC.OpenFile(tex0FileDataID))
+                {
+                    ReadTexFile(adttex0);
+                }
+            }
+        }
+
+        private void ReadRootFile(uint rootFileDataID)
+        {
             using (var adt = CASC.OpenFile(rootFileDataID))
             using (var bin = new BinaryReader(adt))
             {
@@ -143,22 +136,9 @@ namespace WoWFormatLib.FileReaders
                         case ADTChunks.MBNV:
                             break;
                         default:
-                            Console.WriteLine(string.Format("ADT {3}, {4} for WDT filedataid: {2} - found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position, wdtFileDataID, tileX, tileY));
+                            Console.WriteLine(string.Format("ADT {3}, {4} for WDT filedataid: {2} - found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position));
                             break;
                     }
-                }
-            }
-
-            if (loadSecondaryADTs)
-            {
-                using (var adtobj0 = CASC.OpenFile(obj0FileDataID))
-                {
-                    ReadObjFile(adtobj0);
-                }
-
-                using (var adttex0 = CASC.OpenFile(tex0FileDataID))
-                {
-                    ReadTexFile(adttex0);
                 }
             }
         }
