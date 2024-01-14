@@ -47,6 +47,7 @@ namespace WoWFormatLib.Structs.ADT
         MTXP = 'M' << 24 | 'T' << 16 | 'X' << 8 | 'P' << 0, // Added in 5.x.
         MDID = 'M' << 24 | 'D' << 16 | 'I' << 8 | 'D' << 0, // Added in 8.1.
         MHID = 'M' << 24 | 'H' << 16 | 'I' << 8 | 'D' << 0, // Added in 8.1.
+        MTCG = 'M' << 24 | 'T' << 16 | 'C' << 8 | 'G' << 0, // Added in SL
 
         // TEX MCNK
         MCLY = 'M' << 24 | 'C' << 16 | 'L' << 8 | 'Y' << 0,
@@ -82,6 +83,15 @@ namespace WoWFormatLib.Structs.ADT
         public Obj objects;
         public uint[] diffuseTextureFileDataIDs;
         public uint[] heightTextureFileDataIDs;
+        public MTCG[] textureColorGradings;
+    }
+
+    public struct MTCG
+    {
+        public uint startDistance;
+        public uint unknown;
+        public uint colorGradingFDID;
+        public uint colorGradingRampFDID;
     }
 
     public struct RootADT

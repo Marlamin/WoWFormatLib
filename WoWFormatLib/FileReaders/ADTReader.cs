@@ -330,7 +330,7 @@ namespace WoWFormatLib.FileReaders
                         chunk.attributes[i][j] = bin.Read<MH2OAttribute>();
                     }
                 }
-      
+
                 if (header.offsetInstances != 0)
                 {
                     bin.BaseStream.Position = chunkBasePos + header.offsetInstances;
@@ -441,14 +441,14 @@ namespace WoWFormatLib.FileReaders
                         case ADTChunks.MODF:
                             adtfile.objects.worldModels = ReadMODFChunk(chunkSize, bin);
                             break;
-                        case ADTChunks.MLMB:
-                        case ADTChunks.MCNK:
                         case ADTChunks.MWDR: // WMO doodad references (multiple)
                             adtfile.objects.worldModelDoodadRefs = ReadMWDRChunk(chunkSize, bin);
                             break;
                         case ADTChunks.MWDS: // WMO doodad sets
                             adtfile.objects.worldModelDoodadSets = ReadMWDSChunk(chunkSize, bin);
                             break;
+                        case ADTChunks.MLMB:
+                        case ADTChunks.MCNK:
                         default:
                             Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position));
                             break;
@@ -641,6 +641,9 @@ namespace WoWFormatLib.FileReaders
                         case ADTChunks.MDID: // Diffuse texture fileDataIDs
                             adtfile.diffuseTextureFileDataIDs = ReadFileDataIDChunk(chunkSize, bin);
                             break;
+                        case ADTChunks.MTCG: // Texture color gradings
+                            adtfile.textureColorGradings = ReadMTCGChunk(chunkSize, bin);
+                            break;
                         case ADTChunks.MAMP:
                             break;
                         default:
@@ -650,6 +653,17 @@ namespace WoWFormatLib.FileReaders
                 }
             }
         }
+
+        private MTCG[] ReadMTCGChunk(uint chunkSize, BinaryReader bin)
+        {
+            var mtcg = new MTCG[chunkSize / 16];
+            for (var i = 0; i < mtcg.Length; i++)
+            {
+                mtcg[i] = bin.Read<MTCG>();
+            }
+            return mtcg;
+        }
+
         private TexMCNK ReadTexMCNKChunk(uint size, BinaryReader bin)
         {
             var mapchunk = new TexMCNK();
