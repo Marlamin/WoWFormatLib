@@ -345,6 +345,9 @@ namespace WoWFormatLib.FileReaders
                     {
                         chunk.instances[i][j] = bin.Read<MH2OInstance>();
 
+                        if (chunk.instances[i][j].offsetExistsBitmap != 0)
+                            sortedOffsetList.Add(chunk.instances[i][j].offsetExistsBitmap);
+
                         if (chunk.instances[i][j].offsetVertexData != 0)
                             sortedOffsetList.Add(chunk.instances[i][j].offsetVertexData);
                     }
@@ -364,52 +367,75 @@ namespace WoWFormatLib.FileReaders
                         if (chunk.instances[i][j].offsetVertexData == 0)
                             continue;
 
-                        var vertexCount = (chunk.instances[i][j].width + 1) * (chunk.instances[i][j].height + 1);
-
-                        bin.BaseStream.Position = chunkBasePos + chunk.instances[i][j].offsetVertexData;
-
-                        var nextOffsetIndex = sortedOffsetList.IndexOf(chunk.instances[i][j].offsetVertexData) + 1;
-
-                        uint nextOffset;
-                        if (nextOffsetIndex > sortedOffsetList.Count - 1)
+                        try
                         {
-                            nextOffset = size;
-                        }
-                        else
-                        {
-                            nextOffset = sortedOffsetList[nextOffsetIndex];
-                        }
+                            var vertexCount = (chunk.instances[i][j].width + 1) * (chunk.instances[i][j].height + 1);
+                            uint bytesPerVertex = 0;
 
-                        var calculatedTotalVertexSize = nextOffset - chunk.instances[i][j].offsetVertexData;
-                        var bytesPerVertex = calculatedTotalVertexSize / vertexCount;
-                        var vertexChunkSize = 0;
-                        switch (bytesPerVertex)
-                        {
-                            case 1: // Case 2, Depth only data
-                                chunk.vertexData[i][j].liquidVertexFormat = 2;
-                                vertexChunkSize += 1 * vertexCount; // depthmap
-                                break;
-                            case 5: // Case 0, Height and Depth data
-                                chunk.vertexData[i][j].liquidVertexFormat = 0;
-                                vertexChunkSize += 4 * vertexCount; // heightmap
-                                vertexChunkSize += 1 * vertexCount; // depthmap
-                                break;
-                            case 8: // Case 1, Height and UV data
-                                chunk.vertexData[i][j].liquidVertexFormat = 1;
-                                vertexChunkSize += 4 * vertexCount; // heightmap
-                                vertexChunkSize += 4 * vertexCount; // uvmap
-                                break;
-                            case 9: // Case 3, Height, UV and Depth data
-                                chunk.vertexData[i][j].liquidVertexFormat = 3;
-                                vertexChunkSize += 4 * vertexCount; // heightmap
-                                vertexChunkSize += 4 * vertexCount; // uvmap
-                                vertexChunkSize += 1 * vertexCount; // depthmap
-                                break;
-                            default:
-                                throw new Exception("Encountered unexpected MH2O bytesPerVertex: " + bytesPerVertex);
-                        }
+                            if (chunk.instances[i][j].liquidObjectOrLVF < 42)
+                            {
+                                bytesPerVertex = chunk.instances[i][j].liquidObjectOrLVF switch
+                                {
+                                    0 => 5,
+                                    1 => 8,
+                                    2 => 1,
+                                    3 => 9,
+                                    _ => throw new Exception("Encountered unexpected MH2O liquidObjectOrLVF: " + chunk.instances[i][j].liquidObjectOrLVF),
+                                };
+                            }
+                            else
+                            {
+                                bin.BaseStream.Position = chunkBasePos + chunk.instances[i][j].offsetVertexData;
 
-                        chunk.vertexData[i][j].vertexData = bin.ReadBytes(vertexChunkSize);
+                                var nextOffsetIndex = sortedOffsetList.IndexOf(chunk.instances[i][j].offsetVertexData) + 1;
+
+                                uint nextOffset;
+                                if (nextOffsetIndex > sortedOffsetList.Count - 1)
+                                {
+                                    nextOffset = size;
+                                }
+                                else
+                                {
+                                    nextOffset = sortedOffsetList[nextOffsetIndex];
+                                }
+
+                                var calculatedTotalVertexSize = nextOffset - chunk.instances[i][j].offsetVertexData;
+                                bytesPerVertex = calculatedTotalVertexSize / (uint)vertexCount;
+                            }
+
+                            var vertexChunkSize = 0;
+                            switch (bytesPerVertex)
+                            {
+                                case 1: // Case 2, Depth only data
+                                    chunk.vertexData[i][j].liquidVertexFormat = 2;
+                                    vertexChunkSize += 1 * vertexCount; // depthmap
+                                    break;
+                                case 5: // Case 0, Height and Depth data
+                                    chunk.vertexData[i][j].liquidVertexFormat = 0;
+                                    vertexChunkSize += 4 * vertexCount; // heightmap
+                                    vertexChunkSize += 1 * vertexCount; // depthmap
+                                    break;
+                                case 8: // Case 1, Height and UV data
+                                    chunk.vertexData[i][j].liquidVertexFormat = 1;
+                                    vertexChunkSize += 4 * vertexCount; // heightmap
+                                    vertexChunkSize += 4 * vertexCount; // uvmap
+                                    break;
+                                case 9: // Case 3, Height, UV and Depth data
+                                    chunk.vertexData[i][j].liquidVertexFormat = 3;
+                                    vertexChunkSize += 4 * vertexCount; // heightmap
+                                    vertexChunkSize += 4 * vertexCount; // uvmap
+                                    vertexChunkSize += 1 * vertexCount; // depthmap
+                                    break;
+                                default:
+                                    throw new Exception("Encountered unexpected MH2O bytesPerVertex: " + bytesPerVertex);
+                            }
+
+                            chunk.vertexData[i][j].vertexData = bin.ReadBytes(vertexChunkSize);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Error during MH2O parsing: " + e.Message);
+                        }
                     }
                 }
             }
