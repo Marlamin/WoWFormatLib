@@ -305,6 +305,9 @@ namespace WoWFormatLib.FileReaders
             var chunkBasePos = bin.BaseStream.Position;
             var chunk = new MH2O();
             chunk.headers = new MH2OHeader[256];
+
+            var sortedOffsetList = new List<uint>();
+
             for (var i = 0; i < 256; i++)
             {
                 chunk.headers[i].offsetInstances = bin.ReadUInt32();
@@ -341,60 +344,68 @@ namespace WoWFormatLib.FileReaders
                     for (short j = 0; j < header.layerCount; j++)
                     {
                         chunk.instances[i][j] = bin.Read<MH2OInstance>();
-                        //if (chunk.instances[i][j].liquidObjectOrLVF >= 42)
-                        //{
-                        //    try
-                        //    {
-                        //        DBC.LiquidVertexFormatLookup.TryGetLVF(chunk.instances[i][j].liquidObjectOrLVF, out chunk.instances[i][j].liquidObjectOrLVF);
-                        //    }
-                        //    catch (Exception e)
-                        //    {
-                        //        throw new Exception("Unable to do LVF lookup, DBC stuff failed: " + e.Message);
-                        //    }
-                        //}
 
-                        //var vertexCount = (chunk.instances[i][j].width + 1) * (chunk.instances[i][j].height + 1);
-                        //var vertexChunkSize = 0;
-                        //switch (chunk.instances[i][j].liquidObjectOrLVF)
-                        //{
-                        //    case 0:
-                        //        vertexChunkSize += 4 * vertexCount; // heightmap
-                        //        vertexChunkSize += 1 * vertexCount; // depthmap
-                        //        break;
-                        //    case 1:
-                        //        vertexChunkSize += 4 * vertexCount; // heightmap
-                        //        vertexChunkSize += 4 * vertexCount; // uvmap
-                        //        break;
-                        //    case 2:
-                        //        vertexChunkSize += 1 * vertexCount; // depthmap
-                        //        break;
-                        //    case 3:
-                        //        vertexChunkSize += 4 * vertexCount; // heightmap
-                        //        vertexChunkSize += 4 * vertexCount; // uvmap
-                        //        vertexChunkSize += 1 * vertexCount; // depthmap
-                        //        break;
-                        //    default:
-                        //        throw new Exception("Encountered unknown liquidObjectOrLVF: " + chunk.instances[i][j].liquidObjectOrLVF + ", did DBC lookup fail?");
-                        //        break;
-                        //}
+                        if (chunk.instances[i][j].offsetVertexData != 0)
+                            sortedOffsetList.Add(chunk.instances[i][j].offsetVertexData);
                     }
                 }
             }
 
-            //for (short i = 0; i < 256; i++)
-            //{
-            //    var header = chunk.headers[i];
+            sortedOffsetList.Sort();
 
-            //    if (header.offsetInstances != 0)
-            //    {
-            //        for (short j = 0; j < header.layerCount; j++)
-            //        {
-            //            bin.BaseStream.Position = chunkBasePos + chunk.instances[i][j].offsetVertexData;
-            //            //chunk.vertexData[i][j].liquidVertexFormat = (byte)chunk.instances[i][j].liquidObjectOrLVF;
-            //            //chunk.vertexData[i][j].vertexData = bin.ReadBytes(vertexChunkSize);
-            //        }
-            //    }
-            //}
+            for (short i = 0; i < 256; i++)
+            {
+                var header = chunk.headers[i];
+
+                if (header.offsetInstances != 0)
+                {
+                    for (short j = 0; j < header.layerCount; j++)
+                    {
+                        var vertexCount = (chunk.instances[i][j].width + 1) * (chunk.instances[i][j].height + 1);
+
+                        bin.BaseStream.Position = chunkBasePos + chunk.instances[i][j].offsetVertexData;
+
+                        var nextOffsetIndex = sortedOffsetList.IndexOf(chunk.instances[i][j].offsetVertexData) + 1;
+
+                        uint nextOffset;
+                        if (nextOffsetIndex > sortedOffsetList.Count)
+                        {
+                            nextOffset = (uint)chunkBasePos + size;
+                        }
+                        else
+                        {
+                            nextOffset = sortedOffsetList[nextOffsetIndex];
+                        }
+
+                        var calculatedTotalVertexSize = nextOffset - chunk.instances[i][j].offsetVertexData;
+                        var bytesPerVertex = calculatedTotalVertexSize / vertexCount;
+                        var vertexChunkSize = 0;
+                        switch (bytesPerVertex)
+                        {
+                            case 1: // Case 2, Depth only data
+                                vertexChunkSize += 1 * vertexCount; // depthmap
+                                break;
+                            case 5: // Case 0, Height and Depth data
+                                vertexChunkSize += 4 * vertexCount; // heightmap
+                                vertexChunkSize += 1 * vertexCount; // depthmap
+                                break;
+                            case 8: // Case 1, Height and UV data
+                                vertexChunkSize += 4 * vertexCount; // heightmap
+                                vertexChunkSize += 4 * vertexCount; // uvmap
+                                break;
+                            case 9: // Case 3, Height, UV and Depth data
+                                vertexChunkSize += 4 * vertexCount; // heightmap
+                                vertexChunkSize += 4 * vertexCount; // uvmap
+                                vertexChunkSize += 1 * vertexCount; // depthmap
+                                break;
+                            default:
+                                throw new Exception("Encountered unknown bytesPerVertex: " + bytesPerVertex);
+                        }
+
+                        chunk.vertexData[i][j].vertexData = bin.ReadBytes(vertexChunkSize);
+                    }
+                }
+            }
             return chunk;
         }
 
