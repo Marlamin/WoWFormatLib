@@ -361,6 +361,9 @@ namespace WoWFormatLib.FileReaders
                 {
                     for (short j = 0; j < header.layerCount; j++)
                     {
+                        if (chunk.instances[i][j].offsetVertexData == 0)
+                            continue;
+
                         var vertexCount = (chunk.instances[i][j].width + 1) * (chunk.instances[i][j].height + 1);
 
                         bin.BaseStream.Position = chunkBasePos + chunk.instances[i][j].offsetVertexData;
@@ -368,9 +371,9 @@ namespace WoWFormatLib.FileReaders
                         var nextOffsetIndex = sortedOffsetList.IndexOf(chunk.instances[i][j].offsetVertexData) + 1;
 
                         uint nextOffset;
-                        if (nextOffsetIndex > sortedOffsetList.Count)
+                        if (nextOffsetIndex > sortedOffsetList.Count - 1)
                         {
-                            nextOffset = (uint)chunkBasePos + size;
+                            nextOffset = size;
                         }
                         else
                         {
@@ -383,23 +386,27 @@ namespace WoWFormatLib.FileReaders
                         switch (bytesPerVertex)
                         {
                             case 1: // Case 2, Depth only data
+                                chunk.vertexData[i][j].liquidVertexFormat = 2;
                                 vertexChunkSize += 1 * vertexCount; // depthmap
                                 break;
                             case 5: // Case 0, Height and Depth data
+                                chunk.vertexData[i][j].liquidVertexFormat = 0;
                                 vertexChunkSize += 4 * vertexCount; // heightmap
                                 vertexChunkSize += 1 * vertexCount; // depthmap
                                 break;
                             case 8: // Case 1, Height and UV data
+                                chunk.vertexData[i][j].liquidVertexFormat = 1;
                                 vertexChunkSize += 4 * vertexCount; // heightmap
                                 vertexChunkSize += 4 * vertexCount; // uvmap
                                 break;
                             case 9: // Case 3, Height, UV and Depth data
+                                chunk.vertexData[i][j].liquidVertexFormat = 3;
                                 vertexChunkSize += 4 * vertexCount; // heightmap
                                 vertexChunkSize += 4 * vertexCount; // uvmap
                                 vertexChunkSize += 1 * vertexCount; // depthmap
                                 break;
                             default:
-                                throw new Exception("Encountered unknown bytesPerVertex: " + bytesPerVertex);
+                                throw new Exception("Encountered unexpected MH2O bytesPerVertex: " + bytesPerVertex);
                         }
 
                         chunk.vertexData[i][j].vertexData = bin.ReadBytes(vertexChunkSize);

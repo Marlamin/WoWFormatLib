@@ -370,7 +370,7 @@ namespace WoWFormatLib.Structs.ADT
 
     public struct MH2OVertexData
     {
-        public byte liquidVertexFormat;
+        public byte liquidVertexFormat; // "case 0-3" as per wiki
         public byte[] vertexData;
     }
 
