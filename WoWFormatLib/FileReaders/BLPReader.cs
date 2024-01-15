@@ -1,6 +1,6 @@
 ﻿using SereniaBLPLib;
-using System.IO;
 using SixLabors.ImageSharp;
+using System.IO;
 using WoWFormatLib.Utils;
 namespace WoWFormatLib.FileReaders
 {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Numerics;
 using System.Text;
 using WoWFormatLib.Structs.WMO;
@@ -161,9 +160,9 @@ namespace WoWFormatLib.FileReaders
 
             var start = wmofile.header.nGroups * lodLevel;
 
-            if(wmofile.groupFileDataIDs == null && !string.IsNullOrEmpty(filename))
+            if (wmofile.groupFileDataIDs == null && !string.IsNullOrEmpty(filename))
             {
-                for(var i = 0; i < wmofile.header.nGroups; i++)
+                for (var i = 0; i < wmofile.header.nGroups; i++)
                 {
                     var groupFilename = filename.Replace(".wmo", "_" + i.ToString().PadLeft(3, '0') + ".wmo");
                     if (CASC.IsCASCInit && CASC.FileExists(groupFilename))
@@ -559,7 +558,7 @@ namespace WoWFormatLib.FileReaders
         {
             var numBatches = size / 24;
             var batches = new MOBS[numBatches];
-            for(var i = 0; i < numBatches; i++)
+            for (var i = 0; i < numBatches; i++)
             {
                 batches[i] = bin.Read<MOBS>();
             }

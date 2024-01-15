@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Numerics;
-using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.Structs.WMO
 {
@@ -236,7 +235,7 @@ namespace WoWFormatLib.Structs.WMO
         Flag_0x10 = 0x10,
         Flag_0x20 = 0x20,
         Flag_0x40 = 0x40,
-        Flag_0x80 = 0x80,   
+        Flag_0x80 = 0x80,
         Flag_0x100 = 0x100,
         Flag_0x200_HasMOLR = 0x200, //Has lights  (MOLR chunk)
         Flag_0x400_HasMPBV_MPBP_MPBI_MPBG = 0x400, //Has MPBV, MPBP, MPBI, MPBG chunks.
@@ -254,7 +253,7 @@ namespace WoWFormatLib.Structs.WMO
         Flag_0x800000 = 0x800000,
         Flag_0x1000000 = 0x1000000, //SMOGroup::CVERTS2: Has two MOCV chunks: Just add two or don't set 0x4 to only use cverts2.
         Flag_0x2000000 = 0x2000000, //SMOGroup::TVERTS2: Has two MOTV chunks: Just add two.
-        Flag_0x40000000	= 0x40000000, // SMOGroup::TVERTS3: Has three MOTV chunks, eg. for MOMT with shader 18.
+        Flag_0x40000000 = 0x40000000, // SMOGroup::TVERTS3: Has three MOTV chunks, eg. for MOMT with shader 18.
     }
 
     public struct WMOGroupFile
@@ -270,7 +269,7 @@ namespace WoWFormatLib.Structs.WMO
         public Vector3 boundingBox1;
         public Vector3 boundingBox2;
         public ushort ofsPortals; //Index of portal in MOPR chunk
-        public ushort numPortals;   
+        public ushort numPortals;
         public ushort numBatchesA;
         public ushort numBatchesB;
         public uint numBatchesC; //WoWDev: For the "Number of batches" fields, A + B + C == the total number of batches in the WMO/v17 group (in the MOBA chunk).

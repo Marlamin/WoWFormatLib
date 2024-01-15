@@ -1,6 +1,4 @@
-﻿using System;
-using WoWFormatLib.Utils;
-namespace WoWFormatLib.Structs.ANIM
+﻿namespace WoWFormatLib.Structs.ANIM
 {
     public enum ANIMChunks
     {

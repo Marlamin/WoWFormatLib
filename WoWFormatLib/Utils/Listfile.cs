@@ -66,12 +66,12 @@ namespace WoWFormatLib.Utils
         {
             var cleaned = filename.ToLower().Replace('\\', '/');
 
-            if(!FilenameToFDID.TryGetValue(cleaned, out fileDataID))
+            if (!FilenameToFDID.TryGetValue(cleaned, out fileDataID))
             {
                 // loop through it as lowercase as fallback :/
-                foreach(var entry in FilenameToFDID)
+                foreach (var entry in FilenameToFDID)
                 {
-                    if(entry.Key.Equals(cleaned, System.StringComparison.CurrentCultureIgnoreCase))
+                    if (entry.Key.Equals(cleaned, System.StringComparison.CurrentCultureIgnoreCase))
                     {
                         fileDataID = entry.Value;
                         return true;

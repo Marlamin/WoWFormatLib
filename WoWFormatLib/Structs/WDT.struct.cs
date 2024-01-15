@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.Structs.WDT
 {
@@ -96,21 +95,21 @@ namespace WoWFormatLib.Structs.WDT
     [Flags]
     public enum MPHDFlags : uint
     {
-        wdt_uses_global_map_obj                 = 0x1,
-        adt_has_mccv                            = 0x2,
-        adt_has_big_alpha                       = 0x4,
-        adt_has_doodadrefs_sorted_by_size_cat   = 0x8,
-        adt_has_mclv                            = 0x10,
-        adt_has_upside_down_ground              = 0x20,
-        unk_0x40                                = 0x40,
-        adt_has_height_texturing                = 0x80,
-        unk_0x100                               = 0x100,
-        wdt_has_maid                            = 0x200,
-        unk_0x400                               = 0x400,
-        unk_0x800                               = 0x800,
-        unk_0x1000                              = 0x1000,
-        unk_0x2000                              = 0x2000,
-        unk_0x4000                              = 0x4000,
-        unk_0x8000                              = 0x8000
+        wdt_uses_global_map_obj = 0x1,
+        adt_has_mccv = 0x2,
+        adt_has_big_alpha = 0x4,
+        adt_has_doodadrefs_sorted_by_size_cat = 0x8,
+        adt_has_mclv = 0x10,
+        adt_has_upside_down_ground = 0x20,
+        unk_0x40 = 0x40,
+        adt_has_height_texturing = 0x80,
+        unk_0x100 = 0x100,
+        wdt_has_maid = 0x200,
+        unk_0x400 = 0x400,
+        unk_0x800 = 0x800,
+        unk_0x1000 = 0x1000,
+        unk_0x2000 = 0x2000,
+        unk_0x4000 = 0x4000,
+        unk_0x8000 = 0x8000
     }
 }

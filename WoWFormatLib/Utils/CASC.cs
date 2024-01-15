@@ -1,7 +1,7 @@
-﻿using System;
+﻿using CASCLib;
+using System;
 using System.IO;
 using System.Net.Http;
-using CASCLib;
 
 namespace WoWFormatLib.Utils
 {

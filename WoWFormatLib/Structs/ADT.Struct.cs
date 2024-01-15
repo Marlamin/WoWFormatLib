@@ -109,7 +109,8 @@ namespace WoWFormatLib.Structs.ADT
 
     }
 
-    public enum MHDRFlags{
+    public enum MHDRFlags
+    {
         mhdr_MFBO = 1,                // contains a MFBO chunk.
         mhdr_northrend = 2,           // is set for some northrend ones.
     }
@@ -233,11 +234,11 @@ namespace WoWFormatLib.Structs.ADT
     [Flags]
     public enum MODFFlags : ushort
     {
-        modf_destroyable            = 0x1,
-        modf_use_lod                = 0x2,
-        modf_0x4_unk                = 0x4,
-        modf_entry_is_filedataid    = 0x8,
-        modf_use_sets_from_mwds     = 0x80,
+        modf_destroyable = 0x1,
+        modf_use_lod = 0x2,
+        modf_0x4_unk = 0x4,
+        modf_entry_is_filedataid = 0x8,
+        modf_use_sets_from_mwds = 0x80,
     }
 
     public struct MWDR
@@ -265,14 +266,14 @@ namespace WoWFormatLib.Structs.ADT
     [Flags]
     public enum MDDFFlags : ushort
     {
-        mddf_biodome                = 0x1,
-        mddf_shrubbery              = 0x2, //probably deprecated < 18179
-        mddf_0x4                    = 0x4,
-        mddf_0x8                    = 0x8,
-        mddf_liquid_known           = 0x20,
-        mddf_entry_is_filedataid    = 0x40,
-        mddf_0x100                  = 0x100,
-        mddf_0x200                  = 0x200,
+        mddf_biodome = 0x1,
+        mddf_shrubbery = 0x2, //probably deprecated < 18179
+        mddf_0x4 = 0x4,
+        mddf_0x8 = 0x8,
+        mddf_liquid_known = 0x20,
+        mddf_entry_is_filedataid = 0x40,
+        mddf_0x100 = 0x100,
+        mddf_0x200 = 0x200,
     }
 
     //List of filenames for M2 models that appear in this map tile.

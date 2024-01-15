@@ -22,12 +22,12 @@
 
     public struct MWMO
     {
-        
+
     }
 
     public struct MWID
     {
-        
+
     }
 
     public struct MODT

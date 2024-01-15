@@ -251,7 +251,7 @@ namespace WoWFormatLib.FileReaders
             {
                 model.name = "";
             }
-            
+
             model.sequences = ReadSequences(nSequences, ofsSequences, bin);
             model.animations = ReadAnimations(nAnimations, ofsAnimations, bin);
             model.animationlookup = ReadAnimationLookup(nAnimationLookup, ofsAnimationLookup, bin);
@@ -426,7 +426,7 @@ namespace WoWFormatLib.FileReaders
                 events[i] = new Event()
                 {
                     identifier = System.Text.Encoding.ASCII.GetString(bin.ReadBytes(4)),
-                    data =  bin.ReadUInt32(), 
+                    data = bin.ReadUInt32(),
                     bone = bin.ReadUInt32(),
                     position = bin.Read<Vector3>(),
                     interpolationType = bin.ReadUInt16(),

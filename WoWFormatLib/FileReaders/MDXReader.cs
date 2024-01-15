@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using WoWFormatLib.Structs.MDX;
@@ -56,7 +55,7 @@ namespace WoWFormatLib.FileReaders
             byte[] nameBytes = data.ReadBytes(50);
             model.name = Encoding.UTF8.GetString(nameBytes).Replace("\0", string.Empty);
         }
-        
+
         private void ParseChunk_MTLS(BinaryReader data, Stream stream, uint chunkLength)
         {
             long chunkEnd = stream.Position + chunkLength;
@@ -125,7 +124,7 @@ namespace WoWFormatLib.FileReaders
 
         private Geoset ParseGeoset(BinaryReader data, Stream stream, long end)
         {
-            Geoset geoset = new Geoset{};
+            Geoset geoset = new Geoset { };
             while (stream.Position < end)
             {
                 MDXChunks chunkID = (MDXChunks)data.ReadUInt32();

@@ -118,13 +118,13 @@ namespace WoWFormatLib.FileReaders
                         //Console.WriteLine(bin.BaseStream.Position + ": " + magic);
                         var rawMagic = bin.ReadBytes(4);
                         magic = Encoding.UTF8.GetString(rawMagic);
-                        if(magic == "DXBC" || magic == "MTLB")
+                        if (magic == "DXBC" || magic == "MTLB")
                         {
                             //File.WriteAllBytes("mtl.bin", targetStream.ToArray());
                             magicFound = true;
                             bin.BaseStream.Position -= 8;
                             length = bin.ReadInt32();
-                           // Console.WriteLine("Found " + magic + " at " + bin.BaseStream.Position + " of length " + length);
+                            // Console.WriteLine("Found " + magic + " at " + bin.BaseStream.Position + " of length " + length);
                         }
 
                         if (bin.BaseStream.Position == bin.BaseStream.Length)
@@ -134,7 +134,7 @@ namespace WoWFormatLib.FileReaders
                     }
 
                     //Console.WriteLine("Reading " + length);
-                    if(length == 1)
+                    if (length == 1)
                     {
                         bin.BaseStream.Position -= 24;
                         length = bin.ReadInt32();
@@ -143,9 +143,9 @@ namespace WoWFormatLib.FileReaders
                     }
                     shaderFile.decompressedBlocks.Add(bin.ReadBytes(length));
 
-                    if(length == 1)
+                    if (length == 1)
                     {
-                      //  File.WriteAllBytes("out2.bin", targetStream.ToArray());
+                        //  File.WriteAllBytes("out2.bin", targetStream.ToArray());
                     }
                     /*Console.WriteLine(magic);
                     while (magic != "DXBC" && magic != "MTLB")

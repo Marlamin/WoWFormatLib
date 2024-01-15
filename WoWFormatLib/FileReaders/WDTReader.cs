@@ -32,7 +32,7 @@ namespace WoWFormatLib.FileReaders
 
             wdtfile.stringTileFiles = new Dictionary<string, MapFileDataIDs>();
 
-            if(wdtfile.tileFiles == null) 
+            if (wdtfile.tileFiles == null)
                 wdtfile.tileFiles = new Dictionary<(byte, byte), MapFileDataIDs>();
 
             foreach (var entry in wdtfile.tileFiles)

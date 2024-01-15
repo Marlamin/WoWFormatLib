@@ -12,7 +12,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CascLib\CascLib\CascLib.csproj" />
-    <ProjectReference Include="..\..\DBCD\DBCD\DBCD.csproj" />
     <ProjectReference Include="..\..\SereniaBLPLib\SereniaBLPLib\SereniaBLPLib.csproj" />
   </ItemGroup>
   <ItemGroup>
