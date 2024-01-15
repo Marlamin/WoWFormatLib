@@ -43,6 +43,7 @@ namespace WoWFormatLib.Structs.ADT
         [Description("Array of texture filenames")]
         MTEX = 'M' << 24 | 'T' << 16 | 'E' << 8 | 'X' << 0, // Removed in 8.1.
 
+        MTXF = 'M' << 24 | 'T' << 16 | 'X' << 8 | 'F' << 0, // Added in 3.x
         MAMP = 'M' << 24 | 'A' << 16 | 'M' << 8 | 'P' << 0, // Added in 4.x.
         MTXP = 'M' << 24 | 'T' << 16 | 'X' << 8 | 'P' << 0, // Added in 5.x.
         MDID = 'M' << 24 | 'D' << 16 | 'I' << 8 | 'D' << 0, // Added in 8.1.
@@ -77,6 +78,7 @@ namespace WoWFormatLib.Structs.ADT
         public MHDR header;
         public MTEX textures;
         public MTXP[] texParams;
+        public MTXF texFlags;
         public MCNK[] chunks;
         public MH2O mh2o;
         public Obj objects;
@@ -404,6 +406,11 @@ namespace WoWFormatLib.Structs.ADT
     public struct MTEX
     {
         public string[] filenames;
+    }
+
+    public struct MTXF
+    {
+        public uint[] flags;
     }
 
     public struct MTXP

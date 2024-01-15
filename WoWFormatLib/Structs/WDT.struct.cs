@@ -19,7 +19,7 @@ namespace WoWFormatLib.Structs.WDT
     public struct WDT
     {
         public MPHD mphd;
-        public MODF modf;
+        public ADT.MODF modf;
         public MANM manm;
         public MapFileDataIDs[] filedataids;
         public Dictionary<uint, string> filenames;
@@ -52,20 +52,6 @@ namespace WoWFormatLib.Structs.WDT
     {
         public Vector3 position;
         public Vector3 normal;
-    }
-
-    public struct MODF
-    {
-        public uint id;
-        public uint uuid;
-        public Vector3 position;
-        public Vector3 rotation;
-        public Vector3 upperExtents;
-        public Vector3 lowerExtents;
-        public short flags;
-        public short doodadSetID;
-        public short nameSet;
-        public short padding;
     }
 
     public struct MapFileDataIDs

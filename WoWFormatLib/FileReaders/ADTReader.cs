@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using WoWFormatLib.Structs.ADT;
+using WoWFormatLib.Structs.WDT;
 using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.FileReaders
@@ -61,7 +62,7 @@ namespace WoWFormatLib.FileReaders
                 throw new FileNotFoundException("One or more ADT files for ADT " + rootFileDataID + " could not be found.");
             }
 
-            ReadRootFile(rootFileDataID);
+            ReadRootFile(rootFileDataID, wdt.mphd.flags);
 
             if (loadSecondaryADTs)
             {
@@ -72,14 +73,14 @@ namespace WoWFormatLib.FileReaders
 
                 using (var adttex0 = CASC.OpenFile(tex0FileDataID))
                 {
-                    ReadTexFile(adttex0);
+                    ReadTexFile(adttex0, wdt.mphd.flags);
                 }
             }
         }
 
-        public void LoadADT(uint rootFileDataID, uint obj0FileDataID = 0, uint tex0FileDataID = 0, bool loadSecondaryADTs = true)
+        public void LoadADT(MPHDFlags wdtMPHDFlags, uint rootFileDataID, uint obj0FileDataID = 0, uint tex0FileDataID = 0, bool loadSecondaryADTs = true)
         {
-            ReadRootFile(rootFileDataID);
+            ReadRootFile(rootFileDataID, wdtMPHDFlags);
 
             if (loadSecondaryADTs)
             {
@@ -100,12 +101,12 @@ namespace WoWFormatLib.FileReaders
 
                 using (var adttex0 = CASC.OpenFile(tex0FileDataID))
                 {
-                    ReadTexFile(adttex0);
+                    ReadTexFile(adttex0, wdtMPHDFlags);
                 }
             }
         }
 
-        public void ReadRootFile(uint rootFileDataID)
+        public void ReadRootFile(uint rootFileDataID, MPHDFlags wdtMPHDFlags)
         {
             if (!CASC.FileExists(rootFileDataID))
             {
@@ -114,11 +115,11 @@ namespace WoWFormatLib.FileReaders
 
             using (var adt = CASC.OpenFile(rootFileDataID))
             {
-                ReadRootFile(adt);
+                ReadRootFile(adt, wdtMPHDFlags);
             }
         }
 
-        public void ReadRootFile(Stream adt)
+        public void ReadRootFile(Stream adt, MPHDFlags wdtMPHDFlags)
         {
             using (var bin = new BinaryReader(adt))
             {
@@ -185,6 +186,9 @@ namespace WoWFormatLib.FileReaders
                                     mcnkIndex[i] = bin.Read<MCIN>();
                                 }
                                 break;
+                            case ADTChunks.MTXF: // Texture flags
+                                adtfile.texFlags = ReadMTXFChunk(chunkSize, bin);
+                                break;
                             case ADTChunks.MCNK: // We read these separately
                             case ADTChunks.MFBO: // Flying bounding box
                                 break;
@@ -209,7 +213,7 @@ namespace WoWFormatLib.FileReaders
                                 }
                                 break;
                             case ADTChunks.MCNK:
-                                adtfile.chunks[MCNKi] = ReadMCNKChunk(chunkSize, bin);
+                                adtfile.chunks[MCNKi] = ReadMCNKChunk(chunkSize, bin, wdtMPHDFlags);
                                 MCNKi++;
                                 break;
                             case ADTChunks.MHDR:
@@ -238,13 +242,13 @@ namespace WoWFormatLib.FileReaders
                     {
                         var mcnk = mcnkIndex[i];
                         bin.BaseStream.Position = mcnk.offset + 8;
-                        adtfile.chunks[i] = ReadMCNKChunk(mcnk.size, bin);
+                        adtfile.chunks[i] = ReadMCNKChunk(mcnk.size, bin, wdtMPHDFlags);
                     }
                 }
             }
         }
 
-        private MCNK ReadMCNKChunk(uint size, BinaryReader bin)
+        private static MCNK ReadMCNKChunk(uint size, BinaryReader bin, MPHDFlags wdtMPHDFlags)
         {
             var mapchunk = new MCNK()
             {
@@ -284,11 +288,19 @@ namespace WoWFormatLib.FileReaders
                         // TODO: Read
                     }
 
-                    if (mapchunk.header.ofsMCAL != 0)
+                    try
                     {
-                        subbin.BaseStream.Position = mapchunk.header.ofsMCAL;
-                        mapchunk.alphaLayer = ReadMCALSubChunk(mapchunk.header.sizeAlpha - 8, subbin, mapchunk);
+                        if (mapchunk.header.ofsMCAL != 0)
+                        {
+                            subbin.BaseStream.Position = mapchunk.header.ofsMCAL;
+                            mapchunk.alphaLayer = ReadMCALSubChunk(mapchunk.header.sizeAlpha - 8, subbin, mapchunk, wdtMPHDFlags);
+                        }
                     }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error reading MCAL, are WDT flags set? " + e.Message);
+                    }
+
 
                     if (mapchunk.header.ofsMCSH != 0)
                     {
@@ -298,7 +310,7 @@ namespace WoWFormatLib.FileReaders
 
                     if (mapchunk.header.ofsMCSE != 0)
                     {
-                        subbin.BaseStream.Position = mapchunk.header.ofsMCSE;
+                        subbin.BaseStream.Position = mapchunk.header.ofsMCSE - 4;
                         var mcseSize = subbin.ReadUInt32();
                         mapchunk.soundEmitters = ReadMCSESubChunk(mcseSize, subbin);
                     }
@@ -808,7 +820,7 @@ namespace WoWFormatLib.FileReaders
         }
 
         /* TEX */
-        private void ReadTexFile(Stream adtTexStream)
+        private void ReadTexFile(Stream adtTexStream, MPHDFlags wdtMPHDFlags)
         {
             using (var bin = new BinaryReader(adtTexStream))
             {
@@ -832,7 +844,7 @@ namespace WoWFormatLib.FileReaders
                             adtfile.textures = ReadMTEXChunk(chunkSize, bin);
                             break;
                         case ADTChunks.MCNK:
-                            ReadTexMCNKChunk(MCNKi, chunkSize, bin);
+                            ReadTexMCNKChunk(MCNKi, chunkSize, bin, wdtMPHDFlags);
                             MCNKi++;
                             break;
                         case ADTChunks.MTXP:
@@ -857,7 +869,7 @@ namespace WoWFormatLib.FileReaders
             }
         }
 
-        private MTCG[] ReadMTCGChunk(uint chunkSize, BinaryReader bin)
+        private static MTCG[] ReadMTCGChunk(uint chunkSize, BinaryReader bin)
         {
             var mtcg = new MTCG[chunkSize / 16];
             for (var i = 0; i < mtcg.Length; i++)
@@ -867,7 +879,7 @@ namespace WoWFormatLib.FileReaders
             return mtcg;
         }
 
-        private void ReadTexMCNKChunk(uint mcnkIndex, uint size, BinaryReader bin)
+        private void ReadTexMCNKChunk(uint mcnkIndex, uint size, BinaryReader bin, MPHDFlags wdtMPHDFlags)
         {
             using (var stream = new MemoryStream(bin.ReadBytes((int)size)))
             using (var subbin = new BinaryReader(stream))
@@ -888,7 +900,7 @@ namespace WoWFormatLib.FileReaders
                             adtfile.chunks[mcnkIndex].layers = ReadMCLYSubChunk(subChunkSize, subbin);
                             break;
                         case ADTChunks.MCAL:
-                            adtfile.chunks[mcnkIndex].alphaLayer = ReadMCALSubChunk(subChunkSize, subbin, adtfile.chunks[mcnkIndex]);
+                            adtfile.chunks[mcnkIndex].alphaLayer = ReadMCALSubChunk(subChunkSize, subbin, adtfile.chunks[mcnkIndex], wdtMPHDFlags);
                             break;
                         case ADTChunks.MCSH:
                         case ADTChunks.MCMT:
@@ -926,6 +938,21 @@ namespace WoWFormatLib.FileReaders
             txchunk.filenames = blpFiles.ToArray();
             return txchunk;
         }
+        private static MTXF ReadMTXFChunk(uint size, BinaryReader bin)
+        {
+            var count = size / 4;
+
+            var mtxf = new MTXF();
+            mtxf.flags = new uint[count];
+
+            for (var i = 0; i < count; i++)
+            {
+                mtxf.flags[i] = bin.ReadUInt32();
+            }
+
+            return mtxf;
+        }
+
         private static MTXP[] ReadMTXPChunk(uint size, BinaryReader bin)
         {
             var count = size / 16;
@@ -939,7 +966,7 @@ namespace WoWFormatLib.FileReaders
 
             return txparams;
         }
-        private MCAL[] ReadMCALSubChunk(uint size, BinaryReader bin, MCNK mapchunk)
+        private static MCAL[] ReadMCALSubChunk(uint size, BinaryReader bin, MCNK mapchunk, MPHDFlags wdtMPHDFlags)
         {
             var mcal = new MCAL[mapchunk.layers.Length];
 
@@ -1002,7 +1029,7 @@ namespace WoWFormatLib.FileReaders
                     if (out_offset != 4096)
                         throw new Exception("we somehow overshoot. this should not be the case, except for broken adts");
                 }
-                else if (wdt.mphd.flags.HasFlag(Structs.WDT.MPHDFlags.adt_has_big_alpha) || wdt.mphd.flags.HasFlag(Structs.WDT.MPHDFlags.adt_has_height_texturing)) // Uncompressed (4096)
+                else if (wdtMPHDFlags.HasFlag(Structs.WDT.MPHDFlags.adt_has_big_alpha) || wdtMPHDFlags.HasFlag(Structs.WDT.MPHDFlags.adt_has_height_texturing)) // Uncompressed (4096)
                 {
                     //Console.WriteLine("Uncompressed (4096)");
                     mcal[layer].layer = bin.ReadBytes(4096);

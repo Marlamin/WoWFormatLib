@@ -65,8 +65,11 @@ namespace WoWFormatLib.FileReaders
             return tileList;
         }
 
-        private static void ReadMWMOChunk(BinaryReader bin)
+        private static void ReadMWMOChunk(BinaryReader bin, uint size)
         {
+            if (size == 0)
+                return;
+
             if (bin.ReadByte() != 0)
             {
                 bin.BaseStream.Position = bin.BaseStream.Position - 1;
@@ -101,9 +104,9 @@ namespace WoWFormatLib.FileReaders
             return tileFiles;
         }
 
-        private static MODF ReadMODFChunk(BinaryReader bin)
+        private static Structs.ADT.MODF ReadMODFChunk(BinaryReader bin)
         {
-            return bin.Read<MODF>();
+            return bin.Read<Structs.ADT.MODF>();
         }
 
         private static MANM ReadMANMChunk(BinaryReader bin)
@@ -155,7 +158,7 @@ namespace WoWFormatLib.FileReaders
                         wdtfile.tiles = ReadMAINChunk(bin);
                         break;
                     case WDTChunks.MWMO:
-                        ReadMWMOChunk(bin);
+                        ReadMWMOChunk(bin, chunkSize);
                         break;
                     case WDTChunks.MPHD:
                         wdtfile.mphd = ReadMPHDChunk(bin);
