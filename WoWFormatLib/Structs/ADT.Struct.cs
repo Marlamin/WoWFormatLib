@@ -78,7 +78,6 @@ namespace WoWFormatLib.Structs.ADT
         public MTEX textures;
         public MTXP[] texParams;
         public MCNK[] chunks;
-        public TexMCNK[] texChunks;
         public MH2O mh2o;
         public Obj objects;
         public uint[] diffuseTextureFileDataIDs;
@@ -94,19 +93,12 @@ namespace WoWFormatLib.Structs.ADT
         public uint colorGradingRampFDID;
     }
 
-    public struct RootADT
+    public struct MCIN
     {
-
-    }
-
-    public struct Tex0ADT
-    {
-
-    }
-
-    public struct Obj0ADT
-    {
-
+        public uint offset;
+        public uint size;
+        public uint flags;
+        public uint asyncID;
     }
 
     public enum MHDRFlags
@@ -188,10 +180,6 @@ namespace WoWFormatLib.Structs.ADT
         public MCCV vertexShading;
         public MCSE soundEmitters;
         public MCBB[] blendBatches;
-    }
-
-    public struct TexMCNK
-    {
         public MCLY[] layers;
         public MCAL[] alphaLayer;
     }
