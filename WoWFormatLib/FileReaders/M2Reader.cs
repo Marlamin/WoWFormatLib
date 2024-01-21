@@ -79,8 +79,8 @@ namespace WoWFormatLib.FileReaders
                         }
                         break;
                     case M2Chunks.SFID: // Skin file IDs
-                        var sfids = new uint[model.nViews];
-                        for (var s = 0; s < model.nViews; s++)
+                        var sfids = new uint[chunkSize / 4];
+                        for (var s = 0; s < chunkSize / 4; s++)
                         {
                             sfids[s] = bin.ReadUInt32();
                         }
