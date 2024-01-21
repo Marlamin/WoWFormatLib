@@ -106,7 +106,10 @@ namespace WoWFormatLib.FileReaders
 
         private static Structs.ADT.MODF ReadMODFChunk(BinaryReader bin)
         {
-            return bin.Read<Structs.ADT.MODF>();
+            var modfEntry = new Structs.ADT.MODF();
+            modfEntry.entries = new Structs.ADT.MODFEntry[1];
+            modfEntry.entries[0] = bin.Read<Structs.ADT.MODFEntry>();
+            return modfEntry;
         }
 
         private static MANM ReadMANMChunk(BinaryReader bin)
