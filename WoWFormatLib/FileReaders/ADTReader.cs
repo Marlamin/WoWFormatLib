@@ -986,7 +986,7 @@ namespace WoWFormatLib.FileReaders
                 {
                     throw new Exception("mismatch: layer before required more / less bytes than expected");
                 }
-                if (mapchunk.layers[layer].flags.HasFlag(mclyFlags.Flag_0x200)) // Compressed
+                if (mapchunk.layers[layer].flags.HasFlag(MCLYFlags.mcly_alpha_map_compressed)) // Compressed
                 {
                     //Console.WriteLine("Compressed");
                     // first layer is always fully opaque -> you can let that out
@@ -1063,7 +1063,7 @@ namespace WoWFormatLib.FileReaders
             for (var i = 0; i < count; i++)
             {
                 mclychunks[i].textureId = bin.ReadUInt32();
-                mclychunks[i].flags = (mclyFlags)bin.ReadUInt32();
+                mclychunks[i].flags = (MCLYFlags)bin.ReadUInt32();
                 mclychunks[i].offsetInMCAL = bin.ReadUInt32();
                 mclychunks[i].effectId = bin.ReadInt32();
             }

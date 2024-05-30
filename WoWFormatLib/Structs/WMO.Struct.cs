@@ -74,6 +74,7 @@ namespace WoWFormatLib.Structs.WMO
         MPY2 = 'M' << 24 | 'P' << 16 | 'Y' << 8 | '2' << 0,
         MOQG = 'M' << 24 | 'O' << 16 | 'Q' << 8 | 'G' << 0,
         MOC2 = 'M' << 24 | 'O' << 16 | 'C' << 8 | '2' << 0,
+        MLSO = 'M' << 24 | 'L' << 16 | 'S' << 8 | 'O' << 0,
 
     }
 
@@ -93,16 +94,17 @@ namespace WoWFormatLib.Structs.WMO
         public uint[] groupFileDataIDs;
         public string skybox;
         public uint skyboxFileDataID;
+        public MGI2[] groupInfo2;
     }
 
     public enum MOHDFlags : short
     {
-        Flag_0x1 = 0x1,
-        Flag_0x2 = 0x2,
-        Flag_0x4 = 0x4,
-        Flag_0x8 = 0x8,
-        Flag_0x10 = 0x10,
-        Flag_0x20 = 0x20,
+        mohd_do_not_attenuate_vertices_based_on_distance_to_portal = 0x1,
+        mohd_use_unified_render_path = 0x2,
+        mohd_use_liquid_type_dbc_id = 0x4,
+        mohd_do_not_fix_vertex_color_alpha = 0x8,
+        mohd_lod = 0x10,
+        mohd_default_max_lod = 0x20,
         Flag_0x40 = 0x40,
         Flag_0x80 = 0x80,
         Flag_0x100 = 0x100,
@@ -132,6 +134,19 @@ namespace WoWFormatLib.Structs.WMO
     {
         public string filename;
         public uint startOffset;
+    }
+
+    [Flags]
+    public enum MODDFlags : byte
+    {
+        modd_accept_proj_texture = 0x1,
+        modd_use_interior_lighting = 0x2,
+        modd_flag_0x4 = 0x4,
+        modd_flag_0x8 = 0x8,
+        modd_flag_0x10 = 0x10,
+        modd_flag_0x20 = 0x20,
+        modd_flag_0x40 = 0x40,
+        modd_flag_0x80 = 0x80
     }
 
     public struct MODD
@@ -183,14 +198,14 @@ namespace WoWFormatLib.Structs.WMO
     [Flags]
     public enum MOMTFlags : uint
     {
-        Flag_0x1 = 0x1,
-        Flag_0x2 = 0x2,
-        Flag_0x4 = 0x4,
-        Flag_0x8 = 0x8,
-        Flag_0x10 = 0x10,
-        Flag_0x20 = 0x20,
-        Flag_0x40 = 0x40,
-        Flag_0x80 = 0x80,
+        momt_unlit = 0x1,
+        momt_unfogged = 0x2,
+        momt_unculled = 0x4,
+        momt_extlight = 0x8,
+        momt_sidn = 0x10,
+        momt_window = 0x20,
+        momt_clamp_s = 0x40,
+        momt_clamp_t = 0x80,
         Flag_0x100 = 0x100,
         Flag_0x200 = 0x200,
         Flag_0x400 = 0x400,
@@ -219,41 +234,67 @@ namespace WoWFormatLib.Structs.WMO
     //Group information
     public struct MOGI
     {
-        public uint flags;
+        public MOGPFlags flags;
         public Vector3 boundingBox1;
         public Vector3 boundingBox2;
         public int nameIndex; //something else
     }
 
-    [Flags]
-    public enum MOGPFlags
+    public struct MGI2
     {
-        Flag_0x1_HasMOBN_MOBR = 0x1, //Has MOBN and MOBR chunk.
-        Flag_0x2 = 0x2,
-        Flag_0x4_HasMOCV = 0x4, //Has vertex colors (MOCV chunk)
-        Flag_0x8_Outdoor = 0x8, //Outdoor
-        Flag_0x10 = 0x10,
-        Flag_0x20 = 0x20,
-        Flag_0x40 = 0x40,
-        Flag_0x80 = 0x80,
-        Flag_0x100 = 0x100,
-        Flag_0x200_HasMOLR = 0x200, //Has lights  (MOLR chunk)
-        Flag_0x400_HasMPBV_MPBP_MPBI_MPBG = 0x400, //Has MPBV, MPBP, MPBI, MPBG chunks.
-        Flag_0x800_HasMODR = 0x800, //Has doodads (MODR chunk)
-        Flag_0x1000_HasMLIQ = 0x1000, //Has water   (MLIQ chunk)
-        Flag_0x2000_Indoor = 0x2000, //Indoor
-        Flag_0x8000 = 0x8000,
-        Flag_0x10000 = 0x10000,
-        Flag_0x20000_HasMORI_MORB = 0x20000, //Has MORI and MORB chunks.
-        Flag_0x40000_Skybox = 0x40000, //Show skybox
-        Flag_0x80000_isNotOcean = 0x80000, //isNotOcean, LiquidType related, see below in the MLIQ chunk.
-        Flag_0x100000 = 0x100000,
-        Flag_0x200000 = 0x200000,
-        Flag_0x400000 = 0x400000,
-        Flag_0x800000 = 0x800000,
-        Flag_0x1000000 = 0x1000000, //SMOGroup::CVERTS2: Has two MOCV chunks: Just add two or don't set 0x4 to only use cverts2.
-        Flag_0x2000000 = 0x2000000, //SMOGroup::TVERTS2: Has two MOTV chunks: Just add two.
-        Flag_0x40000000 = 0x40000000, // SMOGroup::TVERTS3: Has three MOTV chunks, eg. for MOMT with shader 18.
+        public MOGPFlags2 flags2;
+        public uint lodIndex; // probably not this
+    }
+
+    [Flags]
+    public enum MOGPFlags : uint
+    {
+        mogp_bsp_tree = 0x1, //Has MOBN and MOBR chunk.
+        mogp_light_map = 0x2,
+        mogp_has_vertex_colors = 0x4, //Has vertex colors (MOCV chunk)
+        moigp_exterior = 0x8, //Outdoor
+        mogp_unk_0x10 = 0x10,
+        mogp_unk_0x20 = 0x20,
+        mogp_exterior_lit = 0x40,
+        mogp_unreachable = 0x80,
+        mogp_show_exterior_sky_indoors = 0x100,
+        mogp_has_lights = 0x200, //Has lights  (MOLR chunk)
+        mogp_lod = 0x400, //Has MPBV, MPBP, MPBI, MPBG chunks.
+        mogp_has_doodads = 0x800, //Has doodads (MODR chunk)
+        mogp_has_water = 0x1000, //Has water   (MLIQ chunk)
+        mogp_interior = 0x2000, //Indoor
+        mogp_unk_0x4000 = 0x4000,
+        mogp_unk_0x8000 = 0x8000, // probably unused now?
+        mogp_alwaysdraw = 0x10000,
+        mogp_unk_0x20000 = 0x20000, //Has MORI and MORB chunks, unused now
+        mogp_show_skybox = 0x40000, //Show skybox
+        mogp_is_not_water_but_ocean = 0x80000, //isNotOcean, LiquidType related, see below in the MLIQ chunk.
+        mogp_unk_0x100000 = 0x100000,
+        mogp_is_mount_allowed = 0x200000,
+        mogp_unk_0x400000 = 0x400000,
+        mogp_unk_0x800000 = 0x800000,
+        mogp_has_vertex_colors2 = 0x1000000, //SMOGroup::CVERTS2: Has two MOCV chunks: Just add two or don't set 0x4 to only use cverts2.
+        mogp_has_uv2 = 0x2000000, //SMOGroup::TVERTS2: Has two MOTV chunks: Just add two.
+        mogp_antiportal = 0x4000000,
+        mogp_unk_0x8000000 = 0x8000000,
+        mogp_unk_0x10000000 = 0x10000000,
+        mogp_unk_0x20000000 = 0x20000000,
+        mogp_has_uv3 = 0x40000000, // SMOGroup::TVERTS3: Has three MOTV chunks, eg. for MOMT with shader 18.
+        mogp_unk_0x80000000 = 0x80000000
+    }
+
+    [Flags]
+    public enum MOGPFlags2 : uint
+    { 
+        mogp2_can_cut_terrain = 0x1,
+        mogp2_unk_0x2 = 0x2,
+        mogp2_unk_0x4 = 0x4,
+        mogp2_unk_0x8 = 0x8,
+        mogp2_unk_0x10 = 0x10,
+        mogp2_unk_0x20 = 0x20,
+        mogp2_is_split_group_parent = 0x40,
+        mogp2_is_split_group_child = 0x80,
+        mogp2_attachment_mesh = 0x100,
     }
 
     public struct WMOGroupFile
@@ -272,16 +313,18 @@ namespace WoWFormatLib.Structs.WMO
         public ushort numPortals;
         public ushort numBatchesA;
         public ushort numBatchesB;
-        public uint numBatchesC; //WoWDev: For the "Number of batches" fields, A + B + C == the total number of batches in the WMO/v17 group (in the MOBA chunk).
+        public ushort numBatchesC; //WoWDev: For the "Number of batches" fields, A + B + C == the total number of batches in the WMO/v17 group (in the MOBA chunk).
+        public ushort numBatchesD;
         public byte fogIndices_0;
         public byte fogIndices_1;
         public byte fogIndices_2;
         public byte fogIndices_3;
         public uint liquidType;
-        public uint groupID;
+        public uint groupID; // WMOAreaTableRec::groupID
+        public MOGPFlags2 flags2;
+        public short parentOrFirstChildSplitGroupindex;
+        public short nextSplitChildGroupIndex;
         public uint unused;
-        public uint unk0;
-        public uint unk1;
         //public MOBR[] faceIndices;
         public MOPY[] materialInfo;
         public MOVI[] indices;
@@ -338,11 +381,12 @@ namespace WoWFormatLib.Structs.WMO
 
     public struct MOPY
     {
-        public byte flags;
-        public byte materialID;
+        public MOPYFlags flags;
+        public ushort materialID;
     }
 
-    public enum MOPYFlags
+    [Flags]
+    public enum MOPYFlags : ushort
     {
         /*
         bool isNoCamCollide (uint8 flags) { return flags & 2; }
@@ -357,6 +401,10 @@ namespace WoWFormatLib.Structs.WMO
         Flag_0x2_NoCamCollide = 0x2,
         Flag_0x4_NoCollide = 0x4,
         Flag_0x8_IsCollisionFace = 0x8, //If it's not set it's isColor apparently
+        mopy_unk_0x10 = 0x10,
+        mopy_unk_0x20 = 0x20,
+        mopy_unk_0x40 = 0x40,
+        mopy_unk_0x80 = 0x80
     }
 
     public struct MOBA

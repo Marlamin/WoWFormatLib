@@ -121,6 +121,9 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.GFID:
                             wmofile.groupFileDataIDs = ReadGFIDChunk(chunkSize, bin);
                             break;
+                        case WMOChunks.MGI2: // MGI2 Group Info (LOD)
+                            wmofile.groupInfo2 = ReadMGI2Chunk(chunkSize, bin);
+                            break;
                         case WMOChunks.MOPV: // MOPV Portal Vertices
                         case WMOChunks.MOPR: // MOPR Portal References
                         case WMOChunks.MOPT: // MOPT Portal Information
@@ -133,7 +136,6 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MLSP: // MLSP Light Set Pointlights
                         case WMOChunks.MDDI: // MDDI Detail Doodad Information
                         case WMOChunks.MDDL: // MODL Detail Doodad Layers
-                        case WMOChunks.MGI2: // MGI2 Group Info (LOD)
                         case WMOChunks.MNLD: // MNLD New Light Defs
                         case WMOChunks.MAVD: // MAVD Ambient Volumne Definition
                         case WMOChunks.MFED: // ?
@@ -142,7 +144,6 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MBVD: // ?
                         case WMOChunks.MOLV: // ?
                         case WMOChunks.MOMX: // ?
-
                             break;
                         default:
                             Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)chunkName))));
@@ -320,6 +321,18 @@ namespace WoWFormatLib.FileReaders
             }
             return groupInfo;
         }
+
+        private static MGI2[] ReadMGI2Chunk(uint size, BinaryReader bin)
+        {
+            var count = size / 8;
+            var groupInfo2 = new MGI2[count];
+            for (var i = 0; i < count; i++)
+            {
+                groupInfo2[i] = bin.Read<MGI2>();
+            }
+            return groupInfo2;
+        }
+
         private static MODS[] ReadMODSChunk(uint size, BinaryReader bin)
         {
             var numDoodadSets = size / 32;
@@ -389,7 +402,7 @@ namespace WoWFormatLib.FileReaders
             {
                 var raw_offset = bin.ReadBytes(3);
                 doodads[i].offset = (uint)(raw_offset[0] | raw_offset[1] << 8 | raw_offset[2] << 16);
-                doodads[i].flags = bin.ReadByte();
+                doodads[i].flags = (byte)(MODDFlags)bin.ReadByte();
                 doodads[i].position = bin.Read<Vector3>();
                 doodads[i].rotation = bin.Read<Quaternion>();
                 doodads[i].scale = bin.ReadSingle();
@@ -456,12 +469,16 @@ namespace WoWFormatLib.FileReaders
                 numPortals = bin.ReadUInt16(),
                 numBatchesA = bin.ReadUInt16(),
                 numBatchesB = bin.ReadUInt16(),
-                numBatchesC = bin.ReadUInt32(),
-                unused = bin.ReadUInt32(),
+                numBatchesC = bin.ReadUInt16(),
+                numBatchesD = bin.ReadUInt16(),
+                fogIndices_0 = bin.ReadByte(),
+                fogIndices_1 = bin.ReadByte(),
+                fogIndices_2 = bin.ReadByte(),
+                fogIndices_3 = bin.ReadByte(),
                 liquidType = bin.ReadUInt32(),
                 groupID = bin.ReadUInt32(),
-                unk0 = bin.ReadUInt32(),
-                unk1 = bin.ReadUInt32()
+                flags2 = (MOGPFlags2)bin.ReadUInt32(),
+                unused = bin.ReadUInt32()
             };
 
             using (var stream = new MemoryStream(bin.ReadBytes((int)size)))
@@ -470,7 +487,7 @@ namespace WoWFormatLib.FileReaders
                 long position = 0;
                 var MOTVi = 0;
 
-                if (mogp.flags.HasFlag(MOGPFlags.Flag_0x40000000))
+                if (mogp.flags.HasFlag(MOGPFlags.mogp_has_uv3))
                 {
                     mogp.textureCoords = new MOTV[4][];
                 }
@@ -508,7 +525,10 @@ namespace WoWFormatLib.FileReaders
                             mogp.renderBatches = ReadMOBAChunk(subChunkSize, subbin);
                             break;
                         case WMOChunks.MOPY: // MOPY Material info for triangles, two bytes per triangle.
-                            mogp.materialInfo = ReadMOPYChunk(subChunkSize, subbin);
+                            mogp.materialInfo = ReadMOPYChunk(subChunkSize, subbin, 1);
+                            break;
+                        case WMOChunks.MPY2: // Material info for triangles, two bytes per triangle.
+                            mogp.materialInfo = ReadMOPYChunk(subChunkSize, subbin, 2);
                             break;
                         case WMOChunks.MOBS: // MOBS Shadow batches
                             mogp.shadowBatches = ReadMOBSChunk(subChunkSize, subbin);
@@ -516,26 +536,26 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MODR: // MODR Doodad references
                         case WMOChunks.MOBN: // MOBN Array of t_BSP_NODE
                         case WMOChunks.MOBR: // MOBR Face indices
-                        case WMOChunks.MOLR: // MOLR Light references
+                        case WMOChunks.MOLR: // MOLR Override light references
                         case WMOChunks.MOCV: // MOCV Vertex colors
-                        case WMOChunks.MDAL: // MDAL Unk (new in WoD)
+                        case WMOChunks.MDAL: // MDAL Replacement for header color
                         case WMOChunks.MLIQ: // MLIQ Liquids
                         case WMOChunks.MOTA: // MOTA Tangent Array
                         case WMOChunks.MOPL: // MOPL Terrain Cutting PLanes
                         case WMOChunks.MOLP: // MOLP Points Lights
                         case WMOChunks.MOLS: // MOLS Spot Lights
                         case WMOChunks.MOPB: // MOPB Prepass Batches
-                        case WMOChunks.MNLR: // MLNR Light New References
-                        case WMOChunks.MLSP: // ?
-                        case WMOChunks.MLSS: // ?
-                        case WMOChunks.MLSK: // ?
-                        case WMOChunks.MOP2: // ?
-                        case WMOChunks.MFVR: // ?
-                        case WMOChunks.MAVR: // ?
-                        case WMOChunks.MPVR: // ?
-                        case WMOChunks.MBVR: // ?
+                        case WMOChunks.MNLR: // MNLR Light New References
+                        case WMOChunks.MLSP: // MLSP Light Set Pointlights
+                        case WMOChunks.MLSS: // MLSS Light Set Spotlights
+                        case WMOChunks.MLSK: // MLSK Point Light animsets
+                        case WMOChunks.MLSO: // MLSO Spot Light animsets
+                        case WMOChunks.MOP2: // MOP2 Map Object Pointlight Anims
+                        case WMOChunks.MFVR: // MVFR Volume Refs
+                        case WMOChunks.MAVR: // MAVR Ambient Volume Refs
+                        case WMOChunks.MPVR: // MPVR Particulate Volume Refs
+                        case WMOChunks.MBVR: // MBVR Box Volume Refs
                         case WMOChunks.MOGX: // ?
-                        case WMOChunks.MPY2: // ?
                         case WMOChunks.MOQG: // ?
                         case WMOChunks.MOC2: // ?
                             continue;
@@ -595,13 +615,24 @@ namespace WoWFormatLib.FileReaders
             }
             return batches;
         }
-        private static MOPY[] ReadMOPYChunk(uint size, BinaryReader bin)
+        private static MOPY[] ReadMOPYChunk(uint size, BinaryReader bin, byte version = 1)
         {
             var numMaterials = size / 2;
+            if(version == 2)
+                numMaterials = size / 4;
+
             var materials = new MOPY[numMaterials];
             for (var i = 0; i < numMaterials; i++)
             {
-                materials[i] = bin.Read<MOPY>();
+                if(version == 1)
+                {
+                    materials[i].flags = (MOPYFlags)(ushort)bin.ReadByte();
+                    materials[i].materialID = bin.ReadByte();
+                }
+                else
+                {
+                    materials[i] = bin.Read<MOPY>();
+                }
             }
             return materials;
         }

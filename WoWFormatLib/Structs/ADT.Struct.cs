@@ -129,9 +129,31 @@ namespace WoWFormatLib.Structs.ADT
         public uint unk4;
     }
 
+    [Flags]
+    public enum MCNKFlags : uint
+    {
+        mcnk_has_mcsh = 0x1,
+        mcnk_impass   = 0x2,
+        mcnk_lq_river = 0x4,
+        mcnk_lq_ocean = 0x8,
+        mcnk_lq_magma = 0x10,
+        mcnk_lg_slime = 0x20,
+        mcnk_has_mccv = 0x40,
+        mcnk_unk_0x80 = 0x80,
+        mcnk_unk_0x100 = 0x100,
+        mcnk_unk_0x200 = 0x200,
+        mcnk_unk_0x400 = 0x400,
+        mcnk_unk_0x800 = 0x800,
+        mcnk_unk_0x1000 = 0x1000,
+        mcnk_unk_0x2000 = 0x2000,
+        mcnk_unk_0x4000 = 0x4000,
+        mcnk_dont_fix_alpha_map = 0x8000,
+        mcnk_high_res_holes = 0x10000
+    }
+
     public struct MCNKheader
     {
-        public uint flags;
+        public MCNKFlags flags;
         public uint indexX;
         public uint indexY;
         public uint nLayers;
@@ -260,8 +282,10 @@ namespace WoWFormatLib.Structs.ADT
         mddf_shrubbery = 0x2, //probably deprecated < 18179
         mddf_0x4 = 0x4,
         mddf_0x8 = 0x8,
+        mddf_0x10 = 0x10,
         mddf_liquid_known = 0x20,
         mddf_entry_is_filedataid = 0x40,
+        mddf_0x80 = 0x80,
         mddf_0x100 = 0x100,
         mddf_0x200 = 0x200,
     }
@@ -305,7 +329,7 @@ namespace WoWFormatLib.Structs.ADT
     public struct MCLY
     {
         public uint textureId;
-        public mclyFlags flags;
+        public MCLYFlags flags;
         public uint offsetInMCAL;
         public int effectId;
     }
@@ -366,21 +390,21 @@ namespace WoWFormatLib.Structs.ADT
     }
 
     [Flags]
-    public enum mclyFlags : uint
+    public enum MCLYFlags : uint
     {
-        Flag_0x1 = 0x1,
-        Flag_0x2 = 0x2,
-        Flag_0x4 = 0x4,
-        Flag_0x8 = 0x8,
-        Flag_0x10 = 0x10,
-        Flag_0x20 = 0x20,
-        Flag_0x40 = 0x40,
-        Flag_0x80 = 0x80,
-        Flag_0x100 = 0x100,
-        Flag_0x200 = 0x200,
-        Flag_0x400 = 0x400,
-        Flag_0x800 = 0x800,
-        Flag_0x1000 = 0x1000
+        mcly_animate_rot_45 = 0x1,
+        mcly_animate_rot_90 = 0x2,
+        mcly_animate_rot_180 = 0x4,
+        mcly_animate_speed_fast = 0x8,
+        mcly_animate_speed_faster = 0x10,
+        mcly_animate_speed_fastest = 0x20,
+        mcly_animation_enabled = 0x40,
+        mcly_overbright = 0x80,
+        mcly_use_alpha_map = 0x100,
+        mcly_alpha_map_compressed = 0x200,
+        mcly_use_cubemap_reflection = 0x400,
+        mcly_unk_apply_scale1 = 0x800,
+        mcly_unk_apply_scale2 = 0x1000
     }
 
     public struct MCAL
