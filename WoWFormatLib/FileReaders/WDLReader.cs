@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using WoWFormatLib.FileProviders;
 using WoWFormatLib.Structs.WDL;
-using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.FileReaders
 {
@@ -10,9 +10,9 @@ namespace WoWFormatLib.FileReaders
     {
         public void LoadWDL(string filename)
         {
-            if (CASC.FileExists(filename))
+            if (FileProvider.FileExists(filename))
             {
-                using (Stream tex = CASC.OpenFile(filename))
+                using (Stream tex = FileProvider.OpenFile(filename))
                 {
                     ReadWDL(filename, tex);
                 }
@@ -41,7 +41,7 @@ namespace WoWFormatLib.FileReaders
                 {
                     if (str.Length > 1)
                     {
-                        if (!CASC.FileExists(str.ToString()))
+                        if (!FileProvider.FileExists(str.ToString()))
                         {
                             Console.WriteLine("WMO file does not exist!!! {0}", str.ToString());
                         }

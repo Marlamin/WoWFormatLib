@@ -4,8 +4,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using WoWFormatLib.FileProviders;
 using WoWFormatLib.Structs.BLS;
-using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.FileReaders
 {
@@ -16,17 +16,17 @@ namespace WoWFormatLib.FileReaders
 
         public BLS LoadBLS(string filename)
         {
-            return LoadBLS(CASC.getFileDataIdByName(filename));
+            return LoadBLS(FileProvider.GetFileDataIdByName(filename));
         }
 
         public BLS LoadBLS(uint fileDataID)
         {
-            if (!CASC.FileExists(fileDataID))
+            if (!FileProvider.FileExists(fileDataID))
             {
                 throw new FileNotFoundException("BLS " + fileDataID + " not found!");
             }
 
-            return LoadBLS(CASC.OpenFile(fileDataID));
+            return LoadBLS(FileProvider.OpenFile(fileDataID));
         }
 
         public BLS LoadBLS(Stream stream)

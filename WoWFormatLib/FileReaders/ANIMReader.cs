@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
+using WoWFormatLib.FileProviders;
 using WoWFormatLib.Structs.ANIM;
-using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.FileReaders
 {
@@ -9,12 +9,12 @@ namespace WoWFormatLib.FileReaders
     {
         public void LoadAnim(string filename)
         {
-            LoadAnim(CASC.getFileDataIdByName(Path.ChangeExtension(filename, "anim")));
+            LoadAnim(FileProvider.GetFileDataIdByName(Path.ChangeExtension(filename, "anim")));
         }
 
         public void LoadAnim(uint fileDataID)
         {
-            using (var bin = new BinaryReader(CASC.OpenFile(fileDataID)))
+            using (var bin = new BinaryReader(FileProvider.OpenFile(fileDataID)))
             {
                 long position = 0;
 

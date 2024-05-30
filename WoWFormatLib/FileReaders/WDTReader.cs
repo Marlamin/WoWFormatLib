@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using WoWFormatLib.FileProviders;
 using WoWFormatLib.Structs.WDT;
-using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.FileReaders
 {
@@ -13,9 +13,9 @@ namespace WoWFormatLib.FileReaders
 
         public void LoadWDT(string filename)
         {
-            if (CASC.FileExists(filename))
+            if (FileProvider.FileExists(filename))
             {
-                LoadWDT(CASC.getFileDataIdByName(filename));
+                LoadWDT(FileProvider.GetFileDataIdByName(filename));
             }
             else
             {
@@ -25,7 +25,7 @@ namespace WoWFormatLib.FileReaders
 
         public void LoadWDT(uint filedataid)
         {
-            using (var stream = CASC.OpenFile(filedataid))
+            using (var stream = FileProvider.OpenFile(filedataid))
             {
                 ReadWDT(stream);
             }

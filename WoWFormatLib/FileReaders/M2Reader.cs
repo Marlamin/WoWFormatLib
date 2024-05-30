@@ -2,8 +2,8 @@
 using System.IO;
 using System.Numerics;
 using System.Text;
+using WoWFormatLib.FileProviders;
 using WoWFormatLib.Structs.M2;
-using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.FileReaders
 {
@@ -13,9 +13,9 @@ namespace WoWFormatLib.FileReaders
 
         public void LoadM2(string filename, bool loadSkins = true)
         {
-            if (CASC.FileExists(filename))
+            if (FileProvider.FileExists(filename))
             {
-                LoadM2(CASC.getFileDataIdByName(Path.ChangeExtension(filename, "M2")), loadSkins);
+                LoadM2(FileProvider.GetFileDataIdByName(Path.ChangeExtension(filename, "M2")), loadSkins);
             }
             else
             {
@@ -26,11 +26,14 @@ namespace WoWFormatLib.FileReaders
         public void LoadM2(uint fileDataID, bool loadSkins = true)
         {
 #if DEBUG
-            LoadM2(CASC.OpenFile(fileDataID), loadSkins);
+            using (var stream = FileProvider.OpenFile(fileDataID))
+            {
+                LoadM2(stream, loadSkins);
+            }
 #else
                 try
                 {
-                    LoadM2(CASC.OpenFile(fileDataID));
+                    LoadM2(FileProvider.OpenFile(fileDataID));
                 }
                 catch(Exception e)
                 {
@@ -148,7 +151,7 @@ namespace WoWFormatLib.FileReaders
                 }
             }
 
-            if (loadSkins && CASC.IsCASCInit)
+            if (loadSkins)
             {
                 model.skins = ReadSkins(model.skinFileDataIDs);
             }

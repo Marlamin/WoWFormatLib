@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
+using WoWFormatLib.FileProviders;
 using WoWFormatLib.Structs.ADT;
-using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.FileReaders
 {
@@ -10,7 +10,7 @@ namespace WoWFormatLib.FileReaders
         public LODADT lodadt;
         public void LoadLODADT(string filename)
         {
-            using (var adt = CASC.OpenFile(filename))
+            using (var adt = FileProvider.OpenFile(filename))
             using (var bin = new BinaryReader(adt))
             {
                 long position = 0;

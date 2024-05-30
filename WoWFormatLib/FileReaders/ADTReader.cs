@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using WoWFormatLib.FileProviders;
 using WoWFormatLib.Structs.ADT;
 using WoWFormatLib.Structs.WDT;
 using WoWFormatLib.Utils;
@@ -40,9 +41,9 @@ namespace WoWFormatLib.FileReaders
                     }
 
                     // Still filename based
-                    rootFileDataID = CASC.getFileDataIdByName("world/maps/" + internalMapName + "/" + internalMapName + "_" + tileX + "_" + tileY + ".adt");
-                    obj0FileDataID = CASC.getFileDataIdByName("world/maps/" + internalMapName + "/" + internalMapName + "_" + tileX + "_" + tileY + "_obj0.adt");
-                    tex0FileDataID = CASC.getFileDataIdByName("world/maps/" + internalMapName + "/" + internalMapName + "_" + tileX + "_" + tileY + "_tex0.adt");
+                    rootFileDataID = FileProvider.GetFileDataIdByName("world/maps/" + internalMapName + "/" + internalMapName + "_" + tileX + "_" + tileY + ".adt");
+                    obj0FileDataID = FileProvider.GetFileDataIdByName("world/maps/" + internalMapName + "/" + internalMapName + "_" + tileX + "_" + tileY + "_obj0.adt");
+                    tex0FileDataID = FileProvider.GetFileDataIdByName("world/maps/" + internalMapName + "/" + internalMapName + "_" + tileX + "_" + tileY + "_tex0.adt");
                 }
                 else
                 {
@@ -57,7 +58,7 @@ namespace WoWFormatLib.FileReaders
                 throw new Exception("Need WDT file for filename based ADT/correct MCAL loading!");
             }
 
-            if (!CASC.FileExists(rootFileDataID) || !CASC.FileExists(obj0FileDataID) || !CASC.FileExists(tex0FileDataID))
+            if (!FileProvider.FileExists(rootFileDataID) || !FileProvider.FileExists(obj0FileDataID) || !FileProvider.FileExists(tex0FileDataID))
             {
                 throw new FileNotFoundException("One or more ADT files for ADT " + rootFileDataID + " could not be found.");
             }
@@ -66,12 +67,12 @@ namespace WoWFormatLib.FileReaders
 
             if (loadSecondaryADTs)
             {
-                using (var adtobj0 = CASC.OpenFile(obj0FileDataID))
+                using (var adtobj0 = FileProvider.OpenFile(obj0FileDataID))
                 {
                     ReadObjFile(adtobj0);
                 }
 
-                using (var adttex0 = CASC.OpenFile(tex0FileDataID))
+                using (var adttex0 = FileProvider.OpenFile(tex0FileDataID))
                 {
                     ReadTexFile(adttex0, wdt.mphd.flags);
                 }
@@ -84,22 +85,22 @@ namespace WoWFormatLib.FileReaders
 
             if (loadSecondaryADTs)
             {
-                if (!CASC.FileExists(obj0FileDataID))
+                if (!FileProvider.FileExists(obj0FileDataID))
                 {
                     throw new FileNotFoundException("OBJ0 ADT file " + obj0FileDataID + " could not be found.");
                 }
 
-                using (var adtobj0 = CASC.OpenFile(obj0FileDataID))
+                using (var adtobj0 = FileProvider.OpenFile(obj0FileDataID))
                 {
                     ReadObjFile(adtobj0);
                 }
 
-                if (!CASC.FileExists(tex0FileDataID))
+                if (!FileProvider.FileExists(tex0FileDataID))
                 {
                     throw new FileNotFoundException("TEX0 ADT file " + tex0FileDataID + " could not be found.");
                 }
 
-                using (var adttex0 = CASC.OpenFile(tex0FileDataID))
+                using (var adttex0 = FileProvider.OpenFile(tex0FileDataID))
                 {
                     ReadTexFile(adttex0, wdtMPHDFlags);
                 }
@@ -108,12 +109,12 @@ namespace WoWFormatLib.FileReaders
 
         public void ReadRootFile(uint rootFileDataID, MPHDFlags wdtMPHDFlags)
         {
-            if (!CASC.FileExists(rootFileDataID))
+            if (!FileProvider.FileExists(rootFileDataID))
             {
                 throw new FileNotFoundException("Root ADT file " + rootFileDataID + " could not be found.");
             }
 
-            using (var adt = CASC.OpenFile(rootFileDataID))
+            using (var adt = FileProvider.OpenFile(rootFileDataID))
             {
                 ReadRootFile(adt, wdtMPHDFlags);
             }

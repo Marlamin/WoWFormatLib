@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using WoWFormatLib.Utils;
+using WoWFormatLib.FileProviders;
 
 namespace WoWFormatLib.FileReaders
 {
@@ -7,7 +7,7 @@ namespace WoWFormatLib.FileReaders
     {
         public void LoadSKEL(uint fileDataID)
         {
-            using (var bin = new BinaryReader(CASC.OpenFile(fileDataID)))
+            using (var bin = new BinaryReader(FileProvider.OpenFile(fileDataID)))
             {
                 var header = new string(bin.ReadChars(4));
 

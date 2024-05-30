@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Numerics;
+using WoWFormatLib.FileProviders;
 using WoWFormatLib.Structs.SKIN;
-using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.FileReaders
 {
@@ -11,7 +11,7 @@ namespace WoWFormatLib.FileReaders
         public SKIN skin;
         public void LoadSKIN(uint fileDataID)
         {
-            using (var bin = new BinaryReader(CASC.OpenFile(fileDataID)))
+            using (var bin = new BinaryReader(FileProvider.OpenFile(fileDataID)))
             {
                 var header = new string(bin.ReadChars(4));
                 if (header != "SKIN")

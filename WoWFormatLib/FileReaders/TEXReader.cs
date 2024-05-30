@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using WoWFormatLib.FileProviders;
 using WoWFormatLib.Structs.TEX;
-using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.FileReaders
 {
@@ -10,9 +10,9 @@ namespace WoWFormatLib.FileReaders
     {
         public void LoadTEX(string filename)
         {
-            if (CASC.FileExists(filename))
+            if (FileProvider.FileExists(filename))
             {
-                using (var tex = CASC.OpenFile(filename))
+                using (var tex = FileProvider.OpenFile(filename))
                 {
                     ReadTEX(filename, tex);
                 }

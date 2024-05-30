@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Text;
+using WoWFormatLib.FileProviders;
 using WoWFormatLib.Structs.WMO;
-using WoWFormatLib.Utils;
 
 namespace WoWFormatLib.FileReaders
 {
@@ -25,9 +25,9 @@ namespace WoWFormatLib.FileReaders
         {
             lodLevel = lod;
 
-            if (CASC.FileExists(filedataid))
+            if (FileProvider.FileExists(filedataid))
             {
-                using (var wmoStream = CASC.OpenFile(filedataid))
+                using (var wmoStream = FileProvider.OpenFile(filedataid))
                 {
                     ReadWMO(wmoStream, filename);
                 }
@@ -44,9 +44,9 @@ namespace WoWFormatLib.FileReaders
         {
             lodLevel = lod;
 
-            if (CASC.FileExists(filename))
+            if (FileProvider.FileExists(filename))
             {
-                using (var wmoStream = CASC.OpenFile(filename))
+                using (var wmoStream = FileProvider.OpenFile(filename))
                 {
                     ReadWMO(wmoStream, filename);
                 }
@@ -165,10 +165,10 @@ namespace WoWFormatLib.FileReaders
                 for (var i = 0; i < wmofile.header.nGroups; i++)
                 {
                     var groupFilename = filename.Replace(".wmo", "_" + i.ToString().PadLeft(3, '0') + ".wmo");
-                    if (CASC.IsCASCInit && CASC.FileExists(groupFilename))
+                    if (FileProvider.FileExists(groupFilename))
                     {
-                        var groupFileDataID = CASC.getFileDataIdByName(groupFilename);
-                        using (var wmoStream = CASC.OpenFile(groupFileDataID))
+                        var groupFileDataID = FileProvider.GetFileDataIdByName(groupFilename);
+                        using (var wmoStream = FileProvider.OpenFile(groupFileDataID))
                         {
                             groupFiles[i] = ReadWMOGroupFile(groupFileDataID, wmoStream);
                         }
@@ -203,9 +203,9 @@ namespace WoWFormatLib.FileReaders
                         groupFileDataID = wmofile.groupFileDataIDs[i];
                     }
 
-                    if (CASC.IsCASCInit && CASC.FileExists(groupFileDataID))
+                    if (FileProvider.FileExists(groupFileDataID))
                     {
-                        using (var wmoStream = CASC.OpenFile(groupFileDataID))
+                        using (var wmoStream = FileProvider.OpenFile(groupFileDataID))
                         {
                             groupFiles[i] = ReadWMOGroupFile(groupFileDataID, wmoStream);
                         }
