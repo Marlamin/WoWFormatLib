@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Numerics;
+using System.Runtime.Serialization;
 
 namespace WoWFormatLib.Structs.WMO
 {
@@ -177,7 +179,7 @@ namespace WoWFormatLib.Structs.WMO
     public struct MOMT
     {
         public MOMTFlags flags;
-        public uint shader;
+        public MOMTShader shader;
         public uint blendMode;
         public uint texture1;
         public uint color1;
@@ -222,6 +224,58 @@ namespace WoWFormatLib.Structs.WMO
         Flag_0x200000 = 0x200000,
         Flag_0x400000 = 0x400000,
         Flag_0x800000 = 0x800000
+    }
+
+    public enum MOMTShader : uint
+    {
+        [EnumMember(Value = "0: Diffuse (VS: MapObjDiffuse_T1, PS: MapObjDiffuse)")]
+        Diffuse = 0,
+        [EnumMember(Value = "1: Specular (VS: MapObjSpecular_T1, PS: MapObjSpecular)")]
+        Specular = 1,
+        [EnumMember(Value = "2: Metal (VS: MapObjSpecular_T1, PS: MapObjMetal)")]
+        Metal = 2,
+        [EnumMember(Value = "3: Env (VS: MapObjDiffuse_T1_Refl, PS: MapObjEnv)")]
+        Env = 3,
+        [EnumMember(Value = "4: Opaque (VS: MapObjDiffuse_T1, PS: MapObjOpaque)")]
+        Opaque = 4,
+        [EnumMember(Value = "5: EnvMetal (VS: MapObjDiffuse_T1_Refl, PS: MapObjEnvMetal)")]
+        EnvMetal = 5,
+        [EnumMember(Value = "6: TwoLayerDiffuse (VS: MapObjDiffuse_Comp, PS: MapObjTwoLayerDiffuse)")]
+        TwoLayerDiffuse = 6,
+        [EnumMember(Value = "7: TwoLayerEnvMetal (VS: MapObjDiffuse_T1, PS: MapObjTwoLayerEnvMetal)")]
+        TwoLayerEnvMetal = 7,
+        [EnumMember(Value = "8: TwoLayerTerrain (VS: MapObjDiffuse_Comp_Terrain, PS: MapObjTwoLayerTerrain)")]
+        TwoLayerTerrain = 8,
+        [EnumMember(Value = "9: DiffuseEmissive (VS: MapObjDiffuse_Comp, PS: MapObjDiffuseEmissive)")]
+        DiffuseEmissive = 9,
+        [EnumMember(Value = "10: WaterWindow (VS: FFXWaterWindow, PS: FFXWaterWindow)")]
+        WaterWindow = 10,
+        [EnumMember(Value = "11: MaskedEnvMetal (VS: MapObjDiffuse_T1_Env_T2, PS: MapObjMaskedEnvMetal)")]
+        MaskedEnvMetal = 11,
+        [EnumMember(Value = "12: MaskedEnvMetalEmissive (VS: MapObjDiffuse_T1_Env_T2, PS: MapObjEnvMetalEmissive)")]
+        EnvMetalEmissive = 12,
+        [EnumMember(Value = "13: TwoLayerDiffuseOpaque (VS: MapObjDiffuse_Comp, PS: MapObjTwoLayerDiffuseOpaque)")]
+        TwoLayerDiffuseOpaque = 13,
+        [EnumMember(Value = "14: SubmarineWindow (VS: FFXSubmarineWindow, PS: FFXSubmarineWindow)")]
+        SubmarineWindow = 14,
+        [EnumMember(Value = "15: TwoLayerDiffuseEmissive (VS: MapObjDiffuse_Comp, PS: MapObjTwoLayerDiffuseEmissive)")]
+        TwoLayerDiffuseEmissive = 15,
+        [EnumMember(Value = "16: DiffuseTerrain (VS: MapObjDiffuse_T1, PS: MapObjDiffuse)")]
+        DiffuseTerrain = 16,
+        [EnumMember(Value = "17: AdditiveMaskedEnvMetal (VS: MapObjDiffuse_T1_Env_T2, PS: MapObjAdditiveMaskedEnvMetal)")]
+        AdditiveMaskedEnvMetal = 17,
+        [EnumMember(Value = "18: TwoLayerDiffuseMod2x (VS: MapObjDiffuse_CompAlpha, PS: MapObjTwoLayerDiffuseMod2x)")]
+        TwoLayerDiffuseMod2x = 18,
+        [EnumMember(Value = "19: TwoLayerDiffuseMod2xNA (VS: MapObjDiffuse_Comp, PS: MapObjTwoLayerDiffuseMod2xNA)")]
+        TwoLayerDiffuseMod2xNA = 19,
+        [EnumMember(Value = "20: TwoLayerDiffuseAlpha (VS: MapObjDiffuse_CompAlpha, PS: MapObjTwoLayerDiffuseAlpha)")]
+        TwoLayerDiffuseAlpha = 20,
+        [EnumMember(Value = "21: Lod (VS: MapObjDiffuse_T1, PS: MapObjLod)")]
+        Lod = 21,
+        [EnumMember(Value = "22: Parallax (VS: MapObjParallax, PS: MapObjParallax)")]
+        Parallax = 22,
+        [EnumMember(Value = "23: DF_MoreTexture_Unknown (VS: MapObjDiffuse_T1, PS: MapObjUnkDFMoreTextureShader)")]
+        DF_MoreTexture_Unknown = 23
     }
 
     //Group names

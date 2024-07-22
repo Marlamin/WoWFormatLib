@@ -12,9 +12,9 @@ namespace WoWFormatLib.FileReaders
         {
             if (FileProvider.FileExists(filename))
             {
-                using (Stream tex = FileProvider.OpenFile(filename))
+                using (Stream wdl = FileProvider.OpenFile(filename))
                 {
-                    ReadWDL(filename, tex);
+                    ReadWDL(wdl);
                 }
             }
             else
@@ -22,6 +22,22 @@ namespace WoWFormatLib.FileReaders
                 throw new FileNotFoundException("WDL " + filename + " does not exist");
             }
         }
+
+        public void LoadWDL(uint filedataid)
+        {
+            if (FileProvider.FileExists(filedataid))
+            {
+                using (Stream wdl = FileProvider.OpenFile(filedataid))
+                {
+                    ReadWDL(wdl);
+                }
+            }
+            else
+            {
+                throw new FileNotFoundException("WDL " + filedataid + " does not exist");
+            }
+        }
+
         private void ReadMVERChunk(BinaryReader bin)
         {
             if (bin.ReadUInt32() != 18)
@@ -54,7 +70,7 @@ namespace WoWFormatLib.FileReaders
                 }
             }
         }
-        private void ReadWDL(string filename, Stream wdl)
+        private void ReadWDL(Stream wdl)
         {
             var bin = new BinaryReader(wdl);
             long position = 0;
@@ -83,7 +99,7 @@ namespace WoWFormatLib.FileReaders
                     case WDLChunks.MAHO:
                         continue;
                     default:
-                        Console.WriteLine(string.Format("{2} Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position.ToString(), filename));
+                        Console.WriteLine(string.Format("{2} Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position.ToString()));
                         break;
                 }
             }
