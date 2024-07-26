@@ -26,7 +26,7 @@ namespace WoWFormatLib.FileProviders
                     Providers.Remove(build);
             }
 
-            Providers.Add(build, provider);
+            Providers.TryAdd(build, provider);
 
             // If we don't have a build set, set it to the first one we get
             if (DefaultBuild == null)
