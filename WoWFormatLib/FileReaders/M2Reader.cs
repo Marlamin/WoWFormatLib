@@ -151,7 +151,7 @@ namespace WoWFormatLib.FileReaders
                 }
             }
 
-            if (loadSkins)
+            if (loadSkins && model.skinFileDataIDs != null)
             {
                 model.skins = ReadSkins(model.skinFileDataIDs);
             }

@@ -252,10 +252,18 @@ namespace WoWFormatLib.FileReaders
                 entries[id].Add("RaceFlags", bin.ReadUInt64().ToString());
 
                 uint treasurePickerIDCount = 0;
+                uint treasurePickerID2Count = 0;
+
                 if (wdb.buildInfo.expansion >= 11)
                 {
                     treasurePickerIDCount = bin.ReadUInt32();
                     entries[id].Add("TreasurePickerIDCount", treasurePickerIDCount.ToString());
+
+                    if(wdb.buildInfo.expansion>= 11 && wdb.clientBuild >= 56196)
+                    {
+                        treasurePickerID2Count = bin.ReadUInt32();
+                        entries[id].Add("TreasurePickerID2Count", treasurePickerID2Count.ToString());
+                    }
                 }
                 else
                 {
@@ -298,6 +306,11 @@ namespace WoWFormatLib.FileReaders
                     {
                         entries[id].Add("TreasurePickerID[" + i + "]", bin.ReadUInt32().ToString());
                     }
+
+                    for (int i = 0; i < treasurePickerID2Count; i++)
+                    {
+                        entries[id].Add("TreasurePickerID2[" + i + "]", bin.ReadUInt32().ToString());
+                    }
                 }
 
                 var ds = new DataStore(bin);
@@ -314,6 +327,9 @@ namespace WoWFormatLib.FileReaders
 
                 if (wdb.buildInfo.expansion >= 10)
                     entries[id].Add("ReadyForTranslation", ds.GetBool().ToString());
+
+                if (wdb.buildInfo.expansion >= 11)
+                    entries[id].Add("ResetByScheduler", ds.GetBool().ToString());
 
                 ds.Flush();
 
