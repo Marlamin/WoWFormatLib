@@ -39,11 +39,6 @@ namespace WoWFormatLib
             return (short)(val[1] | val[0] << 8);
         }
 
-        public static string ToHexString(this byte[] data)
-        {
-            return BitConverter.ToString(data).Replace("-", string.Empty);
-        }
-
         public static byte[] Copy(this byte[] array, int len)
         {
             byte[] ret = new byte[len];
