@@ -140,6 +140,9 @@ namespace WoWFormatLib.FileReaders
 
         private void ReadWDT(Stream wdt)
         {
+            if (wdt == null)
+                return;
+
             var bin = new BinaryReader(wdt);
             long position = 0;
             while (position < wdt.Length)
