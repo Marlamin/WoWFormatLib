@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq.Expressions;
 using System.Numerics;
 using System.Text;
 using WoWFormatLib.FileProviders;
@@ -37,7 +38,7 @@ namespace WoWFormatLib.FileReaders
                 }
                 catch(Exception e)
                 {
-                    CASCLib.Logger.WriteLine("Error during reading file: {0}", e.Message);
+                    Console.WriteLine("Error during reading file: {0}", e.Message);
                     return;
                 }
 #endif
@@ -52,6 +53,9 @@ namespace WoWFormatLib.FileReaders
                 m2.Position = position;
 
                 var chunkName = (M2Chunks)bin.ReadUInt32();
+                if (chunkName == 0)
+                    throw new Exception("M2 is likely encrypted");
+
                 var chunkSize = bin.ReadUInt32();
 
                 position = m2.Position + chunkSize;
@@ -144,7 +148,7 @@ namespace WoWFormatLib.FileReaders
                             Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)chunkName))));
                             break;
 #else
-                            CASCLib.Logger.WriteLine(String.Format("M2: Found unknown header at offset {1} \"{0}\"", chunkName, position.ToString()));
+                            Console.WriteLine(String.Format("M2: Found unknown header at offset {1} \"{0}\"", chunkName, position.ToString()));
 #endif
                         }
                         break;

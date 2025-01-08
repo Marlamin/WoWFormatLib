@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\CascLib\CascLib\CascLib.csproj" />
     <ProjectReference Include="..\..\SereniaBLPLib\SereniaBLPLib\SereniaBLPLib.csproj" />
+    <ProjectReference Include="..\..\TACTSharp\TACTSharp\TACTSharp.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />

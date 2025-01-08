@@ -1,4 +1,5 @@
 ﻿using CASCLib;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -42,22 +43,19 @@ namespace WoWFormatLib.Utils
 
                     if (tokens.Length != 2)
                     {
-                        Logger.WriteLine($"Invalid line in listfile: {line}");
+                        Console.WriteLine($"Invalid line in listfile: {line}");
                         continue;
                     }
 
                     if (!uint.TryParse(tokens[0], out uint fileDataId))
                     {
-                        Logger.WriteLine($"Invalid line in listfile: {line}");
+                        Console.WriteLine($"Invalid line in listfile: {line}");
                         continue;
                     }
 
                     FDIDToFilename.Add(fileDataId, tokens[1]);
 
-                    if (!FilenameToFDID.ContainsKey(tokens[1]))
-                    {
-                        FilenameToFDID.Add(tokens[1], fileDataId);
-                    }
+                    FilenameToFDID.TryAdd(tokens[1], fileDataId);
                 }
             }
         }

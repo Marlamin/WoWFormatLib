@@ -560,13 +560,8 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MOC2: // ?
                             continue;
                         default:
-#if DEBUG
                             Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", subChunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)subChunkName))));
                             break;
-#else
-                            CASCLib.Logger.WriteLine("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName.ToString("X"), position.ToString());
-                            break;
-#endif
                     }
                 }
             }
