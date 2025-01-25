@@ -381,12 +381,24 @@ namespace WoWFormatLib.Structs.WMO
         public uint unused;
         //public MOBR[] faceIndices;
         public MOPY[] materialInfo;
-        public MOVI[] indices;
+        public ushort[] indices;
         public MOVT[] vertices;
         public MONR[] normals;
         public MOTV[][] textureCoords;
         public MOBA[] renderBatches;
         public MOBS[] shadowBatches;
+        public MOBN[] bspNodes;
+        public ushort[] bspIndices;
+    }
+
+    public struct MOBN
+    {
+        public ushort flags;
+        public short negChild;
+        public short posChild;
+        public ushort nFaces;
+        public uint faceStart;
+        public float planeDist;
     }
 
     public struct MOBS

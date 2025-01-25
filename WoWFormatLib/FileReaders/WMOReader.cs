@@ -533,9 +533,13 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MOBS: // MOBS Shadow batches
                             mogp.shadowBatches = ReadMOBSChunk(subChunkSize, subbin);
                             break;
-                        case WMOChunks.MODR: // MODR Doodad references
                         case WMOChunks.MOBN: // MOBN Array of t_BSP_NODE
+                            mogp.bspNodes = ReadMOBNChunk(subChunkSize, subbin);
+                            break;
                         case WMOChunks.MOBR: // MOBR Face indices
+                            mogp.bspIndices = ReadMOBRChunk(subChunkSize, subbin);
+                            break;
+                        case WMOChunks.MODR: // MODR Doodad references
                         case WMOChunks.MOLR: // MOLR Override light references
                         case WMOChunks.MOCV: // MOCV Vertex colors
                         case WMOChunks.MDAL: // MDAL Replacement for header color
@@ -567,6 +571,29 @@ namespace WoWFormatLib.FileReaders
             }
 
             return mogp;
+        }
+
+        private static MOBN[] ReadMOBNChunk(uint size, BinaryReader subbin)
+        {
+            var numNodes = size / 32;
+            var nodes = new MOBN[numNodes];
+            for (var i = 0; i < numNodes; i++)
+            {
+                nodes[i] = subbin.Read<MOBN>();
+            }
+            return nodes;
+        }
+
+        private static ushort[] ReadMOBRChunk(uint size, BinaryReader subbin)
+        {
+            var numIndices = size / 2;
+            var indices = new ushort[numIndices];
+            for (var i = 0; i < numIndices; i++)
+            {
+                indices[i] = subbin.ReadUInt16();
+            }
+
+            return indices;
         }
 
         private static MOBS[] ReadMOBSChunk(uint size, BinaryReader bin)
@@ -642,13 +669,13 @@ namespace WoWFormatLib.FileReaders
             }
             return textureCoords;
         }
-        private static MOVI[] ReadMOVIChunk(uint size, BinaryReader bin)
+        private static ushort[] ReadMOVIChunk(uint size, BinaryReader bin)
         {
             var numIndices = size / 2;
-            var indices = new MOVI[numIndices];
+            var indices = new ushort[numIndices];
             for (var i = 0; i < numIndices; i++)
             {
-                indices[i].indice = bin.ReadUInt16();
+                indices[i] = bin.ReadUInt16();
             }
             return indices;
         }
