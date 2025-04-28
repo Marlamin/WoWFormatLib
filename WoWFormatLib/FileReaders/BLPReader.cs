@@ -15,7 +15,7 @@ namespace WoWFormatLib.FileReaders
             using (var blp = new BLPFile(FileProvider.OpenFile(fileDataID)))
             {
                 var pixels = blp.GetPixels(0, out var w, out var h);
-                bmp = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(pixels, w, h);
+                bmp = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(pixels, w, h);
             }
         }
 
@@ -24,7 +24,7 @@ namespace WoWFormatLib.FileReaders
             using (var blp = new BLPFile(FileProvider.OpenFile(filename)))
             {
                 var pixels = blp.GetPixels(0, out var w, out var h);
-                bmp = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(pixels, w, h);
+                bmp = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(pixels, w, h);
             }
         }
 
@@ -33,7 +33,7 @@ namespace WoWFormatLib.FileReaders
             using (var blp = new BLPFile(file))
             {
                 var pixels = blp.GetPixels(0, out var w, out var h);
-                bmp = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(pixels, w, h);
+                bmp = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(pixels, w, h);
             }
         }
     }
