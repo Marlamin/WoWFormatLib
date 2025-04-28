@@ -12,10 +12,10 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CascLib\CascLib\CascLib.csproj" />
-    <ProjectReference Include="..\..\SereniaBLPLib\SereniaBLPLib\SereniaBLPLib.csproj" />
     <ProjectReference Include="..\..\TACTSharp\TACTSharp\TACTSharp.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="BLPSharp" Version="0.1.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
