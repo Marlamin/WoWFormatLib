@@ -123,6 +123,9 @@ namespace WoWFormatLib.FileReaders
                         }
                         model.geometryParticleModelFileIDs = gpids;
                         break;
+                    case M2Chunks.PCOL: // Playerhousing Collision
+                        model.PCOL = ReadPCOL(chunkSize, bin);
+                        break;
                     case M2Chunks.TXAC: // Texture transforms (?)
                     case M2Chunks.EXPT: // Extended Particles
                     case M2Chunks.EXP2: // Extended Particles 2
@@ -140,6 +143,7 @@ namespace WoWFormatLib.FileReaders
                     case M2Chunks.NERF:
                     case M2Chunks.DETL:
                     case M2Chunks.DBOC:
+                    case M2Chunks.DPIV: // ?
                         break;
                     default:
                         if (chunkName.ToString("X") != "00000000")
@@ -634,6 +638,45 @@ namespace WoWFormatLib.FileReaders
                 vertices[i] = bin.Read<Vertice>();
             }
             return vertices;
+        }
+
+        private static PCOL ReadPCOL(uint chunkSize, BinaryReader bin)
+        {
+            var pcol = new PCOL();
+            var start = bin.BaseStream.Position;
+
+            pcol.vertexPosCount = bin.ReadUInt32();
+            pcol.vertexPosOffset = bin.ReadUInt32();
+            pcol.faceNormCount = bin.ReadUInt32();
+            pcol.faceNormOffset = bin.ReadUInt32();
+            pcol.indexCount = bin.ReadUInt32();
+            pcol.indexOffset = bin.ReadUInt32();
+            pcol.flagsCount = bin.ReadUInt32();
+            pcol.flagsOffset = bin.ReadUInt32();
+
+            bin.BaseStream.Position = start + pcol.vertexPosOffset;
+            pcol.vertexPositions = new Vector3[pcol.vertexPosCount];
+            for (var i = 0; i < pcol.vertexPosCount; i++)
+            {
+                pcol.vertexPositions[i] = bin.Read<Vector3>();
+            }
+
+            bin.BaseStream.Position = start + pcol.faceNormOffset;
+            pcol.faceNormals = new Vector3[pcol.faceNormCount];
+            for (var i = 0; i < pcol.faceNormCount; i++)
+                pcol.faceNormals[i] = bin.Read<Vector3>();
+
+            bin.BaseStream.Position = start + pcol.indexOffset;
+            pcol.indices = new ushort[pcol.indexCount];
+            for (var i = 0; i < pcol.indexCount; i++)
+                pcol.indices[i] = bin.ReadUInt16();
+
+            bin.BaseStream.Position = start + pcol.flagsOffset;
+            pcol.flags = new ushort[pcol.flagsCount];
+            for (var i = 0; i < pcol.flagsCount; i++)
+                pcol.flags[i] = bin.ReadUInt16();
+
+            return pcol;
         }
     }
 }

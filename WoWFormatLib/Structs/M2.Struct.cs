@@ -33,6 +33,8 @@ namespace WoWFormatLib.Structs.M2
         NERF = 'N' << 0 | 'E' << 8 | 'R' << 16 | 'F' << 24,
         DETL = 'D' << 0 | 'E' << 8 | 'T' << 16 | 'L' << 24,
         DBOC = 'D' << 0 | 'B' << 8 | 'O' << 16 | 'C' << 24,
+        PCOL = 'P' << 0 | 'C' << 8 | 'O' << 16 | 'L' << 24,
+        DPIV = 'D' << 0 | 'P' << 8 | 'I' << 16 | 'V' << 24,
     }
 
     public struct M2Model
@@ -89,6 +91,8 @@ namespace WoWFormatLib.Structs.M2
         public CameraLookup[] cameralookup;
         public RibbonEmitter[] ribbonemitters;
         public ParticleEmitter[] particleemitters;
+
+        public PCOL PCOL;
     }
 
     /* Retrieved from https://wowdev.wiki/M2 */
@@ -116,7 +120,17 @@ namespace WoWFormatLib.Structs.M2
         Flag_0x40000 = 0x40000,
         Flag_0x80000 = 0x80000,
         Flag_0x100000 = 0x100000,
-        Flag_0x200000 = 0x200000  // apparently: use 24500 upgraded model format: chunked .anim files, change in the exporter reordering sequence+bone blocks before name
+        Flag_0x200000 = 0x200000,  // apparently: use 24500 upgraded model format: chunked .anim files, change in the exporter reordering sequence+bone blocks before name
+        Flag_0x400000 = 0x400000,
+        Flag_0x800000 = 0x800000,
+        Flag_0x1000000 = 0x1000000,
+        Flag_0x2000000 = 0x2000000,
+        Flag_0x4000000 = 0x4000000,
+        Flag_0x8000000 = 0x8000000,
+        Flag_0x10000000 = 0x10000000,
+        Flag_0x20000000 = 0x20000000,
+        Flag_0x40000000 = 0x40000000,
+        Flag_0x80000000 = 0x80000000,
     }
 
     [Flags]
@@ -142,6 +156,22 @@ namespace WoWFormatLib.Structs.M2
         public uint fileDataID;
     }
 
+    public struct PCOL
+    {
+        public uint vertexPosCount;
+        public uint vertexPosOffset;
+        public uint faceNormCount;
+        public uint faceNormOffset;
+        public uint indexCount;
+        public uint indexOffset;
+        public uint flagsCount;
+        public uint flagsOffset;
+
+        public Vector3[] vertexPositions;
+        public Vector3[] faceNormals;
+        public ushort[] indices;
+        public ushort[] flags;
+    }
 
     [Flags]
     public enum AnimFlags : uint
