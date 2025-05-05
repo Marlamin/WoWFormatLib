@@ -129,7 +129,7 @@ namespace WoWFormatLib.Structs.M2
         Flag_0x8000000 = 0x8000000,
         Flag_0x10000000 = 0x10000000,
         Flag_0x20000000 = 0x20000000,
-        Flag_0x40000000 = 0x40000000,
+        Flag_0x40000000 = 0x40000000, // seen on some playerhousing decor starting in 11.1.7
         Flag_0x80000000 = 0x80000000,
     }
 
