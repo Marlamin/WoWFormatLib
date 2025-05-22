@@ -92,6 +92,7 @@ namespace WoWFormatLib.Structs.WMO
         public MODS[] doodadSets;
         public MOGN[] groupNames;
         public MOGI[] groupInfo;
+        public MNLD[] newLightDefinitions;
         public WMOGroupFile[] group;
         public uint[] groupFileDataIDs;
         public string skybox;
@@ -487,6 +488,52 @@ namespace WoWFormatLib.Structs.WMO
         public ushort lastVertex;
         public byte flags;
         public byte materialID;
+    }
+
+    public struct MNLD
+    {
+        public int type;                       // 0 = Point light (sphere), 1 = Spot light (cone) 
+        public int lightIndex;                 // Appears to be same as index in mapobject_new_light_defs[]
+        public int enableColorGradient;        // 0 = false (use only startColor), 1 = true (use start and end color gradient)
+        public int doodadSet;                  // Doodad Set this light belongs to
+        public uint startColor;          // Start Color
+        public Vector3 position;             // Light position in WMO
+        public Vector3 rotation;             // Euler rotation in radians, for spot light rotates the light, for point light rotates the light cookie
+        public float attenStart;               // Start attenuation
+        public float attenEnd;                 // End attenuation
+        public float intensity;                // Light intensity
+        public uint endColor;            // End Color
+        public float colorBlendStart;          // Gradient start distance from emitter position, for mixing start and end color
+        public float colorBlendEnd;            // Gradient end distance from emitter position,  for mixing start and end color
+        public uint gap0;                   // empty
+        public float flickerIntensity;         // Flickering light intensity
+        public float flickerSpeed;             // Flickering light speed
+        public int flickerMode;                // 0 = off, 1 = sine curve, 2 = noise curve, 3 = noise step curve
+        public Vector3 field_54;             // Only found 0's so far
+        public uint gap1;                   // empty
+        public uint lightCookieFileID;         // file ID for light cookie texture. For point light it's a cube map
+        public uint gap2_0;                  // empty
+        public uint gap2_1;                  // empty
+        public uint gap2_2;                  // empty
+        public uint gap2_3;                  // empty
+        public uint gap2_4;                  // empty
+        public float spotlightRadius;          // The overall radius of the spot light, in radians
+        public float spotlightDropoffStart;    // Start of drop-off gradient, in radians. Starts at center, ends at edge. Controls the rate at which light intensity decreases from the center to the edge of the spot light beam
+        public float spotlightDropoffEnd;      // End of drop-off gradient, in radians. Both start and end drop-off angles have to be smaller than radius else sharp edge
+        public uint unk0;                      // 14336 (power of 2)
+        public uint gap4_0;                  // empty
+        public uint gap4_1;                  // empty
+        public uint gap4_2;                  // empty
+        public uint gap4_3;                  // empty
+        public uint gap4_4;                  // empty
+        public uint gap4_5;                  // empty
+        public uint gap4_6;                  // empty
+        public uint gap4_7;                  // empty
+        public uint gap4_8;                  // empty
+        public uint gap4_9;                  // empty
+        public char gap4_b;
+        public char field_50;                  // Only found 0's so far
+        public ushort unk1;                   // Only found 0's so far
     }
 
 

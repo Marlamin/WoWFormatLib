@@ -124,6 +124,9 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MGI2: // MGI2 Group Info (LOD)
                             wmofile.groupInfo2 = ReadMGI2Chunk(chunkSize, bin);
                             break;
+                        case WMOChunks.MNLD: // MNLD New Light Defs
+                            wmofile.newLightDefinitions = ReadMNLDChunk(chunkSize, bin);
+                            break;
                         case WMOChunks.MOPV: // MOPV Portal Vertices
                         case WMOChunks.MOPR: // MOPR Portal References
                         case WMOChunks.MOPT: // MOPT Portal Information
@@ -136,7 +139,6 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MLSP: // MLSP Light Set Pointlights
                         case WMOChunks.MDDI: // MDDI Detail Doodad Information
                         case WMOChunks.MDDL: // MODL Detail Doodad Layers
-                        case WMOChunks.MNLD: // MNLD New Light Defs
                         case WMOChunks.MAVD: // MAVD Ambient Volumne Definition
                         case WMOChunks.MFED: // ?
                         case WMOChunks.MAVG: // ?
@@ -320,6 +322,21 @@ namespace WoWFormatLib.FileReaders
                 groupInfo[i] = bin.Read<MOGI>();
             }
             return groupInfo;
+        }
+
+        private static MNLD[] ReadMNLDChunk(uint size, BinaryReader bin)
+        {
+            var numIds = size / 184;
+            var mnlds = new MNLD[numIds];
+            for (var i = 0; i < numIds; i++)
+            {
+                bin.BaseStream.Position += 4;
+                mnlds[i].lightIndex = bin.ReadInt32();
+                bin.BaseStream.Position += 92;
+                mnlds[i].lightCookieFileID = bin.ReadUInt32();
+                bin.BaseStream.Position += 80;
+            }
+            return mnlds;
         }
 
         private static MGI2[] ReadMGI2Chunk(uint size, BinaryReader bin)
