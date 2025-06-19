@@ -33,7 +33,7 @@ namespace WoWFormatLib.FileReaders
         {
             if (string.IsNullOrEmpty(patch))
             {
-                patch = "11.0.0.55087";
+                patch = "11.2.0.61476";
                 Console.WriteLine("No build specified, defaulting to " + patch);
             }
 
@@ -453,7 +453,10 @@ namespace WoWFormatLib.FileReaders
                 entries[id].Add("Flags[0]", bin.ReadUInt32().ToString());
                 entries[id].Add("Flags[1]", bin.ReadUInt32().ToString());
 
-                if(wdb.buildInfo.expansion < 11 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major == 0))
+                if (wdb.buildInfo.expansion > 11 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major >= 2 && wdb.buildInfo.minor >= 0))
+                    entries[id].Add("TWW_112_Int", bin.ReadUInt32().ToString());
+
+                if (wdb.buildInfo.expansion < 11 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major == 0))
                     entries[id].Add("CreatureType", bin.ReadUInt32().ToString());
                 else
                     entries[id].Add("CreatureType", bin.ReadByte().ToString());
@@ -639,6 +642,9 @@ namespace WoWFormatLib.FileReaders
                 }
 
                 goEntry.Add("ContentTuningID", bin.ReadUInt32().ToString());
+
+                if (wdb.buildInfo.expansion > 11 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major >= 2 && wdb.buildInfo.minor >= 0))
+                    bin.ReadUInt32(); // TWW_112_Int, unk
 
                 entries.TryAdd(id, goEntry);
             }
