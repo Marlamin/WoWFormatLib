@@ -270,9 +270,9 @@ namespace WoWFormatLib.FileReaders
                             mesh.Color1.Buffer = ReadBuffer(subbin, subChunkSize);
                             break;
                         case M3Chunks.VSTR:
-                            mesh.MaterialString.PropertyA = subbin.ReadUInt32();
-                            mesh.MaterialString.PropertyB = subbin.ReadUInt32();
-                            mesh.MaterialString.MaterialName = new string(subbin.ReadChars((int)subChunkSize)).Replace("\0", "");
+                            mesh.Names.PropertyA = subbin.ReadUInt32();
+                            mesh.Names.PropertyB = subbin.ReadUInt32();
+                            mesh.Names.NameBlock = new string(subbin.ReadChars((int)subChunkSize)).Replace("\0", "");
                             break;
                         case M3Chunks.VGEO:
                             mesh.Geosets.PropertyA = subbin.ReadUInt32();
@@ -283,14 +283,14 @@ namespace WoWFormatLib.FileReaders
                                 mesh.Geosets.Geosets[i] = new M3Geoset()
                                 {
                                     Unknown0 = subbin.ReadUInt32(),
+                                    NameCharStart = subbin.ReadUInt32(),
+                                    NameCharCount = subbin.ReadUInt32(),
+                                    IndexStart = subbin.ReadUInt32(),
+                                    IndexCount = subbin.ReadUInt32(),
+                                    VertexStart = subbin.ReadUInt32(),
+                                    VertexCount = subbin.ReadUInt32(),
                                     Unknown1 = subbin.ReadUInt32(),
-                                    Unknown2 = subbin.ReadUInt32(),
-                                    IndicesIndex = subbin.ReadUInt32(),
-                                    IndicesCount = subbin.ReadUInt32(),
-                                    Unknown3 = subbin.ReadUInt32(),
-                                    Unknown4 = subbin.ReadUInt32(),
-                                    Unknown5 = subbin.ReadUInt32(),
-                                    Unknown6 = subbin.ReadUInt32()
+                                    Unknown2 = subbin.ReadUInt32()
                                 };
                             }
                             break;
@@ -302,8 +302,8 @@ namespace WoWFormatLib.FileReaders
                             {
                                 mesh.LodLevels.LodLevels[i] = new M3LodLevel()
                                 {
-                                    IndexCount = subbin.ReadUInt32(),
-                                    VertexCount = subbin.ReadUInt32()
+                                    VertexCount = subbin.ReadUInt32(),
+                                    IndexCount = subbin.ReadUInt32()
                                 };
                             }
                             break;
@@ -317,8 +317,8 @@ namespace WoWFormatLib.FileReaders
                                 {
                                     Unknown0 = subbin.ReadUInt16(),
                                     Unknown1 = subbin.ReadUInt16(),
-                                    Unknown2 = subbin.ReadUInt16(),
-                                    Unknown3 = subbin.ReadUInt16()
+                                    GeosetIndex = subbin.ReadUInt16(),
+                                    MaterialIndex = subbin.ReadUInt16()
                                 };
                             }
                             break;

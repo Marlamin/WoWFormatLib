@@ -86,7 +86,7 @@ namespace WoWFormatLib.Structs.M3
         public BUFF UV4;
         public BUFF UV5;
         public BUFF Tangents;
-        public VSTR MaterialString;
+        public VSTR Names;
         public BUFF Indices;
         public VGEO Geosets;
         public LODS LodLevels;
@@ -116,7 +116,7 @@ namespace WoWFormatLib.Structs.M3
         public uint PropertyA;
         public uint PropertyB;
 
-        public string MaterialName;
+        public string NameBlock;
     }
 
     public struct VGEO
@@ -129,15 +129,15 @@ namespace WoWFormatLib.Structs.M3
 
     public struct M3Geoset
     {
-        public uint Unknown0;
-        public uint Unknown1;
-        public uint Unknown2;
-        public uint IndicesIndex;
-        public uint IndicesCount;
-        public uint Unknown3;
-        public uint Unknown4;
-        public uint Unknown5;
-        public uint Unknown6;
+        public uint Unknown0;           // Unknown, first geoset of the model has a value. 8 on 5916032 or 12 on 6648661 & 6655655
+        public uint NameCharStart;      // Start of name string in VSTR.
+        public uint NameCharCount;      // Number of characters in name string in VSTR.
+        public uint IndexStart;
+        public uint IndexCount;
+        public uint VertexStart;
+        public uint VertexCount;
+        public uint Unknown1;           // Always 0, could be for bones.
+        public uint Unknown2;           // Always 0, could be for bones.
     }
 
     public struct LODS
@@ -164,10 +164,10 @@ namespace WoWFormatLib.Structs.M3
 
     public struct M3RenderBatch
     {
-        public uint Unknown0;
-        public uint Unknown1;
-        public uint Unknown2;
-        public uint Unknown3;
+        public uint Unknown0; // Always 0
+        public uint Unknown1; // Always 0
+        public uint GeosetIndex;
+        public uint MaterialIndex;
     }
 
     public struct VWTS
