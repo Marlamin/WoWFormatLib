@@ -5,15 +5,28 @@ namespace WoWFormatLib.Structs.BLS
     public struct BLS
     {
         public uint version;
-        public uint permutationCount;
+        public string API;
+        public uint nPermutations;
         public uint nShaders;
         public uint ofsCompressedChunks;
         public uint nCompressedChunks;
         public uint ofsCompressedData;
+        public uint unk0;
+        public uint unk1;
+        public uint unk2;
         public uint[] ofsShaderBlocks;
-        public List<byte[]> decompressedBlocks;
-        public ShaderBlock[] shaderBlocks;
+        public byte[] decompressedHeader;
+        public List<byte[]> decompressedShaders;
+        public List<UnkStructWithHash> unkStructsWithHash;
+        //public ShaderBlock[] shaderBlocks;
         public byte[] rawBytes;
+    }
+
+    public struct UnkStructWithHash
+    {
+        public uint offset;
+        public uint size;
+        public string hash;
     }
 
     public struct ShaderBlock

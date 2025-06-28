@@ -40,66 +40,93 @@ namespace WoWFormatLib.FileReaders
                 }
 
                 shaderFile.version = bin.ReadUInt32();
-                bin.ReadChars(4);
-                shaderFile.permutationCount = bin.ReadUInt32();
-
                 if (shaderFile.version != 0x1000E)
                 {
                     Console.WriteLine("Unsupported shader version: " + shaderFile.version.ToString("X") + ", skipping..");
                     return shaderFile;
                 }
 
+                var apiChars = bin.ReadChars(4);
+                Array.Reverse(apiChars);
+                shaderFile.API = new string(apiChars);
+
+                shaderFile.nPermutations = bin.ReadUInt32();
                 shaderFile.nShaders = bin.ReadUInt32();
                 shaderFile.ofsCompressedChunks = bin.ReadUInt32();
                 shaderFile.nCompressedChunks = bin.ReadUInt32();
                 shaderFile.ofsCompressedData = bin.ReadUInt32();
+                shaderFile.unk0 = bin.ReadUInt32();
+                shaderFile.unk1 = bin.ReadUInt32();
 
-                shaderFile.ofsShaderBlocks = new uint[shaderFile.nShaders + 1];
-                for (var i = 0; i < (shaderFile.nShaders + 1); i++)
+                shaderFile.unkStructsWithHash = new List<UnkStructWithHash>();
+                for (var i = 0; i < shaderFile.nShaders; i++)
+                {
+                    var unkStructWithHash = new UnkStructWithHash
+                    {
+                        offset = bin.ReadUInt32(),
+                        size = bin.ReadUInt32(),
+                        hash = Convert.ToHexStringLower(bin.ReadBytes(16))
+                    };
+                    shaderFile.unkStructsWithHash.Add(unkStructWithHash);
+                }
+
+                shaderFile.unk2 = bin.ReadUInt32();
+
+                shaderFile.ofsShaderBlocks = new uint[shaderFile.nCompressedChunks + 1];
+                for (var i = 0; i < (shaderFile.nCompressedChunks + 1); i++)
                 {
                     shaderFile.ofsShaderBlocks[i] = bin.ReadUInt32();
                 }
 
-                if (bin.BaseStream.Position != shaderFile.ofsCompressedChunks)
+                if (bin.BaseStream.Position != shaderFile.ofsCompressedData)
                 {
-                    Console.WriteLine("!!! Didn't end up at ofsCompressedChunks, there might be unread data at " + bin.BaseStream.Position + "!");
-                    bin.BaseStream.Position = shaderFile.ofsCompressedChunks;
+                    Console.WriteLine("!!! Didn't end up at ofsCompressedData (" + shaderFile.ofsCompressedData + "), there might be unread data at " + bin.BaseStream.Position + "!");
+                    bin.BaseStream.Position = shaderFile.ofsCompressedData;
                 }
 
-                var shaderOffsets = new uint[shaderFile.nCompressedChunks + 1];
-                for (var i = 0; i < (shaderFile.nCompressedChunks + 1); i++)
+                using (var targetStream = new MemoryStream())
                 {
-                    shaderOffsets[i] = bin.ReadUInt32();
-                }
-
-                targetStream = new MemoryStream();
-
-                shaderFile.decompressedBlocks = new List<byte[]>();
-
-                for (var i = 0; i < shaderFile.nCompressedChunks; i++)
-                {
-                    var chunkStart = shaderFile.ofsCompressedData + shaderOffsets[i];
-                    var chunkLength = shaderOffsets[i + 1] - shaderOffsets[i];
-
-                    bin.BaseStream.Position = chunkStart;
-
-                    using (var compressed = new MemoryStream(bin.ReadBytes((int)chunkLength)))
+                    for (var i = 0; i < shaderFile.nCompressedChunks; i++)
                     {
-                        // Skip zlib headers
-                        compressed.ReadByte();
-                        compressed.ReadByte();
+                        var chunkStart = shaderFile.ofsCompressedData + shaderFile.ofsShaderBlocks[i];
+                        var chunkLength = shaderFile.ofsShaderBlocks[i + 1] - shaderFile.ofsShaderBlocks[i];
 
-                        using (var decompressionStream = new DeflateStream(compressed, CompressionMode.Decompress))
+                        bin.BaseStream.Position = chunkStart;
+
+                        using (var compressed = new MemoryStream(bin.ReadBytes((int)chunkLength)))
                         {
-                            decompressionStream.CopyTo(targetStream);
+                            // Skip zlib headers
+                            compressed.ReadByte();
+                            compressed.ReadByte();
+
+                            using (var decompressionStream = new DeflateStream(compressed, CompressionMode.Decompress))
+                            {
+                                decompressionStream.CopyTo(targetStream);
+                            }
+                        }
+                    }
+
+                    shaderFile.rawBytes = targetStream.ToArray();
+
+                    targetStream.Position = 0;
+                    using (var subbin = new BinaryReader(targetStream))
+                    {
+                        shaderFile.decompressedHeader = subbin.ReadBytes(96);
+                        shaderFile.decompressedShaders = new List<byte[]>();
+                        foreach (var unkStruct in shaderFile.unkStructsWithHash)
+                        {
+                            if (unkStruct.size == 0)
+                                continue;
+
+                            subbin.BaseStream.Position = unkStruct.offset + 96;
+                            shaderFile.decompressedShaders.Add(subbin.ReadBytes((int)unkStruct.size));
                         }
                     }
                 }
 
-                shaderFile.rawBytes = targetStream.ToArray();
             }
             return shaderFile;
-
+            /*
             // Start reading decompressed data
             using (var bin = new BinaryReader(targetStream))
             {
@@ -279,7 +306,7 @@ namespace WoWFormatLib.FileReaders
                     }
 
                     bin.BaseStream.Position += header.variableStringsSize;
-                    */
+                   
                     // Padding up to 4 bytes
                     for (var p = 0; p < 4; p++)
                     {
@@ -293,10 +320,9 @@ namespace WoWFormatLib.FileReaders
                     {
                         //Console.WriteLine("!!! Didn't end up at next shader (" + shaderFile.ofsShaderBlocks[i + 1] + "), there might be unread data at " + bin.BaseStream.Position + "!");
                     }
+                     
                 }
-            }
-
-            return shaderFile;
+            } */
         }
     }
 }
