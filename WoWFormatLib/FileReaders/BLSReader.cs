@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using WoWFormatLib.FileProviders;
+using WoWFormatLib.Structs;
 using WoWFormatLib.Structs.BLS;
 
 namespace WoWFormatLib.FileReaders
@@ -17,6 +18,11 @@ namespace WoWFormatLib.FileReaders
         public BLS LoadBLS(string filename)
         {
             return LoadBLS(FileProvider.GetFileDataIdByName(filename));
+        }
+
+        public BLS LoadBLS(byte[] cKey)
+        {
+            return LoadBLS(FileProvider.OpenFile(cKey));
         }
 
         public BLS LoadBLS(uint fileDataID)
@@ -109,16 +115,17 @@ namespace WoWFormatLib.FileReaders
                     shaderFile.rawBytes = targetStream.ToArray();
 
                     targetStream.Position = 0;
+                    var compressedHeaderSize = shaderFile.API == "MT11" ? 0 : 96;
                     using (var subbin = new BinaryReader(targetStream))
                     {
-                        shaderFile.decompressedHeader = subbin.ReadBytes(96);
+                        shaderFile.decompressedHeader = subbin.ReadBytes(compressedHeaderSize);
                         shaderFile.decompressedShaders = new List<byte[]>();
                         foreach (var unkStruct in shaderFile.unkStructsWithHash)
                         {
                             if (unkStruct.size == 0)
                                 continue;
 
-                            subbin.BaseStream.Position = unkStruct.offset + 96;
+                            subbin.BaseStream.Position = unkStruct.offset + compressedHeaderSize;
                             shaderFile.decompressedShaders.Add(subbin.ReadBytes((int)unkStruct.size));
                         }
                     }

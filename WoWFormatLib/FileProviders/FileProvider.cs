@@ -88,6 +88,16 @@ namespace WoWFormatLib.FileProviders
             return currentProvider.OpenFile(filename);
         }
 
+        public static Stream OpenFile(byte[] cKey, string build = null)
+        {
+            var currentProvider = GetBestProviderForBuild(build);
+
+            if (currentProvider == null)
+                throw new System.Exception("No file provider set");
+
+            return currentProvider.OpenFile(cKey);
+        }
+
         public static uint GetFileDataIdByName(string filename, string build = null)
         {
             var currentProvider = GetBestProviderForBuild(build);

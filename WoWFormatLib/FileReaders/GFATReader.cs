@@ -24,6 +24,10 @@ namespace WoWFormatLib.FileReaders
 
             return LoadGFAT(FileProvider.OpenFile(fileDataID));
         }
+        public GFAT LoadGFAT(byte[] cKey)
+        {
+            return LoadGFAT(FileProvider.OpenFile(cKey));
+        }
 
         public GFAT LoadGFAT(Stream stream)
         {

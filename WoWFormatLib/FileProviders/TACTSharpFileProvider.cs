@@ -41,5 +41,12 @@ namespace WoWFormatLib.FileProviders
                 throw new Exception("Build mismatch, this TACT instance has build " + BuildName + " loaded but " + build + " was requested");
             }
         }
+
+        public Stream OpenFile(byte[] cKey) => new MemoryStream(build.OpenFileByCKey(cKey));
+
+        public bool FileExists(byte[] cKey)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

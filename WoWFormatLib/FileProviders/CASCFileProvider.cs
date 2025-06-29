@@ -76,5 +76,15 @@ namespace WoWFormatLib.FileProviders
         {
             return cascHandler.FileExists((int)filedataid);
         }
+
+        public Stream OpenFile(byte[] cKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool FileExists(byte[] cKey)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

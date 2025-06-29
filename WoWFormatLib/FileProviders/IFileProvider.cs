@@ -13,6 +13,10 @@ namespace WoWFormatLib
         Stream OpenFile(string filename);
         bool FileExists(string filename);
 
+        // CKey-based file methods
+        Stream OpenFile(byte[] cKey);
+        bool FileExists(byte[] cKey);
+
         // Build related methods
         void SetBuild(string build);
     }

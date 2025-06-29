@@ -107,5 +107,15 @@ namespace WoWFormatLib.FileProviders
         {
             return Files.FirstOrDefault(x => x.Value == filename).Key;
         }
+
+        public Stream OpenFile(byte[] cKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool FileExists(byte[] cKey)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
