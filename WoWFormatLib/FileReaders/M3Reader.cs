@@ -68,16 +68,17 @@ namespace WoWFormatLib.FileReaders
                         case M3Chunks.M3DT:
                             model.Header = new M3DT()
                             {
-                                PropertyA = propertyA,
+                                Version = propertyA,
                                 PropertyB = propertyB,
 
                                 Unknown0 = bin.ReadUInt32(),
-                                Unknown1 = bin.ReadUInt32(),
+                                Unknown1_a = bin.ReadUInt16(),
+                                Unknown1_b = bin.ReadUInt16(),
                                 Unknown2 = bin.ReadUInt32(),
                                 Unknown3 = bin.ReadUInt32(),
                                 Unknown4 = bin.ReadUInt32(),
                                 Unknown5 = bin.ReadUInt32(),
-                                Unknown6 = bin.ReadUInt32(),
+                                Flags = bin.ReadInt32(),
 
                                 BoundingBoxMin = new Vector3(bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle()),
                                 BoundingBoxMax = new Vector3(bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle()),
@@ -87,7 +88,10 @@ namespace WoWFormatLib.FileReaders
                                 BoundingBox2Max = new Vector3(bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle()),
                                 Radius2 = bin.ReadSingle(),
 
-                                Unknown7 = bin.ReadUInt32()
+                                ParticleCount = bin.ReadByte(),
+                                UnkByte0 = bin.ReadByte(),
+                                UnkByte1 = bin.ReadByte(),
+                                UnkByte2 = bin.ReadByte()
                             };
                             break;
                         case M3Chunks.M3SI:
@@ -98,6 +102,12 @@ namespace WoWFormatLib.FileReaders
                             break;
                         case M3Chunks.M3CL:
                             model.Collision = ReadM3CLChunk(bin, chunkSize, propertyA, propertyB);
+                            break;
+                        case M3Chunks.M3XF:
+                            model.TransformMatrix = new M3XF()
+                            {
+                                Transform = bin.Read<Matrix4x4>()
+                            };
                             break;
                         default:
                             Console.WriteLine("Unknown M3 chunk: {0} of size {1} at position {2}", debugChunkName, chunkSize, bin.BaseStream.Position);
@@ -146,25 +156,116 @@ namespace WoWFormatLib.FileReaders
                 instances.Instances[i] = new M3Instance()
                 {
                     FileDataID = bin.ReadUInt32(),
-                    MD5 = bin.ReadBytes(16),
+                    GUID = bin.ReadBytes(16),
                     Unknown0 = bin.ReadUInt32(),
-                    Unknown1 = bin.ReadUInt32(),
+                    BlendMode = bin.ReadUInt32(),
                     Unknown2 = bin.ReadUInt32(),
                     Unknown3 = bin.ReadUInt32(),
-                    Unknown4 = bin.ReadUInt32(),
-                    Unknown5 = bin.ReadUInt32(),
-                    Unknown6 = bin.ReadUInt32(),
-                    Unknown7 = bin.ReadUInt32(),
-                    Unknown8 = bin.ReadUInt32(),
-                    Unknown9 = bin.ReadUInt32(),
-                    Unknown10 = bin.ReadUInt32(),
-                    Unknown11 = bin.ReadUInt32(),
-                    Unknown12 = bin.ReadUInt32(),
-                    Unknown13 = bin.ReadUInt32(),
-                    Unknown14 = bin.ReadUInt32(),
-                    Unknown15 = bin.ReadUInt32(),
-                    Unknown16 = bin.ReadUInt32()
+                    Unknown4 = bin.ReadUInt32()
                 };
+
+                var shaderData = new ShaderData()
+                {
+                    uniformCount = bin.ReadInt32(),
+                    uniformDataSize = bin.ReadInt32(),
+                    uniformHashesOffset = bin.ReadInt32(),
+                    uniformTypesOffset = bin.ReadInt32(),
+                    uniformLocationsOffset = bin.ReadInt32(),
+                    uniformDataOffset = bin.ReadInt32(),
+                    samplerCount = bin.ReadInt32(),
+                    samplerHashesOffset = bin.ReadInt32(),
+                    samplerTextureFileIDsOffset = bin.ReadInt32(),
+                    unkDataCount = bin.ReadInt32(),
+                    unkDataHashesOffset = bin.ReadInt32(),
+                    unkDataOffset = bin.ReadInt32()
+                };
+
+                var prevPos = bin.BaseStream.Position;
+
+                if(shaderData.uniformCount > 0)
+                {
+                    shaderData.UniformHashes = [];
+                    shaderData.UniformTypes = [];
+                    shaderData.UniformLocations = [];
+                    shaderData.UniformData = [];
+
+                    bin.BaseStream.Position = baseOffset + (shaderData.uniformHashesOffset * 4);
+                    for (int u = 0; u < shaderData.uniformCount; u++)
+                        shaderData.UniformHashes.Add(bin.ReadUInt64());
+
+                    bin.BaseStream.Position = baseOffset + (shaderData.uniformTypesOffset * 4);
+                    for (int u = 0; u < shaderData.uniformCount; u++)
+                        shaderData.UniformTypes.Add(bin.ReadUInt16());
+
+                    bin.BaseStream.Position = baseOffset + (shaderData.uniformLocationsOffset * 4);
+                    for (int u = 0; u < shaderData.uniformCount; u++)
+                        shaderData.UniformLocations.Add(bin.ReadInt32());
+
+                    bin.BaseStream.Position = baseOffset + (shaderData.uniformDataOffset * 4);
+                    for (int u = 0; u < shaderData.uniformCount; u++)
+                    {
+                        switch (shaderData.UniformTypes[u])
+                        {
+                            case 0:
+                                shaderData.UniformData.Add([bin.ReadInt32()]);
+                                break;
+                            case 14:
+                                shaderData.UniformData.Add([bin.ReadSingle()]);
+                                break;
+                            case 15:
+                                shaderData.UniformData.Add([bin.ReadSingle(), bin.ReadSingle()]);
+                                break;
+                            case 16:
+                                shaderData.UniformData.Add([bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle()]);
+                                break;
+                            case 17:
+                                shaderData.UniformData.Add([bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle()]);
+                                break;
+                            default:
+                                throw new Exception("Unknown uniform type: " + shaderData.UniformTypes[u]);
+                        }
+                    }
+                }
+
+                if(shaderData.samplerCount > 0)
+                {
+                    shaderData.SamplerHashes = [];
+                    shaderData.SamplerTextureFileIDs = [];
+
+                    bin.BaseStream.Position = baseOffset + (shaderData.samplerHashesOffset * 4);
+                    for (int s = 0; s < shaderData.samplerCount; s++)
+                        shaderData.SamplerHashes.Add(bin.ReadUInt64());
+
+                    bin.BaseStream.Position = baseOffset + (shaderData.samplerTextureFileIDsOffset * 4);
+                    for(int s = 0; s < shaderData.samplerCount; s++)
+                        shaderData.SamplerTextureFileIDs.Add(bin.ReadInt32());
+                }
+
+                if(shaderData.unkDataCount > 0)
+                {
+                    shaderData.UnkDataHashes = [];
+                    shaderData.UnkData = [];
+
+                    bin.BaseStream.Position = baseOffset + (shaderData.unkDataHashesOffset * 4);
+                    for (int u = 0; u < shaderData.unkDataCount; u++)
+                        shaderData.UnkDataHashes.Add(bin.ReadUInt64());
+
+                    bin.BaseStream.Position = baseOffset + (shaderData.unkDataOffset * 4);
+                    for (int u = 0; u < shaderData.unkDataCount; u++)
+                    {
+                        var unkData = new UnkData
+                        {
+                            unk0 = bin.ReadByte(),
+                            unk1 = bin.ReadByte(),
+                            unk2 = bin.ReadUInt16()
+                        };
+                        shaderData.UnkData.Add(unkData);
+                    }
+                }
+
+                bin.BaseStream.Position = prevPos;
+
+                instances.Instances[i].shaderData = shaderData;
             }
 
             if ((bin.BaseStream.Position - baseOffset) != instances.TotalSize)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using WoWFormatLib.Structs.M2;
 
@@ -35,6 +36,7 @@ namespace WoWFormatLib.Structs.M3
         M3ST = 'M' << 0 | '3' << 8 | 'S' << 16 | 'T' << 24,
         M3VS = 'M' << 0 | '3' << 8 | 'V' << 16 | 'S' << 24,
         M3PT = 'M' << 0 | '3' << 8 | 'P' << 16 | 'T' << 24,
+        M3XF = 'M' << 0 | '3' << 8 | 'X' << 16 | 'F' << 24
     }
 
     public struct M3Model
@@ -45,23 +47,24 @@ namespace WoWFormatLib.Structs.M3
         public M3SI Instances;
         public M3ST StringTable;
         public M3VS m3vs;
-        public M3XF m3xf;
+        public M3XF TransformMatrix;
         public M3PT m3pt;
     }
 
     #region MES3 Mesh
     public struct M3DT
     {
-        public uint PropertyA;
+        public uint Version;
         public uint PropertyB;
 
         public uint Unknown0;
-        public uint Unknown1;
+        public ushort Unknown1_a;
+        public ushort Unknown1_b;
         public uint Unknown2;
         public uint Unknown3;
         public uint Unknown4;
         public uint Unknown5;
-        public uint Unknown6;
+        public int Flags;
 
         public Vector3 BoundingBoxMin;
         public Vector3 BoundingBoxMax;
@@ -71,7 +74,10 @@ namespace WoWFormatLib.Structs.M3
         public Vector3 BoundingBox2Max;
         public float Radius2;
 
-        public uint Unknown7;
+        public byte ParticleCount;
+        public byte UnkByte0;
+        public byte UnkByte1;
+        public byte UnkByte2;
     }
 
     public struct MES3
@@ -219,24 +225,47 @@ namespace WoWFormatLib.Structs.M3
     public struct M3Instance
     {
         public uint FileDataID;
-        public byte[] MD5;
+        public byte[] GUID;
         public uint Unknown0;
-        public uint Unknown1;
+        public uint BlendMode;
         public uint Unknown2;
         public uint Unknown3;
         public uint Unknown4;
-        public uint Unknown5;
-        public uint Unknown6;
-        public uint Unknown7;
-        public uint Unknown8;
-        public uint Unknown9;
-        public uint Unknown10;
-        public uint Unknown11;
-        public uint Unknown12;
-        public uint Unknown13;
-        public uint Unknown14;
-        public uint Unknown15;
-        public uint Unknown16;
+        public ShaderData shaderData;
+    }
+
+    public struct ShaderData
+    {
+        public int uniformCount;
+        public int uniformDataSize;
+        public int uniformHashesOffset;
+        public int uniformTypesOffset;
+        public int uniformLocationsOffset;
+        public int uniformDataOffset;
+        public int samplerCount;
+        public int samplerHashesOffset;
+        public int samplerTextureFileIDsOffset;
+        public int unkDataCount;
+        public int unkDataHashesOffset;
+        public int unkDataOffset;
+
+        public List<ulong> UniformHashes;
+        public List<ushort> UniformTypes;
+        public List<int> UniformLocations;
+        public List<object[]> UniformData;
+
+        public List<ulong> SamplerHashes;
+        public List<int> SamplerTextureFileIDs;
+
+        public List<ulong> UnkDataHashes;
+        public List<UnkData> UnkData;
+    }
+
+    public struct UnkData
+    {
+        public byte unk0;
+        public byte unk1;
+        public ushort unk2;
     }
     #endregion
 
@@ -252,7 +281,7 @@ namespace WoWFormatLib.Structs.M3
 
     public struct M3XF
     {
-
+        public Matrix4x4 Transform;
     }
 
     public struct M3PT
