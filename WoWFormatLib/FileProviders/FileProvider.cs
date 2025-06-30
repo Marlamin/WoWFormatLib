@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace WoWFormatLib.FileProviders
 {
@@ -7,6 +8,8 @@ namespace WoWFormatLib.FileProviders
     {
         private static Dictionary<string, IFileProvider> Providers = [];
         private static string DefaultBuild;
+        private static readonly Lock fileProviderLock = new();
+
         public static bool HasProvider(string build)
         {
             return Providers.ContainsKey(build);
@@ -19,14 +22,17 @@ namespace WoWFormatLib.FileProviders
 
         public static void SetProvider(IFileProvider provider, string build)
         {
-            // Remove existing provider if it is Wago and the new one is CASC
-            if (Providers.TryGetValue(build, out var existingProvider))
+            lock (fileProviderLock)
             {
-                if (existingProvider is WagoFileProvider && provider is CASCFileProvider)
-                    Providers.Remove(build);
-            }
+                // Remove existing provider if it is Wago and the new one is CASC
+                if (Providers.TryGetValue(build, out var existingProvider))
+                {
+                    if (existingProvider is WagoFileProvider && provider is CASCFileProvider)
+                        Providers.Remove(build);
+                }
 
-            Providers.TryAdd(build, provider);
+                Providers.TryAdd(build, provider);
+            }
 
             // If we don't have a build set, set it to the first one we get
             if (DefaultBuild == null)
