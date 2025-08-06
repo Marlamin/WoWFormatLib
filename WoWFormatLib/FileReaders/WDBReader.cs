@@ -185,6 +185,9 @@ namespace WoWFormatLib.FileReaders
                     entries[id].Add("Flags[" + i + "]", bin.ReadUInt32().ToString());
                 }
 
+                if (wdb.buildInfo.expansion > 11 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major >= 2 && wdb.buildInfo.minor >= 0))
+                    entries[id].Add("Flags[3]", bin.ReadUInt32().ToString());
+
                 for (var i = 0; i < 4; i++)
                 {
                     entries[id].Add("RewardFixedItemID[" + i + "]", bin.ReadUInt32().ToString());
