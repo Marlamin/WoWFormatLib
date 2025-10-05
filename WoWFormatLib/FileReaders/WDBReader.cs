@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -290,6 +291,18 @@ namespace WoWFormatLib.FileReaders
                     numConditionalQuestCompletion = bin.ReadUInt32();
                 }
 
+                if (wdb.buildInfo.expansion >= 12)
+                {
+                    var numUnk = bin.ReadUInt32();
+                    entries[id].Add("NumUnk", numUnk.ToString());
+
+                    var numDecorRewards = bin.ReadUInt32();
+                    entries[id].Add("NumDecorRewards", numDecorRewards.ToString());
+
+                    for (var i = 0; i < numDecorRewards; i++)
+                        entries[id].Add("DecorRewardID[" + i + "]", bin.ReadUInt32().ToString());
+                }
+
                 if (wdb.clientBuild >= 35078 && wdb.buildInfo.expansion >= 9)
                 {
                     for (var i = 0; i < rewardDisplaySpellCount; i++)
@@ -347,6 +360,12 @@ namespace WoWFormatLib.FileReaders
                     entries[id].Add("ObjectiveStorageIndex[" + i + "]", bin.ReadByte().ToString());
                     entries[id].Add("ObjectiveObjectID[" + i + "]", bin.ReadUInt32().ToString());
                     entries[id].Add("ObjectiveAmount[" + i + "]", bin.ReadUInt32().ToString());
+
+                    if(wdb.buildInfo.expansion >= 12)
+                    {
+                        entries[id].Add("ObjectiveUNK[" + i + "]", bin.ReadUInt32().ToString());
+                    }
+
                     entries[id].Add("ObjectiveFlags[" + i + "]", bin.ReadUInt32().ToString());
                     entries[id].Add("ObjectiveFlags2[" + i + "]", bin.ReadUInt32().ToString());
                     entries[id].Add("ObjectivePercentAmount[" + i + "]", bin.ReadSingle().ToString());
@@ -396,7 +415,9 @@ namespace WoWFormatLib.FileReaders
                 {
                     if (bin.BaseStream.Position > posPreread + length)
                     {
-                        throw new Exception("Quest " + id + " overshot reading, stopping");
+                        //throw new Exception("Quest " + id + " overshot reading by " + (posPreread - length) + ", stopping");
+                        Console.WriteLine("[Quest ID " + id + "] Overshot reading, should be at position " + (posPreread + length) + " but am at " + bin.BaseStream.Position + " instead, this means there is reading issue, fixing for this quest");
+                        bin.BaseStream.Position = posPreread + length;
                     }
                     else
                     {
