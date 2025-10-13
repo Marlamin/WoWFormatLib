@@ -378,6 +378,11 @@ namespace WoWFormatLib.FileReaders
                         entries[id].Add("ObjectiveVisualEffects[" + i + "][" + j + "]", bin.ReadUInt32().ToString());
                     }
 
+                    if(wdb.buildInfo.expansion >= 12 && wdb.buildInfo.build >= 63728)
+                    {
+                        entries[id].Add("ObjectiveUNK2[" + i + "]", bin.ReadUInt32().ToString());
+                    }
+
                     var descriptionLength = bin.ReadByte();
                     entries[id].Add("ObjectiveDescription[" + i + "]", ds.GetString(descriptionLength).Trim('\0'));
                 }
