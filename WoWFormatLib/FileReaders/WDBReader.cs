@@ -291,10 +291,13 @@ namespace WoWFormatLib.FileReaders
                     numConditionalQuestCompletion = bin.ReadUInt32();
                 }
 
-                if (wdb.buildInfo.expansion >= 12)
+                if (wdb.buildInfo.expansion >= 12 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major == 2 && wdb.buildInfo.minor == 7))
                 {
-                    var numUnk = bin.ReadUInt32();
-                    entries[id].Add("NumUnk", numUnk.ToString());
+                    var numHouseRoomRewards = bin.ReadUInt32();
+                    entries[id].Add("NumHouseRoomRewards", numHouseRoomRewards.ToString());
+
+                    for (var i = 0; i < numHouseRoomRewards; i++)
+                        entries[id].Add("HouseRoomRewardID[" + i + "]", bin.ReadUInt32().ToString());
 
                     var numDecorRewards = bin.ReadUInt32();
                     entries[id].Add("NumDecorRewards", numDecorRewards.ToString());
@@ -361,7 +364,7 @@ namespace WoWFormatLib.FileReaders
                     entries[id].Add("ObjectiveObjectID[" + i + "]", bin.ReadUInt32().ToString());
                     entries[id].Add("ObjectiveAmount[" + i + "]", bin.ReadUInt32().ToString());
 
-                    if(wdb.buildInfo.expansion >= 12)
+                    if (wdb.buildInfo.expansion >= 12 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major == 2 && wdb.buildInfo.minor == 7))
                     {
                         entries[id].Add("ObjectiveUNK[" + i + "]", bin.ReadUInt32().ToString());
                     }
@@ -378,9 +381,9 @@ namespace WoWFormatLib.FileReaders
                         entries[id].Add("ObjectiveVisualEffects[" + i + "][" + j + "]", bin.ReadUInt32().ToString());
                     }
 
-                    if(wdb.buildInfo.expansion >= 12 && wdb.buildInfo.build >= 63728)
+                    if (wdb.buildInfo.expansion >= 12 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major == 2 && wdb.buildInfo.minor == 7))
                     {
-                        entries[id].Add("ObjectiveUNK2[" + i + "]", bin.ReadUInt32().ToString());
+                        entries[id].Add("ObjectiveWorldEffectID[" + i + "]", bin.ReadUInt32().ToString());
                     }
 
                     var descriptionLength = bin.ReadByte();
