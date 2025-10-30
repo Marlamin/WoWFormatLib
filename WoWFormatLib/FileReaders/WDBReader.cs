@@ -296,11 +296,11 @@ namespace WoWFormatLib.FileReaders
                     var numHouseRoomRewards = bin.ReadUInt32();
                     entries[id].Add("NumHouseRoomRewards", numHouseRoomRewards.ToString());
 
-                    for (var i = 0; i < numHouseRoomRewards; i++)
-                        entries[id].Add("HouseRoomRewardID[" + i + "]", bin.ReadUInt32().ToString());
-
                     var numDecorRewards = bin.ReadUInt32();
                     entries[id].Add("NumDecorRewards", numDecorRewards.ToString());
+
+                    for (var i = 0; i < numHouseRoomRewards; i++)
+                        entries[id].Add("HouseRoomRewardID[" + i + "]", bin.ReadUInt32().ToString());
 
                     for (var i = 0; i < numDecorRewards; i++)
                         entries[id].Add("DecorRewardID[" + i + "]", bin.ReadUInt32().ToString());
