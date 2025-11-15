@@ -385,8 +385,11 @@ namespace WoWFormatLib.FileReaders
                     {
                         entries[id].Add("ObjectiveWorldEffectID[" + i + "]", bin.ReadUInt32().ToString());
                     }
-
                     var descriptionLength = bin.ReadByte();
+                    
+                    if(wdb.buildInfo.expansion >= 12 && wdb.buildInfo.build >= 64228)
+                        bin.ReadByte();
+                    
                     entries[id].Add("ObjectiveDescription[" + i + "]", ds.GetString(descriptionLength).Trim('\0'));
                 }
 
