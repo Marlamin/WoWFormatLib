@@ -176,6 +176,12 @@ namespace WoWFormatLib.FileReaders
                 entries[id].Add("RewardSpell", bin.ReadUInt32().ToString());
                 entries[id].Add("RewardHonorAddition", bin.ReadUInt32().ToString());
                 entries[id].Add("RewardHonorMultiplier", bin.ReadSingle().ToString());
+
+                if (wdb.buildInfo.expansion >= 12 && wdb.buildInfo.build >= 64611)
+                {
+                    entries[id].Add("RewardFavor", bin.ReadUInt32().ToString());
+                }
+
                 entries[id].Add("RewardArtifactXPDifficulty", bin.ReadUInt32().ToString());
                 entries[id].Add("RewardArtifactXPMultiplier", bin.ReadSingle().ToString());
                 entries[id].Add("RewardArtifactCategoryID", bin.ReadUInt32().ToString());
