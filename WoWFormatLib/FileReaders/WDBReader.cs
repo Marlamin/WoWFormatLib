@@ -393,7 +393,7 @@ namespace WoWFormatLib.FileReaders
                     }
                     var descriptionLength = bin.ReadByte();
                     
-                    if(wdb.buildInfo.expansion >= 12 && wdb.buildInfo.build >= 64228)
+                    if ((wdb.buildInfo.expansion >= 12 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major == 2 && wdb.buildInfo.minor == 7)) && wdb.buildInfo.build >= 64228)
                         bin.ReadByte();
                     
                     entries[id].Add("ObjectiveDescription[" + i + "]", ds.GetString(descriptionLength).Trim('\0'));
