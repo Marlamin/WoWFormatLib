@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using WoWFormatLib.FileProviders;
 using WoWFormatLib.Structs.WDT;
@@ -9,7 +10,19 @@ namespace WoWFormatLib.FileReaders
 {
     public class WDTReader
     {
+        public enum WDTType
+        {
+            Unknown,
+            Root,
+            Occlusion,
+            Lights,
+            Fogs,
+            MapParticuleVolumes,
+            Preload
+        }
+
         public WDT wdtfile;
+        public WDTType type;
 
         public void LoadWDT(string filename)
         {
@@ -145,6 +158,89 @@ namespace WoWFormatLib.FileReaders
 
             var bin = new BinaryReader(wdt);
             long position = 0;
+
+            // We make a list of chunks first to detect the WDT sub-file type
+            var chunkList = new List<string>();
+            while (position < wdt.Length)
+            {
+                wdt.Position = position;
+
+                var chunkName = new string(bin.ReadChars(4).Reverse().ToArray());
+                var chunkSize = bin.ReadUInt32();
+
+                position = wdt.Position + chunkSize;
+
+                if (chunkName == "MVER")
+                {
+                    var version = bin.ReadUInt32();
+                    wdtfile.version = version;
+                }
+
+                chunkList.Add(chunkName);
+            }
+
+            wdt.Position = 0;
+            position = 0;
+
+            foreach (var chunk in chunkList)
+            {
+                if (chunk == "MAIN" || chunk == "MAID" || chunk == "MWMO" || chunk == "MPHD" || chunk == "MODF" || chunk == "MANM")
+                {
+                    type = WDTType.Root;
+                    break;
+                }
+                else if (chunk == "MAOI" || chunk == "MAOH")
+                {
+                    type = WDTType.Occlusion;
+                    break;
+                }
+                else if (chunk == "MPLT" || chunk == "MPL2" || chunk == "MPL3" || chunk == "MSLT" || chunk == "MTEX" || chunk == "MLTA")
+                {
+                    type = WDTType.Lights;
+                    break;
+                }
+                else if (chunk == "VFOG" || chunk == "VFEX")
+                {
+                    type = WDTType.Fogs;
+                    break;
+                }
+                else if (chunk == "PVPD" || chunk == "PVMI" || chunk == "PVBD")
+                {
+                    type = WDTType.MapParticuleVolumes;
+                    break;
+                }
+                else if (chunk == "MMFE")
+                {
+                    type = WDTType.Preload;
+                    break;
+                }
+                else if (chunk != "MVER")
+                {
+                    Console.WriteLine(string.Format("Found unknown chunk at offset {1} \"{0}\" while trying to detect WDT type!", chunk, position.ToString()));
+                }
+            }
+
+            if (type == WDTType.Unknown)
+            {
+                // We can kinda guess type by version while they don't overlap for some types
+                switch (wdtfile.version)
+                {
+                    case 20:
+                        type = WDTType.Lights;
+                        break;
+                    case 2:
+                        type = WDTType.Fogs;
+                        break;
+                    case 3:
+                        type = WDTType.MapParticuleVolumes;
+                        break;
+                    case 18: // Root or Occlusion
+                    default:
+                        Console.WriteLine("Couldn't detect WDT type by chunk names, and version " + wdtfile.version + " is not recognized, so WDT type remains unknown.");
+                        break;
+                }
+            }
+
             while (position < wdt.Length)
             {
                 wdt.Position = position;
@@ -154,33 +250,41 @@ namespace WoWFormatLib.FileReaders
 
                 position = wdt.Position + chunkSize;
 
-                switch (chunkName)
+                if (type == WDTType.Root)
                 {
-                    case WDTChunks.MVER:
-                        if (bin.ReadUInt32() != 18)
-                            throw new Exception("Unsupported WDT version!");
-                        break;
-                    case WDTChunks.MAIN:
-                        wdtfile.tiles = ReadMAINChunk(bin);
-                        break;
-                    case WDTChunks.MWMO:
-                        ReadMWMOChunk(bin, chunkSize);
-                        break;
-                    case WDTChunks.MPHD:
-                        wdtfile.mphd = ReadMPHDChunk(bin);
-                        break;
-                    case WDTChunks.MAID:
-                        wdtfile.tileFiles = ReadMAIDChunk(bin);
-                        break;
-                    case WDTChunks.MODF:
-                        wdtfile.modf = ReadMODFChunk(bin);
-                        break;
-                    case WDTChunks.MANM:
-                        wdtfile.manm = ReadMANMChunk(bin);
-                        break;
-                    default:
-                        Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString()));
-                        break;
+                    if (wdtfile.version != 18)
+                        throw new Exception("Unsupported root WDT version " + wdtfile.version + "!");
+
+                    switch (chunkName)
+                    {
+                        case WDTChunks.MVER:
+                            break;
+                        case WDTChunks.MAIN:
+                            wdtfile.tiles = ReadMAINChunk(bin);
+                            break;
+                        case WDTChunks.MWMO:
+                            ReadMWMOChunk(bin, chunkSize);
+                            break;
+                        case WDTChunks.MPHD:
+                            wdtfile.mphd = ReadMPHDChunk(bin);
+                            break;
+                        case WDTChunks.MAID:
+                            wdtfile.tileFiles = ReadMAIDChunk(bin);
+                            break;
+                        case WDTChunks.MODF:
+                            wdtfile.modf = ReadMODFChunk(bin);
+                            break;
+                        case WDTChunks.MANM:
+                            wdtfile.manm = ReadMANMChunk(bin);
+                            break;
+                        default:
+                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString()));
+                            break;
+                    }
+                }
+                else
+                {
+                    throw new Exception("WDT type " + Enum.GetName(type) + " is not supported!");
                 }
             }
         }
