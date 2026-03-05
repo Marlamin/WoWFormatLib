@@ -738,7 +738,7 @@ namespace WoWFormatLib.FileReaders
 
             return mmid;
         }
-        private static MWMO ReadMWMOChunk(uint size, BinaryReader bin)
+        public static MWMO ReadMWMOChunk(uint size, BinaryReader bin)
         {
             var wmoFilesChunk = bin.ReadBytes((int)size);
 
@@ -766,7 +766,7 @@ namespace WoWFormatLib.FileReaders
             mwmo.offsets = offsets.ToArray();
             return mwmo;
         }
-        private static MWID ReadMWIDChunk(uint size, BinaryReader bin)
+        public static MWID ReadMWIDChunk(uint size, BinaryReader bin)
         {
             var count = size / 4;
 
@@ -793,15 +793,11 @@ namespace WoWFormatLib.FileReaders
             for (var i = 0; i < count; i++)
             {
                 mddf.entries[i] = bin.Read<MDDFEntry>();
-                if (mddf.entries[i].flags.HasFlag(MDDFFlags.mddf_entry_is_filedataid))
-                {
-                    //Console.WriteLine("ADT Reader: Found a filedataid reference while parsing MDDF: {0}", mddf.entries[i].mmidEntry);
-                }
             }
 
             return mddf;
         }
-        private static MODF ReadMODFChunk(uint size, BinaryReader bin)
+        public static MODF ReadMODFChunk(uint size, BinaryReader bin)
         {
             var modf = new MODF();
 
@@ -811,10 +807,6 @@ namespace WoWFormatLib.FileReaders
             for (var i = 0; i < count; i++)
             {
                 modf.entries[i] = bin.Read<MODFEntry>();
-                if (modf.entries[i].flags.HasFlag(MODFFlags.modf_entry_is_filedataid))
-                {
-                    //Console.WriteLine("ADT Reader: Found a filedataid reference while parsing MODF: {0}", modf.entries[i].mwidEntry);
-                }
             }
 
             return modf;
