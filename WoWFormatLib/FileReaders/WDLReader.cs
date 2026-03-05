@@ -91,7 +91,7 @@ namespace WoWFormatLib.FileReaders
                             wdlfile.skySceneObjects[i] = bin.Read<MSSO>();
                         break;
                     case WDLChunks.MSSF: // SkySceneUnk
-                        var mssfCount = chunkSize / 4;
+                        var mssfCount = chunkSize / 8;
                         wdlfile.mssf = new MSSF[mssfCount];
                         for (int i = 0; i < mssfCount; i++)
                             wdlfile.mssf[i] = bin.Read<MSSF>();
