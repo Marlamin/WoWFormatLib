@@ -31,7 +31,6 @@ namespace WoWFormatLib.Structs.WDL
     public struct WDL
     {
         public uint version;
-        public List<string> chunks;
         public Structs.ADT.MWMO mwmo; //WMO filenames (zero terminated)
         public Structs.ADT.MWID mwid; //Indexes to MWMO chunk
         public Structs.ADT.MODF modf; //Placement info for WMOs

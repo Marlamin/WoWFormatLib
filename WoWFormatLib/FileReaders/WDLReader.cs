@@ -45,7 +45,6 @@ namespace WoWFormatLib.FileReaders
         private void ReadWDL(Stream wdl)
         {
             wdlfile = new WDL();
-            wdlfile.chunks = new List<string>();
             var bin = new BinaryReader(wdl);
             long position = 0;
             while (position < wdl.Length)
@@ -53,8 +52,6 @@ namespace WoWFormatLib.FileReaders
                 wdl.Position = position;
 
                 var chunkName = (WDLChunks)bin.ReadUInt32();
-                var chunkNameStr = Encoding.ASCII.GetString(BitConverter.GetBytes((uint)chunkName).Reverse().ToArray());
-                wdlfile.chunks.Add(chunkNameStr);
                 var chunkSize = bin.ReadUInt32();
 
                 position = wdl.Position + chunkSize;
@@ -124,6 +121,7 @@ namespace WoWFormatLib.FileReaders
                     case WDLChunks.MLMB: // Same as OBJ0/OBJ1 ADT MLMB
                         break;
                     default:
+                        var chunkNameStr = Encoding.ASCII.GetString(BitConverter.GetBytes((uint)chunkName).Reverse().ToArray());
                         Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkNameStr, position.ToString()));
                         break;
                 }
