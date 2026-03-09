@@ -194,7 +194,8 @@ namespace WoWFormatLib.FileReaders
                             case ADTChunks.MFBO: // Flying bounding box
                                 break;
                             default:
-                                Console.WriteLine(string.Format("(WotLK root ADT) Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position));
+                                var chunkNameAsString = Encoding.ASCII.GetString(BitConverter.GetBytes((uint)chunkName));
+                                Console.WriteLine(string.Format("(WotLK root ADT) Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkNameAsString, position));
                                 break;
                         }
                     }
@@ -231,7 +232,8 @@ namespace WoWFormatLib.FileReaders
                             case ADTChunks.MBNV:
                                 break;
                             default:
-                                Console.WriteLine(string.Format("(Latest root ADT) Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position));
+                                var chunkNameAsString = Encoding.ASCII.GetString(BitConverter.GetBytes((uint)chunkName));
+                                Console.WriteLine(string.Format("(Latest root ADT) Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkNameAsString, position));
                                 break;
                         }
                     }
