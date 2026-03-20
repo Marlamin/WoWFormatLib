@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using WoWFormatLib.FileProviders;
 using WoWFormatLib.Structs.ADT;
@@ -13,13 +14,31 @@ namespace WoWFormatLib.FileReaders
     {
         public ADT adtfile;
         private Structs.WDT.WDT wdt;
+        public enum ADTType
+        {
+            Unknown,
+            Root,
+            Object0,
+            Object1,
+            Texture0,
+            Texture1, // Deprecated
+            LevelOfDetail
+        }
+
+        public enum ADTVersion
+        {
+            Unknown,
+            Modern,
+            WotLK
+        }
 
         /* ROOT */
         /// <param name="wdtFile">WDT file, required to load split ADTs and load MCAL correctly</param>
         /// <param name="tileX">Tile X coordinate</param>
         /// <param name="tileY" >Tile Y coordinate</param>
         /// <param name="loadSecondaryADTs">Load secondary ADTs (OBJ0 and TEX0)</param>
-        /// <param name="wdtFilename">WDT filename, required for filename based ADT loading</param>
+        /// <param name="internalMapName">Internal map name, required for filename based ADT loading</param>
+        /// <exception cref="FileNotFoundException"></exception>
         public void LoadADT(Structs.WDT.WDT? wdtFile, byte tileX, byte tileY, bool loadSecondaryADTs = true, string internalMapName = "")
         {
             adtfile.x = tileX;
@@ -86,23 +105,110 @@ namespace WoWFormatLib.FileReaders
             if (loadSecondaryADTs)
             {
                 if (!FileProvider.FileExists(obj0FileDataID))
-                {
                     throw new FileNotFoundException("OBJ0 ADT file " + obj0FileDataID + " could not be found.");
-                }
 
                 using (var adtobj0 = FileProvider.OpenFile(obj0FileDataID))
-                {
                     ReadObjFile(adtobj0);
-                }
 
                 if (!FileProvider.FileExists(tex0FileDataID))
-                {
                     throw new FileNotFoundException("TEX0 ADT file " + tex0FileDataID + " could not be found.");
-                }
 
                 using (var adttex0 = FileProvider.OpenFile(tex0FileDataID))
-                {
                     ReadTexFile(adttex0, wdtMPHDFlags);
+            }
+        }
+
+        /// <summary>
+        /// Loads any type of ADT file by detecting the filetype first and then handing it to the right function. Only use this if you don't know the type of ADT file you're loading.
+        /// </summary>
+        /// <param name="fileDataID"></param>
+        /// <param name="wdtMPHDFlags"></param>
+        /// <exception cref="FileNotFoundException"></exception>
+        public void LoadADT(uint fileDataID, MPHDFlags wdtMPHDFlags)
+        {
+            if (!FileProvider.FileExists(fileDataID))
+                throw new FileNotFoundException("ADT file " + fileDataID + " could not be found.");
+
+            var adtVersion = ADTVersion.Modern;
+            var adtType = ADTType.Unknown;
+
+            using (var adt = FileProvider.OpenFile(fileDataID))
+            using (var bin = new BinaryReader(adt))
+            {
+                var chunkName = (ADTChunks)bin.ReadUInt32();
+                if (chunkName != ADTChunks.MVER)
+                    throw new Exception("Invalid ADT file, expected MVER chunk at the beginning!");
+                bin.ReadUInt32();
+                adtfile.version = bin.ReadUInt32();
+
+                long position = adt.Position;
+
+                while (position < adt.Length)
+                {
+                    adt.Position = position;
+                    chunkName = (ADTChunks)bin.ReadUInt32();
+                    var chunkSize = bin.ReadUInt32();
+                    position = adt.Position + chunkSize;
+
+                    var chunkNameBytes = BitConverter.GetBytes((uint)chunkName);
+                    Array.Reverse(chunkNameBytes);
+                    var chunkNameString = Encoding.ASCII.GetString(chunkNameBytes);
+                    Console.WriteLine(chunkNameString);
+
+                    if (chunkName == ADTChunks.MCIN) // Only exists in WotLK ADTs and WotLK has no other types so bail
+                    {
+                        adtType = ADTType.Root;
+                        adtVersion = ADTVersion.WotLK;
+                        break;
+                    }
+
+                    if (chunkName == ADTChunks.MHDR || chunkName == ADTChunks.MH2O || chunkName == ADTChunks.MFBO)
+                    {
+                        adtType = ADTType.Root;
+                        break;
+                    }
+                    else if (chunkName == ADTChunks.MMDX || chunkName == ADTChunks.MMID || chunkName == ADTChunks.MWMO || chunkName == ADTChunks.MWID || chunkName == ADTChunks.MODF || chunkName == ADTChunks.MDDF)
+                    {
+                        adtType = ADTType.Object0;
+                        break;
+                    }
+                    else if (chunkName == ADTChunks.MLDD || chunkName == ADTChunks.MLDX)
+                    {
+                        adtType = ADTType.Object1;
+                    }
+                    else if (chunkName == ADTChunks.MTEX || chunkName == ADTChunks.MTXF || chunkName == ADTChunks.MTXP || chunkName == ADTChunks.MDID || chunkName == ADTChunks.MHID || chunkName == ADTChunks.MCLY)
+                    {
+                        adtType = ADTType.Texture0;
+                        break;
+                    }
+                    else if (chunkName == ADTChunks.MLHD || chunkName == ADTChunks.MLVH || chunkName == ADTChunks.MLVI)
+                    {
+                        adtType = ADTType.LevelOfDetail;
+                        break;
+                    }
+                }
+
+                adt.Position = 0;
+                switch (adtType)
+                {
+                    case ADTType.Root:
+                        ReadRootFile(adt, wdtMPHDFlags, adtVersion);
+                        break;
+                    case ADTType.Object0:
+                        ReadObjFile(adt);
+                        break;
+                    case ADTType.Texture0:
+                        ReadTexFile(adt, wdtMPHDFlags);
+                        break;
+                    case ADTType.Object1:
+                        break; // NYI
+                    case ADTType.LevelOfDetail:
+                        var lodReader = new LODADTReader();
+                        lodReader.LoadLODADT(fileDataID);
+                        adtfile.lod = lodReader.lodadt;
+                        break;
+                    default:
+                        throw new Exception("Could not detect type of ADT file!");
                 }
             }
         }
@@ -120,7 +226,7 @@ namespace WoWFormatLib.FileReaders
             }
         }
 
-        public void ReadRootFile(Stream adt, MPHDFlags wdtMPHDFlags)
+        public void ReadRootFile(Stream adt, MPHDFlags wdtMPHDFlags, ADTVersion versionOverride = ADTVersion.Unknown)
         {
             using (var bin = new BinaryReader(adt))
             {
@@ -139,7 +245,7 @@ namespace WoWFormatLib.FileReaders
 
                     position = adt.Position + chunkSize;
 
-                    if (VersionManager.CurrentVersion == VersionManager.FileVersion.WotLK)
+                    if (VersionManager.CurrentVersion == VersionManager.FileVersion.WotLK || versionOverride == ADTVersion.WotLK)
                     {
                         switch (chunkName)
                         {

@@ -8,9 +8,9 @@ namespace WoWFormatLib.FileReaders
     public class LODADTReader
     {
         public LODADT lodadt;
-        public void LoadLODADT(string filename)
+
+        public void LoadLODADT(Stream adt)
         {
-            using (var adt = FileProvider.OpenFile(filename))
             using (var bin = new BinaryReader(adt))
             {
                 long position = 0;
@@ -58,11 +58,22 @@ namespace WoWFormatLib.FileReaders
                         case ADTChunks.MLLV:
                             break;
                         default:
-                            Console.WriteLine(string.Format("{2} Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position, filename));
+                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position));
                             break;
                     }
                 }
             }
+        }
+        public void LoadLODADT(string filename)
+        {
+            using (var adt = FileProvider.OpenFile(filename))
+                LoadLODADT(adt);
+        }
+
+        public void LoadLODADT(uint fileDataID)
+        {
+            using (var adt = FileProvider.OpenFile(fileDataID))
+                LoadLODADT(adt);
         }
 
         private static float[] ReadMLVHChunk(uint size, BinaryReader bin)

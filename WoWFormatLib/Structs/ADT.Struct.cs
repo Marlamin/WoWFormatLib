@@ -68,6 +68,10 @@ namespace WoWFormatLib.Structs.ADT
         MLLN = 'M' << 24 | 'L' << 16 | 'L' << 8 | 'N' << 0,
         MLLI = 'M' << 24 | 'L' << 16 | 'L' << 8 | 'I' << 0,
         MLLV = 'M' << 24 | 'L' << 16 | 'L' << 8 | 'V' << 0,
+
+        // OBJ1
+        MLDD = 'M' << 24 | 'L' << 16 | 'D' << 8 | 'D' << 0,
+        MLDX = 'M' << 24 | 'L' << 16 | 'D' << 8 | 'X' << 0,
     }
 
     public struct ADT
@@ -85,6 +89,7 @@ namespace WoWFormatLib.Structs.ADT
         public uint[] diffuseTextureFileDataIDs;
         public uint[] heightTextureFileDataIDs;
         public MTCG[] textureColorGradings;
+        public LODADT lod;
     }
 
     public struct MTCG
