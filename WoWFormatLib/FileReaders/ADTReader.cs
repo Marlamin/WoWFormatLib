@@ -152,8 +152,8 @@ namespace WoWFormatLib.FileReaders
 
                     var chunkNameBytes = BitConverter.GetBytes((uint)chunkName);
                     Array.Reverse(chunkNameBytes);
-                    var chunkNameString = Encoding.ASCII.GetString(chunkNameBytes);
-                    Console.WriteLine(chunkNameString);
+                    //var chunkNameString = Encoding.ASCII.GetString(chunkNameBytes);
+                    //Console.WriteLine(chunkNameString);
 
                     if (chunkName == ADTChunks.MCIN) // Only exists in WotLK ADTs and WotLK has no other types so bail
                     {
@@ -994,6 +994,9 @@ namespace WoWFormatLib.FileReaders
                     var subChunkSize = subbin.ReadUInt32();
 
                     subpos = stream.Position + subChunkSize;
+
+                    if(adtfile.chunks == null)
+                        adtfile.chunks = new MCNK[16 * 16];
 
                     switch (subChunkName)
                     {
