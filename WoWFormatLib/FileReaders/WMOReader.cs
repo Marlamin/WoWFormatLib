@@ -556,9 +556,17 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MOBR: // MOBR Face indices
                             mogp.bspIndices = ReadMOBRChunk(subChunkSize, subbin);
                             break;
+                        case WMOChunks.MOCV: // MOCV Vertex colors
+                            if(mogp.colors == null)
+                                mogp.colors = ReadMOCVChunk(subChunkSize, subbin);
+                            else
+                                mogp.colors2 = ReadMOCVChunk(subChunkSize, subbin);
+                            break;
+                        case WMOChunks.MOC2: // MOC2 More "colors" (but actually weights)
+                            mogp.colors3 = ReadMOCVChunk(subChunkSize, subbin);
+                            break;
                         case WMOChunks.MODR: // MODR Doodad references
                         case WMOChunks.MOLR: // MOLR Override light references
-                        case WMOChunks.MOCV: // MOCV Vertex colors
                         case WMOChunks.MDAL: // MDAL Replacement for header color
                         case WMOChunks.MLIQ: // MLIQ Liquids
                         case WMOChunks.MOTA: // MOTA Tangent Array
@@ -578,7 +586,6 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MBVR: // MBVR Box Volume Refs
                         case WMOChunks.MOGX: // ?
                         case WMOChunks.MOQG: // ?
-                        case WMOChunks.MOC2: // ?
                             continue;
                         default:
                             Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", subChunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)subChunkName))));
@@ -685,6 +692,16 @@ namespace WoWFormatLib.FileReaders
                 textureCoords[i].Y = bin.ReadSingle();
             }
             return textureCoords;
+        }
+        private static Vector4[] ReadMOCVChunk(uint size, BinaryReader bin)
+        {
+            var numVerts = size / 4;
+            var colors = new Vector4[numVerts];
+            for (var i = 0; i < numVerts; i++)
+            {
+                colors[i] = new Vector4(bin.ReadByte() / 255.0f, bin.ReadByte() / 255.0f, bin.ReadByte() / 255.0f, bin.ReadByte() / 255.0f);
+            }
+            return colors;
         }
         private static ushort[] ReadMOVIChunk(uint size, BinaryReader bin)
         {

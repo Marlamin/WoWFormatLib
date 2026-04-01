@@ -390,6 +390,9 @@ namespace WoWFormatLib.Structs.WMO
         public MOBS[] shadowBatches;
         public MOBN[] bspNodes;
         public ushort[] bspIndices;
+        public Vector4[] colors;
+        public Vector4[] colors2;
+        public Vector4[] colors3;
     }
 
     public struct MOBN
