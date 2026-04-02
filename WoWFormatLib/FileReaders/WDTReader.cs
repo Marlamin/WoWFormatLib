@@ -117,6 +117,33 @@ namespace WoWFormatLib.FileReaders
             return tileFiles;
         }
 
+        private static Dictionary<(byte, byte), MapFileDataIDs2> ReadMAI2Chunk(BinaryReader bin)
+        {
+            var tileFiles = new Dictionary<(byte, byte), MapFileDataIDs2>();
+            for (byte x = 0; x < 64; x++)
+            {
+                for (byte y = 0; y < 64; y++)
+                {
+                    tileFiles.Add((y, x), bin.Read<MapFileDataIDs2>());
+
+                    if(tileFiles[(y, x)].unknown0 != 0 || tileFiles[(y, x)].unknown1 != 0 || tileFiles[(y, x)].unknown2 != 0 || tileFiles[(y, x)].unknown3 != 0 ||
+                       tileFiles[(y, x)].unknown4 != 0 || tileFiles[(y, x)].unknown5 != 0 || tileFiles[(y, x)].unknown6 != 0 || tileFiles[(y, x)].unknown7 != 0)
+                    {
+                        Console.WriteLine(string.Format("WDT: Found non-zero data in MAI2 chunk for tile {0},{1} at offset {2}!", y, x, bin.BaseStream.Position.ToString()));
+                        Console.WriteLine("\t unknown0: " + tileFiles[(y, x)].unknown0);
+                        Console.WriteLine("\t unknown1: " + tileFiles[(y, x)].unknown1);
+                        Console.WriteLine("\t unknown2: " + tileFiles[(y, x)].unknown2);
+                        Console.WriteLine("\t unknown3: " + tileFiles[(y, x)].unknown3);
+                        Console.WriteLine("\t unknown4: " + tileFiles[(y, x)].unknown4);
+                        Console.WriteLine("\t unknown5: " + tileFiles[(y, x)].unknown5);
+                        Console.WriteLine("\t unknown6: " + tileFiles[(y, x)].unknown6);
+                        Console.WriteLine("\t unknown7: " + tileFiles[(y, x)].unknown7);
+                    }
+                }
+            }
+            return tileFiles;
+        }
+
         private static Structs.ADT.MODF ReadMODFChunk(BinaryReader bin)
         {
             var modfEntry = new Structs.ADT.MODF();
@@ -216,7 +243,7 @@ namespace WoWFormatLib.FileReaders
                 }
                 else if (chunk != "MVER")
                 {
-                    Console.WriteLine(string.Format("Found unknown chunk at offset {1} \"{0}\" while trying to detect WDT type!", chunk, position.ToString()));
+                    Console.WriteLine(string.Format("WDT: Found unknown chunk at offset {1} \"{0}\"/ while trying to detect WDT type!", chunk, position.ToString()));
                 }
             }
 
@@ -271,6 +298,9 @@ namespace WoWFormatLib.FileReaders
                         case WDTChunks.MAID:
                             wdtfile.tileFiles = ReadMAIDChunk(bin);
                             break;
+                        case WDTChunks.MAI2:
+                            wdtfile.tileFiles2 = ReadMAI2Chunk(bin);
+                            break;
                         case WDTChunks.MODF:
                             wdtfile.modf = ReadMODFChunk(bin);
                             break;
@@ -278,7 +308,7 @@ namespace WoWFormatLib.FileReaders
                             wdtfile.manm = ReadMANMChunk(bin);
                             break;
                         default:
-                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString()));
+                            Console.WriteLine(string.Format("WDT: Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)chunkName))));
                             break;
                     }
                 }

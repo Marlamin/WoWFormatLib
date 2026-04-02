@@ -13,6 +13,7 @@ namespace WoWFormatLib.Structs.WDT
         MPHD = 'M' << 24 | 'P' << 16 | 'H' << 8 | 'D' << 0,
         MODF = 'M' << 24 | 'O' << 16 | 'D' << 8 | 'F' << 0,
         MAID = 'M' << 24 | 'A' << 16 | 'I' << 8 | 'D' << 0,
+        MAI2 = 'M' << 24 | 'A' << 16 | 'I' << 8 | '2' << 0,
         MANM = 'M' << 24 | 'A' << 16 | 'N' << 8 | 'M' << 0,
 
         // Occlusion
@@ -49,6 +50,7 @@ namespace WoWFormatLib.Structs.WDT
         public Dictionary<uint, string> filenames;
         public List<(byte, byte)> tiles;
         public Dictionary<(byte, byte), MapFileDataIDs> tileFiles;
+        public Dictionary<(byte, byte), MapFileDataIDs2> tileFiles2;
         public Dictionary<string, MapFileDataIDs> stringTileFiles;
 
         // TODO: Other types
@@ -89,6 +91,18 @@ namespace WoWFormatLib.Structs.WDT
         public uint mapTexture;
         public uint mapTextureN;
         public uint minimapTexture;
+    }
+
+    public struct MapFileDataIDs2
+    {
+        public uint unknown0;
+        public uint unknown1;
+        public uint unknown2;
+        public uint unknown3;
+        public uint unknown4;
+        public uint unknown5;
+        public uint unknown6;
+        public uint unknown7;
     }
 
     public struct MPHD

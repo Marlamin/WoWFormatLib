@@ -301,7 +301,7 @@ namespace WoWFormatLib.FileReaders
                                 break;
                             default:
                                 var chunkNameAsString = Encoding.ASCII.GetString(BitConverter.GetBytes((uint)chunkName));
-                                Console.WriteLine(string.Format("(WotLK root ADT) Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkNameAsString, position));
+                                Console.WriteLine(string.Format("WotLK Root ADT: Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkNameAsString, position));
                                 break;
                         }
                     }
@@ -339,7 +339,7 @@ namespace WoWFormatLib.FileReaders
                                 break;
                             default:
                                 var chunkNameAsString = Encoding.ASCII.GetString(BitConverter.GetBytes((uint)chunkName));
-                                Console.WriteLine(string.Format("(Latest root ADT) Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkNameAsString, position));
+                                Console.WriteLine(string.Format("Root ADT: Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkNameAsString, position));
                                 break;
                         }
                     }
@@ -496,9 +496,11 @@ namespace WoWFormatLib.FileReaders
                                 break;
                             case ADTChunks.MCLQ:
                             case ADTChunks.MCLV:
+                            case ADTChunks.MPTX: // Predominant textures for >4 layer ADTs for detail doodads
                                 continue;
                             default:
-                                Console.WriteLine(string.Format("(Latest root ADT MCNK) Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName, subpos));
+                                var subChunkNameAsString = Encoding.ASCII.GetString(BitConverter.GetBytes((uint)subChunkName));
+                                Console.WriteLine(string.Format("Root ADT MCNK: Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkNameAsString, subpos));
                                 break;
                         }
                     }
@@ -775,7 +777,7 @@ namespace WoWFormatLib.FileReaders
                         case ADTChunks.MCNK:
                             break;
                         default:
-                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position));
+                            Console.WriteLine(string.Format("ADT OBJ: Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)chunkName))));
                             break;
                     }
                 }
@@ -963,7 +965,7 @@ namespace WoWFormatLib.FileReaders
                         case ADTChunks.MAMP:
                             break;
                         default:
-                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position));
+                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)chunkName))));
                             break;
                     }
                 }
@@ -1010,7 +1012,7 @@ namespace WoWFormatLib.FileReaders
                         case ADTChunks.MCMT:
                             break;
                         default:
-                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName, subpos.ToString()));
+                            Console.WriteLine(string.Format("ADT TEX MCNK: Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", subChunkName.ToString("X"), subpos.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)subChunkName))));
                             break;
                     }
                 }

@@ -146,9 +146,10 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MBVD: // ?
                         case WMOChunks.MOLV: // ?
                         case WMOChunks.MOMX: // ?
+                        case WMOChunks.MOPE: // ?
                             break;
                         default:
-                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)chunkName))));
+                            Console.WriteLine(string.Format("Root WMO: Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)chunkName))));
                             break;
                     }
                 }
@@ -466,7 +467,8 @@ namespace WoWFormatLib.FileReaders
                             groupFile.mogp = ReadMOGPChunk(chunkSize, bin);
                             continue;
                         default:
-                            throw new Exception(string.Format("{2} Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString(), filedataid));
+                            Console.WriteLine(string.Format("WMO Group: Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)chunkName))));
+                            break;
                     }
                 }
             }
@@ -588,7 +590,7 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MOQG: // ?
                             continue;
                         default:
-                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", subChunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)subChunkName))));
+                            Console.WriteLine(string.Format("WMO MOGP: Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", subChunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)subChunkName))));
                             break;
                     }
                 }

@@ -25,6 +25,7 @@ namespace WoWFormatLib.Structs.ADT
         MCBB = 'M' << 24 | 'C' << 16 | 'B' << 8 | 'B' << 0,
         MCLQ = 'M' << 24 | 'C' << 16 | 'L' << 8 | 'Q' << 0,
         MCLV = 'M' << 24 | 'C' << 16 | 'L' << 8 | 'V' << 0,
+        MPTX = 'M' << 24 | 'P' << 16 | 'T' << 8 | 'X' << 0,
 
         // OBJ
         MMDX = 'M' << 24 | 'M' << 16 | 'D' << 8 | 'X' << 0,
