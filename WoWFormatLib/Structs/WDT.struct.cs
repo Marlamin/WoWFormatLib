@@ -114,7 +114,7 @@ namespace WoWFormatLib.Structs.WDT
         public uint mpvFDID;
         public uint texFDID;
         public uint wdlFDID;
-        public uint unused;
+        public uint pd4FDID;
     }
 
     [Flags]
