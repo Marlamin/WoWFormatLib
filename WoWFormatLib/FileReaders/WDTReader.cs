@@ -108,12 +108,9 @@ namespace WoWFormatLib.FileReaders
         {
             var tileFiles = new Dictionary<(byte, byte), MapFileDataIDs>();
             for (byte x = 0; x < 64; x++)
-            {
                 for (byte y = 0; y < 64; y++)
-                {
                     tileFiles.Add((y, x), bin.Read<MapFileDataIDs>());
-                }
-            }
+
             return tileFiles;
         }
 
@@ -121,26 +118,9 @@ namespace WoWFormatLib.FileReaders
         {
             var tileFiles = new Dictionary<(byte, byte), MapFileDataIDs2>();
             for (byte x = 0; x < 64; x++)
-            {
                 for (byte y = 0; y < 64; y++)
-                {
                     tileFiles.Add((y, x), bin.Read<MapFileDataIDs2>());
 
-                    if(tileFiles[(y, x)].unknown0 != 0 || tileFiles[(y, x)].unknown1 != 0 || tileFiles[(y, x)].unknown2 != 0 || tileFiles[(y, x)].unknown3 != 0 ||
-                       tileFiles[(y, x)].unknown4 != 0 || tileFiles[(y, x)].unknown5 != 0 || tileFiles[(y, x)].unknown6 != 0 || tileFiles[(y, x)].unknown7 != 0)
-                    {
-                        Console.WriteLine(string.Format("WDT: Found non-zero data in MAI2 chunk for tile {0},{1} at offset {2}!", y, x, bin.BaseStream.Position.ToString()));
-                        Console.WriteLine("\t unknown0: " + tileFiles[(y, x)].unknown0);
-                        Console.WriteLine("\t unknown1: " + tileFiles[(y, x)].unknown1);
-                        Console.WriteLine("\t unknown2: " + tileFiles[(y, x)].unknown2);
-                        Console.WriteLine("\t unknown3: " + tileFiles[(y, x)].unknown3);
-                        Console.WriteLine("\t unknown4: " + tileFiles[(y, x)].unknown4);
-                        Console.WriteLine("\t unknown5: " + tileFiles[(y, x)].unknown5);
-                        Console.WriteLine("\t unknown6: " + tileFiles[(y, x)].unknown6);
-                        Console.WriteLine("\t unknown7: " + tileFiles[(y, x)].unknown7);
-                    }
-                }
-            }
             return tileFiles;
         }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using WoWFormatLib.FileProviders;
 using WoWFormatLib.Structs.ADT;
@@ -13,6 +12,7 @@ namespace WoWFormatLib.FileReaders
     public class ADTReader
     {
         public ADT adtfile;
+        public uint rootFileDataID;
         private Structs.WDT.WDT wdt;
         public enum ADTType
         {
@@ -39,7 +39,7 @@ namespace WoWFormatLib.FileReaders
         /// <param name="loadSecondaryADTs">Load secondary ADTs (OBJ0 and TEX0)</param>
         /// <param name="internalMapName">Internal map name, required for filename based ADT loading</param>
         /// <exception cref="FileNotFoundException"></exception>
-        public void LoadADT(Structs.WDT.WDT? wdtFile, byte tileX, byte tileY, bool loadSecondaryADTs = true, string internalMapName = "")
+        public uint LoadADT(Structs.WDT.WDT? wdtFile, byte tileX, byte tileY, bool loadSecondaryADTs = true, string internalMapName = "")
         {
             adtfile.x = tileX;
             adtfile.y = tileY;
@@ -96,9 +96,11 @@ namespace WoWFormatLib.FileReaders
                     ReadTexFile(adttex0, wdt.mphd.flags);
                 }
             }
+
+            return rootFileDataID;
         }
 
-        public void LoadADT(MPHDFlags wdtMPHDFlags, uint rootFileDataID, uint obj0FileDataID = 0, uint tex0FileDataID = 0, bool loadSecondaryADTs = true)
+        public uint LoadADT(MPHDFlags wdtMPHDFlags, uint rootFileDataID, uint obj0FileDataID = 0, uint tex0FileDataID = 0, bool loadSecondaryADTs = true)
         {
             ReadRootFile(rootFileDataID, wdtMPHDFlags);
 
@@ -116,6 +118,8 @@ namespace WoWFormatLib.FileReaders
                 using (var adttex0 = FileProvider.OpenFile(tex0FileDataID))
                     ReadTexFile(adttex0, wdtMPHDFlags);
             }
+
+            return rootFileDataID;
         }
 
         /// <summary>
@@ -997,7 +1001,7 @@ namespace WoWFormatLib.FileReaders
 
                     subpos = stream.Position + subChunkSize;
 
-                    if(adtfile.chunks == null)
+                    if (adtfile.chunks == null)
                         adtfile.chunks = new MCNK[16 * 16];
 
                     switch (subChunkName)
