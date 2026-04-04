@@ -129,21 +129,22 @@ namespace WoWFormatLib.FileReaders
                     case M2Chunks.TXAC: // Texture transforms (?)
                     case M2Chunks.EXPT: // Extended Particles
                     case M2Chunks.EXP2: // Extended Particles 2
-                    case M2Chunks.PABC:
-                    case M2Chunks.PADC:
-                    case M2Chunks.PEDC:
-                    case M2Chunks.PSBC:
-                    case M2Chunks.PGD1:
-                    case M2Chunks.WFV1:
-                    case M2Chunks.WFV2:
-                    case M2Chunks.LDV1:
-                    case M2Chunks.WFV3:
-                    case M2Chunks.PFDC:
-                    case M2Chunks.EDGF:
-                    case M2Chunks.NERF:
-                    case M2Chunks.DETL:
-                    case M2Chunks.DBOC:
-                    case M2Chunks.DPIV: // ?
+                    case M2Chunks.PABC: // Parent Animation Blacklist, replaces parentSequencesLookups
+                    case M2Chunks.PADC: // Replacement for transparency (nTransparency and ofsTransparency in header are ignored)
+                    case M2Chunks.PEDC: // ParentEventData
+                    case M2Chunks.PSBC: // ParentSequenceBounds
+                    case M2Chunks.PGD1: // ParticleGeosetData V1
+                    case M2Chunks.WFV1: // Waterfall Data V1
+                    case M2Chunks.WFV2: // Waterfall Data V2
+                    case M2Chunks.LDV1: // LOD data
+                    case M2Chunks.WFV3: // Waterfall Data V3
+                    case M2Chunks.PFDC: // Inline PHYS
+                    case M2Chunks.EDGF: // EdgeFade 
+                    case M2Chunks.DETL: // Light related
+                    case M2Chunks.NERF: // Unknown
+                    case M2Chunks.DBOC: // Unknown
+                    case M2Chunks.DPIV: // Pivot point?
+                    case M2Chunks.TEXL: // Textured Lights
                         break;
                     default:
                         if (chunkName.ToString("X") != "00000000")
