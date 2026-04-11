@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -43,8 +44,10 @@ namespace WoWFormatLib.FileReaders
         {
             uint version = 0;
             var blobTextures = Array.Empty<BlobTexture>();
-            var mipMapData = Array.Empty<byte>();
-
+            var mipMapData = new List<byte[]>();
+            var txmdOffsetsToIndex = new Dictionary<int, int>();
+            var blobTextureDict = new Dictionary<int, BlobTexture>();
+            var postTXBTPos = 0L;
             using (var bin = new BinaryReader(tex))
             {
                 long position = 0;
@@ -68,9 +71,13 @@ namespace WoWFormatLib.FileReaders
                             break;
                         case TEXChunks.TXBT: // Blob Texture
                             blobTextures = ReadTXBTChunk(bin, chunkSize);
+                            for (var i = 0; i < blobTextures.Length; i++)
+                                blobTextureDict.Add((int)blobTextures[i].fileDataID, blobTextures[i]);
+                            postTXBTPos = position;
                             break;
                         case TEXChunks.TXMD: // Mipmap Data
-                            mipMapData = bin.ReadBytes((int)chunkSize);
+                            txmdOffsetsToIndex[((int)tex.Position - 8) - (int)postTXBTPos] = mipMapData.Count;
+                            mipMapData.Add(bin.ReadBytes((int)chunkSize));
                             break;
                         default:
                             Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkName, position.ToString()));
@@ -82,8 +89,9 @@ namespace WoWFormatLib.FileReaders
             return new TEXFile
             {
                 version = version,
-                blobTextures = blobTextures,
-                mipMapData = mipMapData
+                blobTextures = blobTextureDict,
+                mipMapData = [.. mipMapData],
+                txmdOffsetsToIndex = txmdOffsetsToIndex
             };
         }
 

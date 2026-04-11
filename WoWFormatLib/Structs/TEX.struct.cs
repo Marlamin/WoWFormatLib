@@ -1,4 +1,6 @@
-﻿namespace WoWFormatLib.Structs.TEX
+﻿using System.Collections.Generic;
+
+namespace WoWFormatLib.Structs.TEX
 {
     public enum TEXChunks
     {
@@ -11,8 +13,9 @@
     public readonly struct TEXFile
     {
         public readonly uint version { get; init; }
-        public readonly BlobTexture[] blobTextures { get; init; }
-        public readonly byte[] mipMapData { get; init; }
+        public readonly byte[][] mipMapData { get; init; }
+        public readonly Dictionary<int, BlobTexture> blobTextures { get; init; }
+        public readonly Dictionary<int, int> txmdOffsetsToIndex { get; init; }
     }
 
     public readonly struct BlobTexture
