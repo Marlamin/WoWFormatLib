@@ -798,12 +798,12 @@ namespace WoWFormatLib.FileReaders
             return mwdrArr;
         }
 
-        private static uint[] ReadMWDSChunk(uint chunkSize, BinaryReader bin)
+        private static ushort[] ReadMWDSChunk(uint chunkSize, BinaryReader bin)
         {
-            var mwdsArr = new uint[chunkSize / 4];
+            var mwdsArr = new ushort[chunkSize / 2];
             for (var i = 0; i < mwdsArr.Length; i++)
             {
-                mwdsArr[i] = bin.ReadUInt32();
+                mwdsArr[i] = bin.ReadUInt16();
             }
             return mwdsArr;
         }

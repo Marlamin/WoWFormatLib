@@ -225,7 +225,7 @@ namespace WoWFormatLib.Structs.ADT
         public MWID wmoNameOffsets;
 
         public MWDR[] worldModelDoodadRefs;
-        public uint[] worldModelDoodadSets;
+        public ushort[] worldModelDoodadSets;
 
     }
 
