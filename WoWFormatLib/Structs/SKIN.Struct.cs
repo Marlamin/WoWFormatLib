@@ -51,9 +51,19 @@ namespace WoWFormatLib.Structs.SKIN
         public float sortRadius;
     }
 
+    public enum TextureUnitFlags : byte
+    {
+        Flag_0x1 = 0x1, // "materials invert something" -deamon
+        Transform = 0x2,
+        ProjectedTexture = 0x4,
+        Flag_0x8 = 0x8, // Something batch compatible
+        Flag_0x10 = 0x10,
+        Flag_0x20 = 0x20, // Project texture 2?
+        Flag_0x40 = 0x40 // Use TextureWeights
+    }
     public struct TextureUnit
     {
-        public byte flags;
+        public TextureUnitFlags flags;
         public sbyte priorityPlane;
         public ushort shaderID;
         public ushort submeshIndex;
@@ -61,7 +71,7 @@ namespace WoWFormatLib.Structs.SKIN
         public ushort colorIndex;
         public ushort renderFlagsIndex;
         public ushort materialLayer;
-        public ushort mode;
+        public ushort textureCount;
         public ushort texture;
         public ushort texUnitNumber2;
         public ushort transparency;
