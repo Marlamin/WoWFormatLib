@@ -419,7 +419,7 @@ namespace WoWFormatLib.FileReaders
             for (var i = 0; i < numDoodads; i++)
             {
                 var raw_offset = bin.ReadBytes(3);
-                doodads[i].offset = (uint)(raw_offset[0] | raw_offset[1] << 8 | raw_offset[2] << 16);
+                doodads[i].offsetOrIndex = (uint)(raw_offset[0] | raw_offset[1] << 8 | raw_offset[2] << 16);
                 doodads[i].flags = (byte)(MODDFlags)bin.ReadByte();
                 doodads[i].position = bin.Read<Vector3>();
                 doodads[i].rotation = bin.Read<Quaternion>();

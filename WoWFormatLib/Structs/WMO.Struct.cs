@@ -155,7 +155,7 @@ namespace WoWFormatLib.Structs.WMO
 
     public struct MODD
     {
-        public uint offset;
+        public uint offsetOrIndex;
         public byte flags;
         public Vector3 position;
         public Quaternion rotation;
