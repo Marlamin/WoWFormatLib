@@ -53,13 +53,14 @@ namespace WoWFormatLib.Structs.SKIN
 
     public struct TextureUnit
     {
-        public ushort flags;
-        public ushort shading;
+        public byte flags;
+        public sbyte priorityPlane;
+        public ushort shaderID;
         public ushort submeshIndex;
-        public ushort submeshIndex2;
+        public ushort flags2;
         public ushort colorIndex;
-        public ushort renderFlags;
-        public ushort texUnitNumber;
+        public ushort renderFlagsIndex;
+        public ushort materialLayer;
         public ushort mode;
         public ushort texture;
         public ushort texUnitNumber2;

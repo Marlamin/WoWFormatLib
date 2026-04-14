@@ -384,8 +384,25 @@ namespace WoWFormatLib.Structs.M2
 
     public struct RenderFlag
     {
-        public ushort flags;
+        public RenderFlags flags;
         public ushort blendingMode;
+    }
+
+    [Flags]
+    public enum RenderFlags : ushort
+    {
+        Unlit = 0x1,
+        Unfogged = 0x2,
+        TwoSided = 0x4,
+        DepthTest = 0x8,
+        DepthWrite = 0x10,
+        Flag_0x20 = 0x20,
+        Flag_0x40 = 0x40,
+        Flag_0x80 = 0x80,
+        Flag_0x100 = 0x100,
+        Flag_0x200 = 0x200,
+        Flag_0x400 = 0x400,
+        Flag_0x800 = 0x800,
     }
 
     public struct RibbonEmitter
