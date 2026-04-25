@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using WoWFormatLib.FileProviders;
 using WoWFormatLib.Structs.ADT;
@@ -234,27 +236,23 @@ namespace WoWFormatLib.FileReaders
         {
             using (var bin = new BinaryReader(adt))
             {
-                long position = 0;
                 var MCNKi = 0;
                 adtfile.chunks = new MCNK[16 * 16];
 
                 var mcnkIndex = new MCIN[256];
 
-                while (position < adt.Length)
+                while (adt.Position < adt.Length)
                 {
-                    adt.Position = position;
-
                     var chunkName = (ADTChunks)bin.ReadUInt32();
                     var chunkSize = bin.ReadUInt32();
-
-                    position = adt.Position + chunkSize;
+                    var chunkBytes = bin.ReadBytes((int)chunkSize);
 
                     if (VersionManager.CurrentVersion == VersionManager.FileVersion.WotLK || versionOverride == ADTVersion.WotLK)
                     {
                         switch (chunkName)
                         {
                             case ADTChunks.MVER:
-                                var version = bin.ReadUInt32();
+                                var version = BitConverter.ToUInt32(chunkBytes, 0);
                                 if (version != 18)
                                 {
                                     throw new Exception("Unsupported ADT version!");
@@ -265,47 +263,47 @@ namespace WoWFormatLib.FileReaders
                                 }
                                 break;
                             case ADTChunks.MHDR:
-                                adtfile.header = bin.Read<MHDR>();
+                                adtfile.header = MemoryMarshal.Read<MHDR>(chunkBytes);
                                 break;
                             case ADTChunks.MH2O:
-                                adtfile.mh2o = ReadMH20SubChunk(chunkSize, bin);
+                                adtfile.mh2o = ReadMH20SubChunk((uint)chunkSize, bin);
                                 break;
                             case ADTChunks.MTEX:
-                                adtfile.textures = ReadMTEXChunk(chunkSize, bin);
+                                adtfile.textures = ReadMTEXChunk(chunkBytes);
                                 break;
                             case ADTChunks.MMDX:
-                                adtfile.objects.m2Names = ReadMMDXChunk(chunkSize, bin);
+                                adtfile.objects.m2Names = ReadMMDXChunk(chunkBytes);
                                 break;
                             case ADTChunks.MMID:
-                                adtfile.objects.m2NameOffsets = ReadMMIDChunk(chunkSize, bin);
+                                adtfile.objects.m2NameOffsets = ReadMMIDChunk(chunkBytes);
                                 break;
                             case ADTChunks.MWMO:
-                                adtfile.objects.wmoNames = ReadMWMOChunk(chunkSize, bin);
+                                adtfile.objects.wmoNames = ReadMWMOChunk(chunkBytes);
                                 break;
                             case ADTChunks.MWID:
-                                adtfile.objects.wmoNameOffsets = ReadMWIDChunk(chunkSize, bin);
+                                adtfile.objects.wmoNameOffsets = ReadMWIDChunk(chunkBytes);
                                 break;
                             case ADTChunks.MODF:
-                                adtfile.objects.worldModels = ReadMODFChunk(chunkSize, bin);
+                                adtfile.objects.worldModels = ReadMODFChunk(chunkBytes);
                                 break;
                             case ADTChunks.MDDF:
-                                adtfile.objects.models = ReadMDDFChunk(chunkSize, bin);
+                                adtfile.objects.models = ReadMDDFChunk(chunkBytes);
                                 break;
                             case ADTChunks.MCIN:
                                 for (var i = 0; i < 256; i++)
                                 {
-                                    mcnkIndex[i] = bin.Read<MCIN>();
+                                    mcnkIndex[i] = MemoryMarshal.Read<MCIN>(chunkBytes.AsSpan(i * Unsafe.SizeOf<MCIN>(), Unsafe.SizeOf<MCIN>()));
                                 }
                                 break;
                             case ADTChunks.MTXF: // Texture flags
-                                adtfile.texFlags = ReadMTXFChunk(chunkSize, bin);
+                                adtfile.texFlags = ReadMTXFChunk(chunkBytes);
                                 break;
                             case ADTChunks.MCNK: // We read these separately
                             case ADTChunks.MFBO: // Flying bounding box
                                 break;
                             default:
                                 var chunkNameAsString = Encoding.ASCII.GetString(BitConverter.GetBytes((uint)chunkName));
-                                Console.WriteLine(string.Format("WotLK Root ADT: Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkNameAsString, position));
+                                Console.WriteLine(string.Format("WotLK Root ADT: Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkNameAsString, adt.Position));
                                 break;
                         }
                     }
@@ -314,7 +312,7 @@ namespace WoWFormatLib.FileReaders
                         switch (chunkName)
                         {
                             case ADTChunks.MVER:
-                                var version = bin.ReadUInt32();
+                                var version = BitConverter.ToUInt32(chunkBytes, 0);
                                 if (version != 18)
                                 {
                                     throw new Exception("Unsupported ADT version!");
@@ -325,14 +323,14 @@ namespace WoWFormatLib.FileReaders
                                 }
                                 break;
                             case ADTChunks.MCNK:
-                                adtfile.chunks[MCNKi] = ReadMCNKChunk(chunkSize, bin, wdtMPHDFlags);
+                                adtfile.chunks[MCNKi] = ReadMCNKChunk(chunkBytes, wdtMPHDFlags);
                                 MCNKi++;
                                 break;
                             case ADTChunks.MHDR:
-                                adtfile.header = bin.Read<MHDR>();
+                                adtfile.header = MemoryMarshal.Read<MHDR>(chunkBytes);
                                 break;
                             case ADTChunks.MH2O:
-                                adtfile.mh2o = ReadMH20SubChunk(chunkSize, bin);
+                                //adtfile.mh2o = ReadMH20SubChunk(chunkSize, bin);
                                 break;
                             case ADTChunks.MFBO: // Flying bounding box
                             //model.blob stuff
@@ -343,7 +341,7 @@ namespace WoWFormatLib.FileReaders
                                 break;
                             default:
                                 var chunkNameAsString = Encoding.ASCII.GetString(BitConverter.GetBytes((uint)chunkName));
-                                Console.WriteLine(string.Format("Root ADT: Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkNameAsString, position));
+                                Console.WriteLine(string.Format("Root ADT: Found unknown header at offset {1} \"{0}\" while we should've already read them all!", chunkNameAsString, adt.Position));
                                 break;
                         }
                     }
@@ -351,124 +349,30 @@ namespace WoWFormatLib.FileReaders
 
                 if (VersionManager.CurrentVersion == VersionManager.FileVersion.WotLK)
                 {
-                    for (var i = 0; i < 256; i++)
-                    {
-                        var mcnk = mcnkIndex[i];
-                        bin.BaseStream.Position = mcnk.offset + 8;
-                        adtfile.chunks[i] = ReadMCNKChunk(mcnk.size, bin, wdtMPHDFlags);
-                    }
+                    //for (var i = 0; i < 256; i++)
+                    //{
+                    //    var mcnk = mcnkIndex[i];
+                    //    bin.BaseStream.Position = mcnk.offset + 8;
+                    //    adtfile.chunks[i] = ReadMCNKChunk(bin.ReadBytes((int)mcnk.size), wdtMPHDFlags);
+                    //}
                 }
             }
         }
 
-        private static MCNK ReadMCNKChunk(uint size, BinaryReader bin, MPHDFlags wdtMPHDFlags)
+        private static MCNK ReadMCNKChunk(ReadOnlySpan<byte> bytes, MPHDFlags wdtMPHDFlags)
         {
             var mapchunk = new MCNK()
             {
-                header = bin.Read<MCNKheader>()
+                header = MemoryMarshal.Read<MCNKheader>(bytes)
             };
 
             if (VersionManager.CurrentVersion == VersionManager.FileVersion.WotLK)
             {
-                bin.BaseStream.Position -= 128;
-                using (var stream = new MemoryStream(bin.ReadBytes((int)size)))
-                using (var subbin = new BinaryReader(stream))
-                {
-                    var ofsMCVT = BitConverter.ToUInt32(new byte[] { mapchunk.header.holesHighRes_0, mapchunk.header.holesHighRes_1, mapchunk.header.holesHighRes_2, mapchunk.header.holesHighRes_3 });
-                    if (ofsMCVT != 0)
-                    {
-                        subbin.BaseStream.Position = ofsMCVT;
-                        mapchunk.vertices = ReadMCVTSubChunk(subbin);
-                    }
-
-                    var ofsMCNR = BitConverter.ToUInt32(new byte[] { mapchunk.header.holesHighRes_4, mapchunk.header.holesHighRes_5, mapchunk.header.holesHighRes_6, mapchunk.header.holesHighRes_7 });
-                    if (ofsMCNR != 0)
-                    {
-                        subbin.BaseStream.Position = ofsMCNR;
-                        mapchunk.normals = ReadMCNRSubChunk(subbin);
-                    }
-
-                    if (mapchunk.header.ofsMCLY != 0)
-                    {
-                        subbin.BaseStream.Position = mapchunk.header.ofsMCLY - 4;
-                        var mclySize = subbin.ReadUInt32();
-                        mapchunk.layers = ReadMCLYSubChunk(mclySize, subbin);
-                    }
-
-                    if (mapchunk.header.ofsMCRF != 0)
-                    {
-                        subbin.BaseStream.Position = mapchunk.header.ofsMCRF;
-                        // TODO: Read
-                    }
-
-                    try
-                    {
-                        if (mapchunk.header.ofsMCAL != 0)
-                        {
-                            subbin.BaseStream.Position = mapchunk.header.ofsMCAL;
-                            mapchunk.alphaLayer = ReadMCALSubChunk(mapchunk.header.sizeAlpha - 8, subbin, mapchunk, wdtMPHDFlags);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Error reading MCAL, are WDT flags set? " + e.Message);
-                    }
-
-
-                    if (mapchunk.header.ofsMCSH != 0)
-                    {
-                        subbin.BaseStream.Position = mapchunk.header.ofsMCSH;
-                        // TODO: Read
-                    }
-
-                    if (mapchunk.header.ofsMCSE != 0)
-                    {
-                        subbin.BaseStream.Position = mapchunk.header.ofsMCSE - 4;
-                        var mcseSize = subbin.ReadUInt32();
-                        mapchunk.soundEmitters = ReadMCSESubChunk(mcseSize, subbin);
-                    }
-
-                    if (mapchunk.header.ofsMCLQ != 0)
-                    {
-                        subbin.BaseStream.Position = mapchunk.header.ofsMCLQ;
-                        // TODO: Read
-                    }
-
-                    if (mapchunk.header.ofsMCCV != 0)
-                    {
-                        subbin.BaseStream.Position = mapchunk.header.ofsMCCV;
-                        mapchunk.vertexShading = ReadMCCVSubChunk(subbin);
-                    }
-                }
-
-                //switch (subChunkName)
-                //{
-                //    case ADTChunks.MCVT:
-                //        mapchunk.vertices = ReadMCVTSubChunk(subbin);
-                //        break;
-                //    case ADTChunks.MCCV:
-                //        mapchunk.vertexShading = ReadMCCVSubChunk(subbin);
-                //        break;
-                //    case ADTChunks.MCNR:
-                //        mapchunk.normals = ReadMCNRSubChunk(subbin);
-                //        break;
-                //    case ADTChunks.MCSE:
-                //        mapchunk.soundEmitters = ReadMCSESubChunk(subChunkSize, subbin);
-                //        break;
-                //    case ADTChunks.MCBB:
-                //        mapchunk.blendBatches = ReadMCBBSubChunk(subChunkSize, subbin);
-                //        break;
-                //    case ADTChunks.MCLQ:
-                //    case ADTChunks.MCLV:
-                //        continue;
-                //    default:
-                //        Console.WriteLine(string.Format("(WotLK root ADT MCNK) Found unknown header at offset {1} \"{0}\" while we should've already read them all!", subChunkName, subpos));
-                //        break;
-                //}
+               // TODO
             }
             else
             {
-                using (var stream = new MemoryStream(bin.ReadBytes((int)size - 128)))
+                using (var stream = new MemoryStream(bytes.Slice(128, bytes.Length - 128).ToArray()))
                 using (var subbin = new BinaryReader(stream))
                 {
                     long subpos = 0;
@@ -754,28 +658,28 @@ namespace WoWFormatLib.FileReaders
                             }
                             break;
                         case ADTChunks.MMDX:
-                            adtfile.objects.m2Names = ReadMMDXChunk(chunkSize, bin);
+                            adtfile.objects.m2Names = ReadMMDXChunk(bin.ReadBytes((int)chunkSize));
                             break;
                         case ADTChunks.MMID:
-                            adtfile.objects.m2NameOffsets = ReadMMIDChunk(chunkSize, bin);
+                            adtfile.objects.m2NameOffsets = ReadMMIDChunk(bin.ReadBytes((int)chunkSize));
                             break;
                         case ADTChunks.MWMO:
-                            adtfile.objects.wmoNames = ReadMWMOChunk(chunkSize, bin);
+                            adtfile.objects.wmoNames = ReadMWMOChunk(bin.ReadBytes((int)chunkSize));
                             break;
                         case ADTChunks.MWID:
-                            adtfile.objects.wmoNameOffsets = ReadMWIDChunk(chunkSize, bin);
+                            adtfile.objects.wmoNameOffsets = ReadMWIDChunk(bin.ReadBytes((int)chunkSize));
                             break;
                         case ADTChunks.MDDF:
-                            adtfile.objects.models = ReadMDDFChunk(chunkSize, bin);
+                            adtfile.objects.models = ReadMDDFChunk(bin.ReadBytes((int)chunkSize));
                             break;
                         case ADTChunks.MODF:
-                            adtfile.objects.worldModels = ReadMODFChunk(chunkSize, bin);
+                            adtfile.objects.worldModels = ReadMODFChunk(bin.ReadBytes((int)chunkSize));
                             break;
                         case ADTChunks.MWDR: // WMO doodad references (multiple)
-                            adtfile.objects.worldModelDoodadRefs = ReadMWDRChunk(chunkSize, bin);
+                            adtfile.objects.worldModelDoodadRefs = ReadMWDRChunk(bin.ReadBytes((int)chunkSize));
                             break;
                         case ADTChunks.MWDS: // WMO doodad sets
-                            adtfile.objects.worldModelDoodadSets = ReadMWDSChunk(chunkSize, bin);
+                            adtfile.objects.worldModelDoodadSets = ReadMWDSChunk(bin.ReadBytes((int)chunkSize));
                             break;
                         case ADTChunks.MLMB:
                         case ADTChunks.MCNK:
@@ -788,47 +692,47 @@ namespace WoWFormatLib.FileReaders
             }
         }
 
-        private static MWDR[] ReadMWDRChunk(uint chunkSize, BinaryReader bin)
+        private static MWDR[] ReadMWDRChunk(ReadOnlySpan<byte> bytes)
         {
-            var mwdrArr = new MWDR[chunkSize / 8];
+            var stride = Unsafe.SizeOf<MWDR>();
+            var mwdrArr = new MWDR[bytes.Length / stride];
             for (var i = 0; i < mwdrArr.Length; i++)
             {
-                mwdrArr[i] = bin.Read<MWDR>();
+                mwdrArr[i] = MemoryMarshal.Read<MWDR>(bytes.Slice(i * stride, stride));
             }
             return mwdrArr;
         }
 
-        private static ushort[] ReadMWDSChunk(uint chunkSize, BinaryReader bin)
+        private static ushort[] ReadMWDSChunk(ReadOnlySpan<byte> bytes)
         {
-            var mwdsArr = new ushort[chunkSize / 2];
+            var mwdsArr = new ushort[bytes.Length / 2];
+            var stride = Unsafe.SizeOf<ushort>();
             for (var i = 0; i < mwdsArr.Length; i++)
             {
-                mwdsArr[i] = bin.ReadUInt16();
+                mwdsArr[i] = MemoryMarshal.Read<ushort>(bytes.Slice(i * stride, stride));
             }
             return mwdsArr;
         }
 
-        private static MMDX ReadMMDXChunk(uint size, BinaryReader bin)
+        private static MMDX ReadMMDXChunk(ReadOnlySpan<byte> bytes)
         {
-            var m2FilesChunk = bin.ReadBytes((int)size);
-
             var mmdx = new MMDX();
             var str = new StringBuilder();
 
             var offsets = new List<uint>();
             var m2Files = new List<string>();
 
-            for (var i = 0; i < m2FilesChunk.Length; i++)
+            for (var i = 0; i < bytes.Length; i++)
             {
-                if (m2FilesChunk[i] == '\0')
+                if (bytes[i] == '\0')
                 {
                     m2Files.Add(str.ToString());
-                    offsets.Add((uint)(i - str.ToString().Length));
+                    offsets.Add((uint)(i - str.Length));
                     str = new StringBuilder();
                 }
                 else
                 {
-                    str.Append((char)m2FilesChunk[i]);
+                    str.Append((char)bytes[i]);
                 }
             }
 
@@ -836,9 +740,9 @@ namespace WoWFormatLib.FileReaders
             mmdx.offsets = offsets.ToArray();
             return mmdx;
         }
-        private static MMID ReadMMIDChunk(uint size, BinaryReader bin)
+        private static MMID ReadMMIDChunk(ReadOnlySpan<byte> bytes)
         {
-            var count = size / 4;
+            var count = bytes.Length / 4;
 
             var mmid = new MMID()
             {
@@ -847,32 +751,31 @@ namespace WoWFormatLib.FileReaders
 
             for (var i = 0; i < count; i++)
             {
-                mmid.offsets[i] = bin.ReadUInt32();
+                mmid.offsets[i] = MemoryMarshal.Read<uint>(bytes.Slice(i * 4, 4));
             }
 
             return mmid;
         }
-        public static MWMO ReadMWMOChunk(uint size, BinaryReader bin)
-        {
-            var wmoFilesChunk = bin.ReadBytes((int)size);
 
+        public static MWMO ReadMWMOChunk(ReadOnlySpan<byte> bytes)
+        {
             var mwmo = new MWMO();
             var str = new StringBuilder();
 
             var offsets = new List<uint>();
             var wmoFiles = new List<string>();
 
-            for (var i = 0; i < wmoFilesChunk.Length; i++)
+            for (var i = 0; i < bytes.Length; i++)
             {
-                if (wmoFilesChunk[i] == '\0')
+                if (bytes[i] == '\0')
                 {
                     wmoFiles.Add(str.ToString());
-                    offsets.Add((uint)(i - str.ToString().Length));
+                    offsets.Add((uint)(i - str.Length));
                     str = new StringBuilder();
                 }
                 else
                 {
-                    str.Append((char)wmoFilesChunk[i]);
+                    str.Append((char)bytes[i]);
                 }
             }
 
@@ -880,9 +783,10 @@ namespace WoWFormatLib.FileReaders
             mwmo.offsets = offsets.ToArray();
             return mwmo;
         }
-        public static MWID ReadMWIDChunk(uint size, BinaryReader bin)
+
+        public static MWID ReadMWIDChunk(ReadOnlySpan<byte> bytes)
         {
-            var count = size / 4;
+            var count = bytes.Length / 4;
 
             var mwid = new MWID()
             {
@@ -891,36 +795,35 @@ namespace WoWFormatLib.FileReaders
 
             for (var i = 0; i < count; i++)
             {
-                mwid.offsets[i] = bin.ReadUInt32();
+                mwid.offsets[i] = MemoryMarshal.Read<uint>(bytes.Slice(i * 4, 4));
             }
 
             return mwid;
         }
-        private static MDDF ReadMDDFChunk(uint size, BinaryReader bin)
+        private static MDDF ReadMDDFChunk(ReadOnlySpan<byte> bytes)
         {
             var mddf = new MDDF();
 
-            var count = size / 36;
-
+            var count = bytes.Length / 36;
             mddf.entries = new MDDFEntry[count];
 
             for (var i = 0; i < count; i++)
             {
-                mddf.entries[i] = bin.Read<MDDFEntry>();
+                mddf.entries[i] = MemoryMarshal.Read<MDDFEntry>(bytes.Slice(i * 36, 36));
             }
 
             return mddf;
         }
-        public static MODF ReadMODFChunk(uint size, BinaryReader bin)
+
+        public static MODF ReadMODFChunk(ReadOnlySpan<byte> bytes)
         {
             var modf = new MODF();
 
-            var count = size / 64;
-
+            var count = bytes.Length / 64;
             modf.entries = new MODFEntry[count];
             for (var i = 0; i < count; i++)
             {
-                modf.entries[i] = bin.Read<MODFEntry>();
+                modf.entries[i] = MemoryMarshal.Read<MODFEntry>(bytes.Slice(i * 64, 64));
             }
 
             return modf;
@@ -931,176 +834,167 @@ namespace WoWFormatLib.FileReaders
         {
             using (var bin = new BinaryReader(adtTexStream))
             {
-                long position = 0;
                 uint MCNKi = 0;
 
-                while (position < adtTexStream.Length)
+                while (adtTexStream.Position < adtTexStream.Length)
                 {
-                    adtTexStream.Position = position;
                     var chunkName = (ADTChunks)bin.ReadUInt32();
                     var chunkSize = bin.ReadUInt32();
+                    var chunkBytes = bin.ReadBytes((int)chunkSize);
 
-                    position = adtTexStream.Position + chunkSize;
                     switch (chunkName)
                     {
                         case ADTChunks.MVER:
-                            if (bin.ReadUInt32() != 18)
+                            if (BitConverter.ToUInt32(chunkBytes, 0) != 18)
                             { throw new Exception("Unsupported ADT version!"); }
                             break;
                         case ADTChunks.MTEX:
-                            adtfile.textures = ReadMTEXChunk(chunkSize, bin);
+                            adtfile.textures = ReadMTEXChunk(chunkBytes);
                             break;
                         case ADTChunks.MCNK:
-                            ReadTexMCNKChunk(MCNKi, chunkSize, bin, wdtMPHDFlags);
+                            ReadTexMCNKChunk(MCNKi, chunkBytes, wdtMPHDFlags);
                             MCNKi++;
                             break;
                         case ADTChunks.MTXP:
-                            adtfile.texParams = ReadMTXPChunk(chunkSize, bin);
+                            adtfile.texParams = ReadMTXPChunk(chunkBytes);
                             break;
                         case ADTChunks.MHID: // Height texture fileDataIDs
-                            adtfile.heightTextureFileDataIDs = ReadFileDataIDChunk(chunkSize, bin);
+                            adtfile.heightTextureFileDataIDs = ReadFileDataIDChunk(chunkBytes);
                             break;
                         case ADTChunks.MDID: // Diffuse texture fileDataIDs
-                            adtfile.diffuseTextureFileDataIDs = ReadFileDataIDChunk(chunkSize, bin);
+                            adtfile.diffuseTextureFileDataIDs = ReadFileDataIDChunk(chunkBytes);
                             break;
                         case ADTChunks.MTCG: // Texture color gradings
-                            adtfile.textureColorGradings = ReadMTCGChunk(chunkSize, bin);
+                            adtfile.textureColorGradings = ReadMTCGChunk(chunkBytes);
                             break;
                         case ADTChunks.MAMP:
                             break;
                         default:
-                            Console.WriteLine(string.Format("Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)chunkName))));
+                            Console.WriteLine(string.Format("ADT TEX: Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", chunkName.ToString("X"), adtTexStream.Position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)chunkName))));
                             break;
                     }
                 }
             }
         }
 
-        private static MTCG[] ReadMTCGChunk(uint chunkSize, BinaryReader bin)
+        private static MTCG[] ReadMTCGChunk(ReadOnlySpan<byte> bytes)
         {
-            var mtcg = new MTCG[chunkSize / 16];
+            var mtcg = new MTCG[bytes.Length / 16];
             for (var i = 0; i < mtcg.Length; i++)
             {
-                mtcg[i] = bin.Read<MTCG>();
+                mtcg[i] = MemoryMarshal.Read<MTCG>(bytes.Slice(i * 16, 16));
             }
             return mtcg;
         }
 
-        private void ReadTexMCNKChunk(uint mcnkIndex, uint size, BinaryReader bin, MPHDFlags wdtMPHDFlags)
+        private void ReadTexMCNKChunk(uint mcnkIndex, ReadOnlySpan<byte> bytes, MPHDFlags wdtMPHDFlags)
         {
-            using (var stream = new MemoryStream(bin.ReadBytes((int)size)))
-            using (var subbin = new BinaryReader(stream))
+            var offset = 0;
+            var length = bytes.Length;
+
+            while (offset < length)
             {
-                long subpos = 0;
+                var subChunkName = (ADTChunks)MemoryMarshal.Read<uint>(bytes.Slice(offset, 4));
+                offset += 4;
+                var subChunkSize = MemoryMarshal.Read<uint>(bytes.Slice(offset, 4));
+                offset += 4;
+                var subChunkBytes = bytes.Slice(offset, (int)subChunkSize);
+                offset += (int)subChunkSize;
 
-                while (subpos < stream.Length)
+                adtfile.chunks ??= new MCNK[16 * 16];
+
+                switch (subChunkName)
                 {
-                    subbin.BaseStream.Position = subpos;
-                    var subChunkName = (ADTChunks)subbin.ReadUInt32();
-                    var subChunkSize = subbin.ReadUInt32();
-
-                    subpos = stream.Position + subChunkSize;
-
-                    if (adtfile.chunks == null)
-                        adtfile.chunks = new MCNK[16 * 16];
-
-                    switch (subChunkName)
-                    {
-                        case ADTChunks.MCLY:
-                            adtfile.chunks[mcnkIndex].layers = ReadMCLYSubChunk(subChunkSize, subbin);
-                            break;
-                        case ADTChunks.MCAL:
-                            adtfile.chunks[mcnkIndex].alphaLayer = ReadMCALSubChunk(subChunkSize, subbin, adtfile.chunks[mcnkIndex], wdtMPHDFlags);
-                            break;
-                        case ADTChunks.MCSH:
-                        case ADTChunks.MCMT:
-                            break;
-                        default:
-                            Console.WriteLine(string.Format("ADT TEX MCNK: Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", subChunkName.ToString("X"), subpos.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)subChunkName))));
-                            break;
-                    }
+                    case ADTChunks.MCLY:
+                        adtfile.chunks[mcnkIndex].layers = ReadMCLYSubChunk(subChunkBytes);
+                        break;
+                    case ADTChunks.MCAL:
+                        adtfile.chunks[mcnkIndex].alphaLayer = ReadMCALSubChunk(subChunkBytes, adtfile.chunks[mcnkIndex], wdtMPHDFlags);
+                        break;
+                    case ADTChunks.MCSH:
+                    case ADTChunks.MCMT:
+                        break;
+                    default:
+                        Console.WriteLine(string.Format("ADT TEX MCNK: Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", subChunkName.ToString("X"), offset.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)subChunkName))));
+                        break;
                 }
             }
         }
-        private static MTEX ReadMTEXChunk(uint size, BinaryReader bin)
+
+        private static MTEX ReadMTEXChunk(ReadOnlySpan<byte> bytes)
         {
             var txchunk = new MTEX();
-
-            //List of BLP filenames
-            var blpFilesChunk = bin.ReadBytes((int)size);
 
             var blpFiles = new List<string>();
             var str = new StringBuilder();
 
-            for (var i = 0; i < blpFilesChunk.Length; i++)
+            for (var i = 0; i < bytes.Length; i++)
             {
-                if (blpFilesChunk[i] == '\0')
+                if (bytes[i] == '\0')
                 {
                     blpFiles.Add(str.ToString());
                     str = new StringBuilder();
                 }
                 else
                 {
-                    str.Append((char)blpFilesChunk[i]);
+                    str.Append((char)bytes[i]);
                 }
             }
 
             txchunk.filenames = blpFiles.ToArray();
             return txchunk;
         }
-        private static MTXF ReadMTXFChunk(uint size, BinaryReader bin)
-        {
-            var count = size / 4;
 
-            var mtxf = new MTXF();
-            mtxf.flags = new uint[count];
+        private static MTXF ReadMTXFChunk(ReadOnlySpan<byte> bytes)
+        {
+            var count = bytes.Length / 4;
+
+            var mtxf = new MTXF
+            {
+                flags = new uint[count]
+            };
 
             for (var i = 0; i < count; i++)
-            {
-                mtxf.flags[i] = bin.ReadUInt32();
-            }
+                mtxf.flags[i] = MemoryMarshal.Read<uint>(bytes.Slice(i * 4, 4));
 
             return mtxf;
         }
 
-        private static MTXP[] ReadMTXPChunk(uint size, BinaryReader bin)
+        private static MTXP[] ReadMTXPChunk(ReadOnlySpan<byte> bytes)
         {
-            var count = size / 16;
+            var count = bytes.Length / 16;
 
             var txparams = new MTXP[count];
 
             for (var i = 0; i < count; i++)
             {
-                txparams[i] = bin.Read<MTXP>();
+                txparams[i] = MemoryMarshal.Read<MTXP>(bytes.Slice(i * 16, 16));
             }
 
             return txparams;
         }
-        private static MCAL[] ReadMCALSubChunk(uint size, BinaryReader bin, MCNK mapchunk, MPHDFlags wdtMPHDFlags)
-        {
-            var mcal = new MCAL[mapchunk.layers.Length];
 
-            mcal[0].layer = new byte[64 * 64];
+        private static byte[][] ReadMCALSubChunk(ReadOnlySpan<byte> span, MCNK mapchunk, MPHDFlags wdtMPHDFlags)
+        {
+            var layerCount = mapchunk.layers.Length;
+            var mcal = new byte[layerCount][];
+
+            mcal[0] = new byte[64 * 64];
             for (var i = 0; i < 64 * 64; i++)
             {
-                mcal[0].layer[i] = 255;
+                mcal[0][i] = 255;
             }
 
-            uint read_offset = 0;
+            var immediate_offset = 0;
 
-            for (var layer = 1; layer < mapchunk.layers.Length; ++layer)
+            for (var layer = 1; layer < layerCount; ++layer)
             {
-                // we assume that we have read as many bytes as this next layer's mcal offset. we then read depending on encoding
-                if (mapchunk.layers[layer].offsetInMCAL != read_offset)
-                {
-                    throw new Exception("mismatch: layer before required more / less bytes than expected");
-                }
                 if (mapchunk.layers[layer].flags.HasFlag(MCLYFlags.mcly_alpha_map_compressed)) // Compressed
                 {
                     //Console.WriteLine("Compressed");
                     // first layer is always fully opaque -> you can let that out
                     // array of 3 x array of 64*64 chars: unpacked alpha values
-                    mcal[layer].layer = new byte[64 * 64];
+                    mcal[layer] = new byte[64 * 64];
 
                     // sorry, I have no god damn idea about c#
                     // *x = value at x. x = pointer to data. ++x = advance pointer a byte
@@ -1108,85 +1002,81 @@ namespace WoWFormatLib.FileReaders
                     uint out_offset = 0;
                     while (out_offset < 4096)
                     {
-                        var info = bin.ReadByte();
+                        var info = span[immediate_offset++];
                         ++in_offset;
                         var mode = (uint)(info & 0x80) >> 7; // 0 = copy, 1 = fill
                         var count = (uint)(info & 0x7f); // do mode operation count times
 
                         if (mode != 0)
                         {
-                            var val = bin.ReadByte();
+                            var val = span[immediate_offset++];
                             ++in_offset;
                             while (count-- > 0 && out_offset < 4096)
                             {
-                                mcal[layer].layer[out_offset] = val;
+                                mcal[layer][out_offset] = val;
                                 ++out_offset;
                             }
+
 
                         }
                         else // mode == 1
                         {
                             while (count-- > 0 && out_offset < 4096)
                             {
-                                var val = bin.ReadByte();
+                                var val = span[immediate_offset++];
                                 ++in_offset;
-                                mcal[layer].layer[out_offset] = val;
+                                mcal[layer][out_offset] = val;
                                 ++out_offset;
                             }
                         }
                     }
-                    read_offset += in_offset;
+
                     if (out_offset != 4096)
                         throw new Exception("we somehow overshoot. this should not be the case, except for broken adts");
                 }
-                else if (wdtMPHDFlags.HasFlag(Structs.WDT.MPHDFlags.adt_has_big_alpha) || wdtMPHDFlags.HasFlag(Structs.WDT.MPHDFlags.adt_has_height_texturing)) // Uncompressed (4096)
+                else if (wdtMPHDFlags.HasFlag(MPHDFlags.adt_has_big_alpha) || wdtMPHDFlags.HasFlag(MPHDFlags.adt_has_height_texturing)) // Uncompressed (4096)
                 {
                     //Console.WriteLine("Uncompressed (4096)");
-                    mcal[layer].layer = bin.ReadBytes(4096);
-                    read_offset += 4096;
+                    mcal[layer] = span.Slice(immediate_offset, 4096).ToArray();
+                    immediate_offset += 4096;
                 }
                 else // Uncompressed (2048)
                 {
                     //Console.WriteLine("Uncompressed (2048)");
-                    mcal[layer].layer = new byte[64 * 64];
-                    var mcal_data = bin.ReadBytes(2048);
-                    read_offset += 2048;
+                    mcal[layer] = new byte[64 * 64];
+                    var mcal_data = span.Slice(immediate_offset, 2048);
+                    immediate_offset += 2048;
                     for (var i = 0; i < 2048; ++i)
                     {
                         // maybe nibbles swapped
-                        mcal[layer].layer[2 * i + 0] = (byte)(((mcal_data[i] & 0x0F) >> 0) * 17);
-                        mcal[layer].layer[2 * i + 1] = (byte)(((mcal_data[i] & 0xF0) >> 4) * 17);
+                        mcal[layer][2 * i + 0] = (byte)(((mcal_data[i] & 0x0F) >> 0) * 17);
+                        mcal[layer][2 * i + 1] = (byte)(((mcal_data[i] & 0xF0) >> 4) * 17);
                     }
                 }
             }
 
-            if (read_offset != size)
-                throw new Exception("Haven't finished reading chunk but should be");
-
             return mcal;
         }
-        private static MCLY[] ReadMCLYSubChunk(uint size, BinaryReader bin)
+
+        private static MCLY[] ReadMCLYSubChunk(ReadOnlySpan<byte> bytes)
         {
-            var count = size / 16;
+            var stride = Unsafe.SizeOf<MCLY>();
+            var count = bytes.Length / stride;
             var mclychunks = new MCLY[count];
+            
             for (var i = 0; i < count; i++)
-            {
-                mclychunks[i].textureId = bin.ReadUInt32();
-                mclychunks[i].flags = (MCLYFlags)bin.ReadUInt32();
-                mclychunks[i].offsetInMCAL = bin.ReadUInt32();
-                mclychunks[i].effectId = bin.ReadInt32();
-            }
+                mclychunks[i] = MemoryMarshal.Read<MCLY>(bytes.Slice(i * stride, stride));
 
             return mclychunks;
         }
 
-        private static uint[] ReadFileDataIDChunk(uint size, BinaryReader bin)
+        private static uint[] ReadFileDataIDChunk(ReadOnlySpan<byte> bytes)
         {
-            var count = size / 4;
+            var count = bytes.Length / 4;
             var filedataids = new uint[count];
             for (var i = 0; i < count; i++)
             {
-                filedataids[i] = bin.ReadUInt32();
+                filedataids[i] = MemoryMarshal.Read<uint>(bytes.Slice(i * 4, 4));
             }
             return filedataids;
         }

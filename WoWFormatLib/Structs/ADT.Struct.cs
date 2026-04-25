@@ -211,7 +211,7 @@ namespace WoWFormatLib.Structs.ADT
         public MCSE soundEmitters;
         public MCBB[] blendBatches;
         public MCLY[] layers;
-        public MCAL[] alphaLayer;
+        public byte[][] alphaLayer;
     }
 
     public struct Obj
@@ -411,11 +411,6 @@ namespace WoWFormatLib.Structs.ADT
         mcly_use_cubemap_reflection = 0x400,
         mcly_unk_apply_scale1 = 0x800,
         mcly_unk_apply_scale2 = 0x1000
-    }
-
-    public struct MCAL
-    {
-        public byte[] layer;
     }
 
     public struct MCCV

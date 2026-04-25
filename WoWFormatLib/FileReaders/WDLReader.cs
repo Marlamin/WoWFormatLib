@@ -64,13 +64,13 @@ namespace WoWFormatLib.FileReaders
                             throw new Exception("Unsupported WDL version!");
                         break;
                     case WDLChunks.MWMO:
-                        wdlfile.mwmo = ADTReader.ReadMWMOChunk(chunkSize, bin);
+                        wdlfile.mwmo = ADTReader.ReadMWMOChunk(bin.ReadBytes((int)chunkSize));
                         break;
                     case WDLChunks.MWID:
-                        wdlfile.mwid = ADTReader.ReadMWIDChunk(chunkSize, bin);
+                        wdlfile.mwid = ADTReader.ReadMWIDChunk(bin.ReadBytes((int)chunkSize));
                         break;
                     case WDLChunks.MODF:
-                        wdlfile.modf = ADTReader.ReadMODFChunk(chunkSize, bin);
+                        wdlfile.modf = ADTReader.ReadMODFChunk(bin.ReadBytes((int)chunkSize));
                         break;
                     case WDLChunks.MSSN: // SkyScenes
                         var mssnCount = chunkSize / 32;
