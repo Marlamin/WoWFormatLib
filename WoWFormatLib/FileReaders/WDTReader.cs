@@ -142,7 +142,7 @@ namespace WoWFormatLib.FileReaders
             {
                 manm.entriesB[i] = new MANM_B();
                 manm.entriesB[i].c = bin.ReadUInt32();
-                manm.entriesB[i].d = bin.ReadBytes(1480);
+                manm.entriesB[i].d = bin.ReadBytes(1480); // 552 on 8.3
                 //manm.entriesB[i].type = bin.ReadUInt32();
                 //manm.entriesB[i].s = bin.ReadUInt32();
                 manm.entriesB[i].posPlusNormalCount = bin.ReadUInt32();
@@ -152,8 +152,8 @@ namespace WoWFormatLib.FileReaders
                     manm.entriesB[i].posPlusNormal[j] = bin.Read<MANMPosPlusNormal>();
                 }
 
+                // not used in 8.3
                 bin.ReadBytes(28 * ((int)manm.entriesB[i].posPlusNormalCount - 3));
-
             }
             return manm;
         }
