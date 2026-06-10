@@ -27,7 +27,7 @@ namespace WoWFormatLib.FileProviders
                 // Remove existing provider if it is Wago and the new one is CASC
                 if (Providers.TryGetValue(build, out var existingProvider))
                 {
-                    if (existingProvider is WagoFileProvider && provider is CASCFileProvider)
+                    if (existingProvider is WagoFileProvider && provider is TACTSharpFileProvider)
                         Providers.Remove(build);
                 }
 
