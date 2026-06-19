@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -269,7 +268,7 @@ namespace WoWFormatLib.FileReaders
                     treasurePickerIDCount = bin.ReadUInt32();
                     entries[id].Add("TreasurePickerIDCount", treasurePickerIDCount.ToString());
 
-                    if(wdb.buildInfo.expansion>= 11 && wdb.clientBuild >= 56196)
+                    if (wdb.buildInfo.expansion >= 11 && wdb.clientBuild >= 56196)
                     {
                         treasurePickerID2Count = bin.ReadUInt32();
                         entries[id].Add("TreasurePickerID2Count", treasurePickerID2Count.ToString());
@@ -297,19 +296,25 @@ namespace WoWFormatLib.FileReaders
                     numConditionalQuestCompletion = bin.ReadUInt32();
                 }
 
+                uint numHouseRoomRewards = 0;
+                uint numDecorRewards = 0;
+
                 if (wdb.buildInfo.expansion >= 12 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major == 2 && wdb.buildInfo.minor == 7))
                 {
-                    var numHouseRoomRewards = bin.ReadUInt32();
+                    numHouseRoomRewards = bin.ReadUInt32();
                     entries[id].Add("NumHouseRoomRewards", numHouseRoomRewards.ToString());
 
-                    var numDecorRewards = bin.ReadUInt32();
+                    numDecorRewards = bin.ReadUInt32();
                     entries[id].Add("NumDecorRewards", numDecorRewards.ToString());
 
-                    for (var i = 0; i < numHouseRoomRewards; i++)
-                        entries[id].Add("HouseRoomRewardID[" + i + "]", bin.ReadUInt32().ToString());
+                    if (wdb.buildInfo.expansion == 12 && wdb.buildInfo.major < 1)
+                    {
+                        for (var i = 0; i < numHouseRoomRewards; i++)
+                            entries[id].Add("HouseRoomRewardID[" + i + "]", bin.ReadUInt32().ToString());
 
-                    for (var i = 0; i < numDecorRewards; i++)
-                        entries[id].Add("DecorRewardID[" + i + "]", bin.ReadUInt32().ToString());
+                        for (var i = 0; i < numDecorRewards; i++)
+                            entries[id].Add("DecorRewardID[" + i + "]", bin.ReadUInt32().ToString());
+                    }
                 }
 
                 if (wdb.clientBuild >= 35078 && wdb.buildInfo.expansion >= 9)
@@ -324,6 +329,10 @@ namespace WoWFormatLib.FileReaders
                         }
                     }
                 }
+                var ds = new DataStore(bin);
+
+                if ((wdb.buildInfo.expansion == 12 && wdb.buildInfo.major >= 1) || wdb.buildInfo.expansion >= 13)
+                    ReadQuestObjectives(wdb, bin, ds, id, entries, (int)numObjectives);
 
                 if (wdb.buildInfo.expansion >= 11)
                 {
@@ -338,77 +347,14 @@ namespace WoWFormatLib.FileReaders
                     }
                 }
 
-                var ds = new DataStore(bin);
-
-                var LogTitleLength = ds.GetIntByBits(9);
-                var LogDescriptionLength = ds.GetIntByBits(12);
-                var QuestDescriptionLength = ds.GetIntByBits(12);
-                var AreaDescriptionLength = ds.GetIntByBits(9);
-                var PortraitGiverTextLength = ds.GetIntByBits(10);
-                var PortraitGiverNameLength = ds.GetIntByBits(8);
-                var PortraitTurnInTextLength = ds.GetIntByBits(10);
-                var PortraitTurnInNameLength = ds.GetIntByBits(8);
-                var QuestCompletionLogLength = ds.GetIntByBits(11);
-
-                if (wdb.buildInfo.expansion >= 10)
-                    entries[id].Add("ReadyForTranslation", ds.GetBool().ToString());
-
-                if (wdb.buildInfo.expansion >= 11)
-                    entries[id].Add("ResetByScheduler", ds.GetBool().ToString());
-
-                ds.Flush();
-
-                for (var i = 0; i < numObjectives; i++)
+                if ((wdb.buildInfo.expansion == 12 && wdb.buildInfo.major >= 1) || wdb.buildInfo.expansion >= 13)
                 {
-                    entries[id].Add("ObjectiveID[" + i + "]", bin.ReadUInt32().ToString());
-                    if (wdb.buildInfo.expansion >= 11)
-                        entries[id].Add("ObjectiveType[" + i + "]", bin.ReadUInt32().ToString());
-                    else
-                        entries[id].Add("ObjectiveType[" + i + "]", bin.ReadByte().ToString());
+                    for (var i = 0; i < numHouseRoomRewards; i++)
+                        entries[id].Add("HouseRoomRewardID[" + i + "]", bin.ReadUInt32().ToString());
 
-                    entries[id].Add("ObjectiveStorageIndex[" + i + "]", bin.ReadByte().ToString());
-                    entries[id].Add("ObjectiveObjectID[" + i + "]", bin.ReadUInt32().ToString());
-                    entries[id].Add("ObjectiveAmount[" + i + "]", bin.ReadUInt32().ToString());
-
-                    if (wdb.buildInfo.expansion >= 12 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major == 2 && wdb.buildInfo.minor == 7))
-                    {
-                        entries[id].Add("ObjectiveUNK[" + i + "]", bin.ReadUInt32().ToString());
-                    }
-
-                    entries[id].Add("ObjectiveFlags[" + i + "]", bin.ReadUInt32().ToString());
-                    entries[id].Add("ObjectiveFlags2[" + i + "]", bin.ReadUInt32().ToString());
-                    entries[id].Add("ObjectivePercentAmount[" + i + "]", bin.ReadSingle().ToString());
-
-                    var numVisualEffects = bin.ReadUInt32();
-                    entries[id].Add("ObjectiveNumVisualEffects[" + i + "]", numVisualEffects.ToString());
-
-                    for (var j = 0; j < numVisualEffects; j++)
-                    {
-                        entries[id].Add("ObjectiveVisualEffects[" + i + "][" + j + "]", bin.ReadUInt32().ToString());
-                    }
-
-                    if (wdb.buildInfo.expansion >= 12 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major == 2 && wdb.buildInfo.minor == 7))
-                    {
-                        entries[id].Add("ObjectiveWorldEffectID[" + i + "]", bin.ReadUInt32().ToString());
-                    }
-                    var descriptionLength = bin.ReadByte();
-                    
-                    if ((wdb.buildInfo.expansion >= 12 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major == 2 && wdb.buildInfo.minor == 7)) && wdb.buildInfo.build >= 64228)
-                        bin.ReadByte();
-                    
-                    entries[id].Add("ObjectiveDescription[" + i + "]", ds.GetString(descriptionLength).Trim('\0'));
+                    for (var i = 0; i < numDecorRewards; i++)
+                        entries[id].Add("DecorRewardID[" + i + "]", bin.ReadUInt32().ToString());
                 }
-
-                entries[id].Add("LogTitle", ds.GetString(LogTitleLength).Trim('\0'));
-                entries[id].Add("LogDescription", ds.GetString(LogDescriptionLength).Trim('\0'));
-                entries[id].Add("QuestDescription", ds.GetString(QuestDescriptionLength).Trim('\0'));
-                entries[id].Add("AreaDescription", ds.GetString(AreaDescriptionLength).Trim('\0'));
-                entries[id].Add("PortraitGiverText", ds.GetString(PortraitGiverTextLength).Trim('\0'));
-                entries[id].Add("PortraitGiverName", ds.GetString(PortraitGiverNameLength).Trim('\0'));
-                entries[id].Add("PortraitTurnInText", ds.GetString(PortraitTurnInTextLength).Trim('\0'));
-                entries[id].Add("PortraitTurnInName", ds.GetString(PortraitTurnInNameLength).Trim('\0'));
-                entries[id].Add("QuestCompletionLog", ds.GetString(QuestCompletionLogLength).Trim('\0'));
-                ds.Flush();
 
                 for (var i = 0; i < numConditionalQuestDescription; i++)
                 {
@@ -428,6 +374,40 @@ namespace WoWFormatLib.FileReaders
                     entries[id].Add("ConditionalQuestCompl[" + i + "]", ds.GetString(conditionalQuestDescLength).Trim('\0'));
                 }
 
+
+                var LogTitleLength = ds.GetIntByBits(9);
+                var LogDescriptionLength = ds.GetIntByBits(12);
+                var QuestDescriptionLength = ds.GetIntByBits(12);
+                var AreaDescriptionLength = ds.GetIntByBits(9);
+                var PortraitGiverTextLength = ds.GetIntByBits(10);
+                var PortraitGiverNameLength = ds.GetIntByBits(8);
+                var PortraitTurnInTextLength = ds.GetIntByBits(10);
+                var PortraitTurnInNameLength = ds.GetIntByBits(8);
+                var QuestCompletionLogLength = ds.GetIntByBits(11);
+
+                if (wdb.buildInfo.expansion >= 10)
+                    entries[id].Add("ReadyForTranslation", ds.GetBool().ToString());
+
+                if (wdb.buildInfo.expansion >= 11)
+                    entries[id].Add("ResetByScheduler", ds.GetBool().ToString());
+
+                ds.Flush();
+
+                if (wdb.buildInfo.expansion == 12 && wdb.buildInfo.major < 1)
+                    ReadQuestObjectives(wdb, bin, ds, id, entries, (int)numObjectives);
+
+                entries[id].Add("LogTitle", ds.GetString(LogTitleLength).Trim('\0'));
+                entries[id].Add("LogDescription", ds.GetString(LogDescriptionLength).Trim('\0'));
+                entries[id].Add("QuestDescription", ds.GetString(QuestDescriptionLength).Trim('\0'));
+                entries[id].Add("AreaDescription", ds.GetString(AreaDescriptionLength).Trim('\0'));
+                entries[id].Add("PortraitGiverText", ds.GetString(PortraitGiverTextLength).Trim('\0'));
+                entries[id].Add("PortraitGiverName", ds.GetString(PortraitGiverNameLength).Trim('\0'));
+                entries[id].Add("PortraitTurnInText", ds.GetString(PortraitTurnInTextLength).Trim('\0'));
+                entries[id].Add("PortraitTurnInName", ds.GetString(PortraitTurnInNameLength).Trim('\0'));
+                entries[id].Add("QuestCompletionLog", ds.GetString(QuestCompletionLogLength).Trim('\0'));
+                ds.Flush();
+
+         
                 if (bin.BaseStream.Position != posPreread + length)
                 {
                     if (bin.BaseStream.Position > posPreread + length)
@@ -445,6 +425,50 @@ namespace WoWFormatLib.FileReaders
             }
 
             return entries;
+        }
+
+        private static void ReadQuestObjectives(WDBCache wdb, BinaryReader bin, DataStore ds, uint id, Dictionary<uint, Dictionary<string, string>> entries, int numObjectives)
+        {
+            for (var i = 0; i < numObjectives; i++)
+            {
+                entries[id].Add("ObjectiveID[" + i + "]", bin.ReadUInt32().ToString());
+                if (wdb.buildInfo.expansion >= 11)
+                    entries[id].Add("ObjectiveType[" + i + "]", bin.ReadUInt32().ToString());
+                else
+                    entries[id].Add("ObjectiveType[" + i + "]", bin.ReadByte().ToString());
+
+                entries[id].Add("ObjectiveStorageIndex[" + i + "]", bin.ReadByte().ToString());
+                entries[id].Add("ObjectiveObjectID[" + i + "]", bin.ReadUInt32().ToString());
+                entries[id].Add("ObjectiveAmount[" + i + "]", bin.ReadUInt32().ToString());
+
+                if (wdb.buildInfo.expansion >= 12 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major == 2 && wdb.buildInfo.minor == 7))
+                {
+                    entries[id].Add("ObjectiveUNK[" + i + "]", bin.ReadUInt32().ToString());
+                }
+
+                entries[id].Add("ObjectiveFlags[" + i + "]", bin.ReadUInt32().ToString());
+                entries[id].Add("ObjectiveFlags2[" + i + "]", bin.ReadUInt32().ToString());
+                entries[id].Add("ObjectivePercentAmount[" + i + "]", bin.ReadSingle().ToString());
+
+                var numVisualEffects = bin.ReadUInt32();
+                entries[id].Add("ObjectiveNumVisualEffects[" + i + "]", numVisualEffects.ToString());
+
+                for (var j = 0; j < numVisualEffects; j++)
+                {
+                    entries[id].Add("ObjectiveVisualEffects[" + i + "][" + j + "]", bin.ReadUInt32().ToString());
+                }
+
+                if (wdb.buildInfo.expansion >= 12 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major == 2 && wdb.buildInfo.minor == 7))
+                {
+                    entries[id].Add("ObjectiveWorldEffectID[" + i + "]", bin.ReadUInt32().ToString());
+                }
+                var descriptionLength = bin.ReadByte();
+
+                if ((wdb.buildInfo.expansion >= 12 || (wdb.buildInfo.expansion == 11 && wdb.buildInfo.major == 2 && wdb.buildInfo.minor == 7)) && wdb.buildInfo.build >= 64228)
+                    bin.ReadByte();
+
+                entries[id].Add("ObjectiveDescription[" + i + "]", ds.GetString(descriptionLength).Trim('\0'));
+            }
         }
 
         private static Dictionary<uint, Dictionary<string, string>> ReadCreatureEntries(BinaryReader bin, WDBCache wdb)
