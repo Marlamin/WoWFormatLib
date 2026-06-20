@@ -147,6 +147,7 @@ namespace WoWFormatLib.FileReaders
                         case WMOChunks.MOLV: // ?
                         case WMOChunks.MOMX: // ?
                         case WMOChunks.MOPE: // ?
+                        case WMOChunks.MFOB: // ?
                             break;
                         default:
                             Console.WriteLine(string.Format("Root WMO: Found unknown header at offset {1} \"{0}\"/\"{2}\" while we should've already read them all!", chunkName.ToString("X"), position.ToString(), Encoding.UTF8.GetString(BitConverter.GetBytes((uint)chunkName))));

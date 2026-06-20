@@ -41,6 +41,7 @@ namespace WoWFormatLib.Structs.WMO
         MBVD = 'M' << 24 | 'B' << 16 | 'V' << 8 | 'D' << 0,
         MOMX = 'M' << 24 | 'O' << 16 | 'M' << 8 | 'X' << 0,
         MOPE = 'M' << 24 | 'O' << 16 | 'P' << 8 | 'E' << 0,
+        MFOB = 'M' << 24 | 'F' << 16 | 'O' << 8 | 'B' << 0,
 
         // Group WMO
         MOGP = 'M' << 24 | 'O' << 16 | 'G' << 8 | 'P' << 0,
