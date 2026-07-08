@@ -70,6 +70,10 @@ namespace WoWFormatLib.FileReaders
                     wmo.Position = position;
 
                     var chunkName = (WMOChunks)bin.ReadUInt32();
+
+                    if ((uint)chunkName == 0)
+                        return;
+
                     var chunkSize = bin.ReadUInt32();
 
                     position = wmo.Position + chunkSize;
