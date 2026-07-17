@@ -249,6 +249,9 @@ namespace WoWFormatLib.Structs.M3
         public int unkDataHashesOffset;
         public int unkDataOffset;
 
+        public int v4_unk0;
+        public int v4_unk1;
+
         public List<ulong> UniformHashes;
         public List<ushort> UniformTypes;
         public List<int> UniformLocations;

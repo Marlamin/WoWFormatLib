@@ -140,7 +140,7 @@ namespace WoWFormatLib.FileReaders
                 throw new Exception("Invalid M3 instances magic!");
 
             instances.Version = bin.ReadUInt32();
-            if (instances.Version != 2)
+            if (instances.Version != 2 && instances.Version != 4)
                 throw new Exception("Unsupported M3 instance version: " + instances.Version);
 
             instances.TotalSize = bin.ReadUInt32() * 4; // Total Chunk size
@@ -179,6 +179,12 @@ namespace WoWFormatLib.FileReaders
                     unkDataHashesOffset = bin.ReadInt32(),
                     unkDataOffset = bin.ReadInt32()
                 };
+
+                if(instances.Version == 4)
+                {
+                    shaderData.v4_unk0 = bin.ReadInt32();
+                    shaderData.v4_unk1 = bin.ReadInt32();
+                }
 
                 var prevPos = bin.BaseStream.Position;
 
