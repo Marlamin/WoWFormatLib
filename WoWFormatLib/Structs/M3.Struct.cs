@@ -144,6 +144,16 @@ namespace WoWFormatLib.Structs.M3
         public uint VertexCount;
         public uint Unknown1;           // Always 0, could be for bones.
         public uint Unknown2;           // Always 0, could be for bones.
+        public uint v4_Unknown0;
+        public uint v4_Unknown1;
+        public uint v4_Unknown2;
+        public uint v4_Unknown3;
+        public uint v4_Unknown4;
+        public uint v4_Unknown5;
+        public uint v4_Unknown6;
+        public uint v4_Unknown7;
+        public uint v4_Unknown8;
+        public uint v4_Unknown9;
     }
 
     public struct LODS

@@ -62,7 +62,7 @@ namespace WoWFormatLib.FileReaders
 
                     var prevPos = bin.BaseStream.Position;
 
-                    Console.WriteLine("M3 chunk " + debugChunkName + " of size " + chunkSize);
+                    //Console.WriteLine("M3 chunk " + debugChunkName + " of size " + chunkSize);
                     switch (chunkName)
                     {
                         case M3Chunks.M3DT:
@@ -298,12 +298,14 @@ namespace WoWFormatLib.FileReaders
                     var debugChunkName = Encoding.ASCII.GetString(BitConverter.GetBytes((uint)subChunkName));
                     var subChunkSize = subbin.ReadUInt32();
 
-                    Console.WriteLine("M3 chunk MES3 subchunk " + debugChunkName);
+                    //Console.WriteLine("M3 chunk MES3 subchunk " + debugChunkName);
 
                     switch (subChunkName)
                     {
                         case M3Chunks.M3VR:
                             mesh.Version.Version = subbin.ReadUInt32();
+                            if(mesh.Version.Version != 2 && mesh.Version.Version != 3 && mesh.Version.Version != 4)
+                                throw new Exception("Unsupported M3 mesh version: " + mesh.Version.Version);
                             subbin.ReadUInt32(); // Skip unknown value
                             break;
                         case M3Chunks.VPOS:
@@ -399,7 +401,22 @@ namespace WoWFormatLib.FileReaders
                                     Unknown1 = subbin.ReadUInt32(),
                                     Unknown2 = subbin.ReadUInt32()
                                 };
+
+                                if(mesh.Version.Version == 4)
+                                {
+                                    mesh.Geosets.Geosets[i].v4_Unknown0 = subbin.ReadUInt32();
+                                    mesh.Geosets.Geosets[i].v4_Unknown1 = subbin.ReadUInt32();
+                                    mesh.Geosets.Geosets[i].v4_Unknown2 = subbin.ReadUInt32();
+                                    mesh.Geosets.Geosets[i].v4_Unknown3 = subbin.ReadUInt32();
+                                    mesh.Geosets.Geosets[i].v4_Unknown4 = subbin.ReadUInt32();
+                                    mesh.Geosets.Geosets[i].v4_Unknown5 = subbin.ReadUInt32();
+                                    mesh.Geosets.Geosets[i].v4_Unknown6 = subbin.ReadUInt32();
+                                    mesh.Geosets.Geosets[i].v4_Unknown7 = subbin.ReadUInt32();
+                                    mesh.Geosets.Geosets[i].v4_Unknown8 = subbin.ReadUInt32();
+                                    mesh.Geosets.Geosets[i].v4_Unknown9 = subbin.ReadUInt32();
+                                }
                             }
+
                             break;
                         case M3Chunks.LODS:
                             mesh.LodLevels.LODCount = subbin.ReadUInt32();
