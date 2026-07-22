@@ -16,6 +16,9 @@ namespace WoWFormatLib.FileReaders
         public ADT adtfile;
         public uint rootFileDataID;
         private Structs.WDT.WDT wdt;
+
+        public bool readMCNKs = true;
+
         public enum ADTType
         {
             Unknown,
@@ -323,7 +326,8 @@ namespace WoWFormatLib.FileReaders
                                 }
                                 break;
                             case ADTChunks.MCNK:
-                                adtfile.chunks[MCNKi] = ReadMCNKChunk(chunkBytes, wdtMPHDFlags);
+                                if(readMCNKs)
+                                    adtfile.chunks[MCNKi] = ReadMCNKChunk(chunkBytes, wdtMPHDFlags);
                                 MCNKi++;
                                 break;
                             case ADTChunks.MHDR:
@@ -852,7 +856,8 @@ namespace WoWFormatLib.FileReaders
                             adtfile.textures = ReadMTEXChunk(chunkBytes);
                             break;
                         case ADTChunks.MCNK:
-                            ReadTexMCNKChunk(MCNKi, chunkBytes, wdtMPHDFlags);
+                            if(readMCNKs)
+                                ReadTexMCNKChunk(MCNKi, chunkBytes, wdtMPHDFlags);
                             MCNKi++;
                             break;
                         case ADTChunks.MTXP:
