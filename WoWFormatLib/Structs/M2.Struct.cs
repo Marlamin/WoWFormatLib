@@ -36,6 +36,7 @@ namespace WoWFormatLib.Structs.M2
         PCOL = 'P' << 0 | 'C' << 8 | 'O' << 16 | 'L' << 24,
         DPIV = 'D' << 0 | 'P' << 8 | 'I' << 16 | 'V' << 24,
         TEXL = 'T' << 0 | 'E' << 8 | 'X' << 16 | 'L' << 24,
+        AFRA = 'A' << 0 | 'F' << 8 | 'R' << 16 | 'A' << 24,
     }
 
     public struct M2Model

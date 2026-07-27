@@ -143,6 +143,7 @@ namespace WoWFormatLib.FileReaders
                     case M2Chunks.DETL: // Light related
                     case M2Chunks.NERF: // Unknown
                     case M2Chunks.DBOC: // Unknown
+                    case M2Chunks.AFRA: // Unknown
                     case M2Chunks.DPIV: // Pivot point?
                     case M2Chunks.TEXL: // Textured Lights
                         break;
