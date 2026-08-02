@@ -39,8 +39,6 @@ namespace WoWFormatLib.Structs.ADT
         MWDR = 'M' << 24 | 'W' << 16 | 'D' << 8 | 'R' << 0,
 
         // TEX
-
-        [Obsolete("Replaced by MDID/MHID FileDataID chunks in 8.1.")]
         [Description("Array of texture filenames")]
         MTEX = 'M' << 24 | 'T' << 16 | 'E' << 8 | 'X' << 0, // Removed in 8.1.
 

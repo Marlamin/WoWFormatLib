@@ -221,9 +221,8 @@ namespace WoWFormatLib.Structs.M2
         public int boneId;
         public uint flags;
         public short parentBone;
-        private ushort unk_0;
-        private ushort unk_1;
-        private ushort unk_2;
+        private ushort submeshID;
+        private uint boneNameCRC;
         public ABlock<Vector3> translation;
         public ABlock<Quaternion> rotation;
         public ABlock<Vector3> scale;
