@@ -221,8 +221,10 @@ namespace WoWFormatLib.Structs.M2
         public int boneId;
         public uint flags;
         public short parentBone;
+#pragma warning disable 0169
         private ushort submeshID;
         private uint boneNameCRC;
+#pragma warning restore 0169
         public ABlock<Vector3> translation;
         public ABlock<Quaternion> rotation;
         public ABlock<Vector3> scale;

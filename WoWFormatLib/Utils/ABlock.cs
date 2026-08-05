@@ -15,8 +15,9 @@ namespace WoWFormatLib
     public struct ArrayReference<T> where T : struct
     {
         public uint Number;
+#pragma warning disable 0649
         private uint elementsOffset;
-
+#pragma warning restore 0649
         public IEnumerable<T> GetElements(BinaryReader bin)
         {
             var type = typeof(T);
