@@ -95,7 +95,7 @@ namespace WoWFormatLib.Structs.WDT
 
     public struct MapFileDataIDs2
     {
-        public uint unknown0;
+        public uint liquidFlowTexture;
         public uint unknown1;
         public uint unknown2;
         public uint unknown3;
