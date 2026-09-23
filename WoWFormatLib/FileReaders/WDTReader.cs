@@ -206,7 +206,7 @@ namespace WoWFormatLib.FileReaders
                     type = WDTType.Lights;
                     break;
                 }
-                else if (chunk == "VFOG" || chunk == "VFEX")
+                else if (chunk == "VFOG" || chunk == "VFEX" || chunk == "VFE2")
                 {
                     type = WDTType.Fogs;
                     break;

@@ -31,6 +31,7 @@ namespace WoWFormatLib.Structs.WDT
         // Fogs
         VFOG = 'V' << 24 | 'F' << 16 | 'O' << 8 | 'G' << 0,
         VFEX = 'V' << 24 | 'F' << 16 | 'E' << 8 | 'X' << 0,
+        VFE2 = 'V' << 24 | 'F' << 16 | 'E' << 8 | '2' << 0,
 
         // MapParticulateVolumes
         PVPD = 'P' << 24 | 'V' << 16 | 'P' << 8 | 'D' << 0,
