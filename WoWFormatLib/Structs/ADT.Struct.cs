@@ -254,7 +254,11 @@ namespace WoWFormatLib.Structs.ADT
         modf_use_lod = 0x2,
         modf_0x4_unk = 0x4,
         modf_entry_is_filedataid = 0x8,
+        modf_0x10_unk = 0x10,
+        modf_0x20_unk = 0x20,
+        modf_skip_minimap = 0x40,
         modf_use_sets_from_mwds = 0x80,
+        modf_0x100_unk = 0x100
     }
 
     public struct MWDR
