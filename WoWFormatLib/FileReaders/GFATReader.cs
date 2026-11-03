@@ -81,7 +81,6 @@ namespace WoWFormatLib.FileReaders
                 }
             }
 
-           // File.WriteAllText(Path.Combine("extract", "gfat", fdid + ".json"), JsonConvert.SerializeObject(shaderComboFile, Newtonsoft.Json.Formatting.Indented));
             return shaderComboFile;
         }
     }
