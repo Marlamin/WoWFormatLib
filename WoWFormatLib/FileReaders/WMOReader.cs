@@ -505,7 +505,7 @@ namespace WoWFormatLib.FileReaders
                 unused = bin.ReadUInt32()
             };
 
-            using (var stream = new MemoryStream(bin.ReadBytes((int)size)))
+            using (var stream = new ReadOnlyMemoryStream(bin.ReadBytes((int)size)))
             using (var subbin = new BinaryReader(stream))
             {
                 long position = 0;

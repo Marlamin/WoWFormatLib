@@ -70,7 +70,7 @@ namespace WoWFormatLib.FileReaders
                     var blsBytes = reader.ReadBytes((int)(endOffset - startOffset));
                     stream.Position = prevPos;
                     var blsReader = new BLSReader();
-                    BLS blsShader = blsReader.LoadBLS(new MemoryStream(blsBytes));
+                    BLS blsShader = blsReader.LoadBLS(new ReadOnlyMemoryStream(blsBytes));
                     shaderComboFile.shaderPerGFX[apiName] = blsShader;
 
                     //var shaderIndex = 0;

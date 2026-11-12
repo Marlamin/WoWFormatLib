@@ -50,7 +50,7 @@ namespace WoWFormatLib.FileReaders
 
             var wdb = new WDBCache();
 
-            using (var ms = new MemoryStream(File.ReadAllBytes(filename)))
+            using (var ms = new ReadOnlyMemoryStream(File.ReadAllBytes(filename)))
             using (var bin = new BinaryReader(ms))
             {
                 wdb.identifier = Encoding.ASCII.GetString(bin.ReadBytes(4).Reverse().ToArray());

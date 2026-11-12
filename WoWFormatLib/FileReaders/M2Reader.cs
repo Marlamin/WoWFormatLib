@@ -63,7 +63,7 @@ namespace WoWFormatLib.FileReaders
                 switch (chunkName)
                 {
                     case M2Chunks.MD21:
-                        using (Stream m2stream = new MemoryStream(bin.ReadBytes((int)chunkSize)))
+                        using (Stream m2stream = new ReadOnlyMemoryStream(bin.ReadBytes((int)chunkSize)))
                         {
                             ParseYeOldeM2Struct(m2stream);
                         }

@@ -68,7 +68,7 @@ namespace WoWFormatLib.FileReaders
                             break;
                         case DATChunks.ACNK: // Chunk (MCNK equiv)
                             var datChunk = new DATChunk();
-                            using (var chunkStream = new MemoryStream(bin.ReadBytes((int)chunkSize)))
+                            using (var chunkStream = new ReadOnlyMemoryStream(bin.ReadBytes((int)chunkSize)))
                             using(var subbin = new BinaryReader(chunkStream))
                             {
                                 if(chunkSize >= 0x40)

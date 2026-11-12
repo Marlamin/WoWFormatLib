@@ -99,7 +99,7 @@ namespace WoWFormatLib.FileReaders
 
                         bin.BaseStream.Position = chunkStart;
 
-                        using (var compressed = new MemoryStream(bin.ReadBytes((int)chunkLength)))
+                        using (var compressed = new ReadOnlyMemoryStream(bin.ReadBytes((int)chunkLength)))
                         {
                             // Skip zlib headers
                             compressed.ReadByte();

@@ -72,7 +72,7 @@ namespace WoWFormatLib.FileProviders
                 Directory.CreateDirectory("cache/wago/files/" + Build);
 
             if (File.Exists("cache/wago/files/" + Build + "/" + filedataid))
-                return new MemoryStream(File.ReadAllBytes("cache/wago/files/" + Build + "/" + filedataid));
+                return new ReadOnlyMemoryStream(File.ReadAllBytes("cache/wago/files/" + Build + "/" + filedataid));
 
             if (!FileLocks.ContainsKey(filedataid))
                 FileLocks[filedataid] = new Lock();
@@ -81,7 +81,7 @@ namespace WoWFormatLib.FileProviders
             {
                 // Check again if the file exists after acquiring the lock
                 if (File.Exists("cache/wago/files/" + Build + "/" + filedataid))
-                    return new MemoryStream(File.ReadAllBytes("cache/wago/files/" + Build + "/" + filedataid));
+                    return new ReadOnlyMemoryStream(File.ReadAllBytes("cache/wago/files/" + Build + "/" + filedataid));
 
                 var response = Client.GetAsync("https://wago.tools/api/casc/" + filedataid + "?version=" + Build).Result;
 
@@ -95,7 +95,7 @@ namespace WoWFormatLib.FileProviders
                     throw new Exception("Failed to fetch file " + filedataid + " from Wago");
                 }
 
-                return new MemoryStream(File.ReadAllBytes("cache/wago/files/" + Build + "/" + filedataid));
+                return new ReadOnlyMemoryStream(File.ReadAllBytes("cache/wago/files/" + Build + "/" + filedataid));
             }
         }
 

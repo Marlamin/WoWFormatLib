@@ -376,7 +376,7 @@ namespace WoWFormatLib.FileReaders
             }
             else
             {
-                using (var stream = new MemoryStream(bytes.Slice(128, bytes.Length - 128).ToArray()))
+                using (var stream = new ReadOnlyMemoryStream(bytes.Slice(128, bytes.Length - 128).ToArray()))
                 using (var subbin = new BinaryReader(stream))
                 {
                     long subpos = 0;

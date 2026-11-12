@@ -30,7 +30,7 @@ namespace WoWFormatLib.FileProviders
 
         public uint GetFileDataIdByName(string filename) => throw new NotImplementedException();
 
-        public Stream OpenFile(uint filedataid) => new MemoryStream(build.OpenFileByFDID(filedataid));
+        public Stream OpenFile(uint filedataid) => new ReadOnlyMemoryStream(build.OpenFileByFDID(filedataid));
 
         public Stream OpenFile(string filename) => throw new NotImplementedException();
 
@@ -42,7 +42,7 @@ namespace WoWFormatLib.FileProviders
             }
         }
 
-        public Stream OpenFile(byte[] cKey) => new MemoryStream(build.OpenFileByCKey(cKey));
+        public Stream OpenFile(byte[] cKey) => new ReadOnlyMemoryStream(build.OpenFileByCKey(cKey));
 
         public bool FileExists(byte[] cKey)
         {
